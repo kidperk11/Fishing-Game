@@ -53,7 +53,6 @@ public class FPCam : MonoBehaviour
         //it feel like the same speed as the mouse.
         if (playerInput.currentControlScheme == "Gamepad")
         {
-            Debug.Log("Current Control Scheme: " + playerInput.currentControlScheme);
             //Get a reference to the current camera input
             inputX = moveCam.ReadValue<Vector2>().x * mouseSenseX * controllerSenseScale.x;
             inputY = moveCam.ReadValue<Vector2>().y * mouseSenseY * controllerSenseScale.y;
@@ -69,7 +68,7 @@ public class FPCam : MonoBehaviour
         yRotation += inputX;
 
         xRotation -= inputY;
-        xRotation = Mathf.Clamp(xRotation, -90, 90f);
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
         //Rotate camera
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
