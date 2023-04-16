@@ -9,6 +9,10 @@ public class FPMove : MonoBehaviour
     public float moveSpeed;
     public Transform orientation;
     public float groundDrag;
+    public float jumpForce;
+    public float jumpCooldown;
+    public float airMultiplier;
+    bool readyToJump;
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -19,6 +23,7 @@ public class FPMove : MonoBehaviour
     float inputY;
     public FPPlayerActions moveActions;
     private InputAction movePlayer;
+    private InputAction jump;
 
     Vector3 moveDirection;
 
@@ -28,11 +33,16 @@ public class FPMove : MonoBehaviour
     {
         movePlayer = moveActions.Player.Move;
         movePlayer.Enable();
+        jump = moveActions.Player.Jump;
+        jump.Enable();
+
+        jump.performed += Jump;
     }
 
     private void OnDisable()
     {
         movePlayer.Disable();
+        jump.Disable();
     }
 
     private void Awake()
@@ -45,6 +55,7 @@ public class FPMove : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        readyToJump = true;
     }
 
     // Update is called once per frame
@@ -74,6 +85,7 @@ public class FPMove : MonoBehaviour
     {
         inputX = movePlayer.ReadValue<Vector2>().x;
         inputY = movePlayer.ReadValue<Vector2>().y;
+
     }
 
     private void MovePlayer()
@@ -81,7 +93,14 @@ public class FPMove : MonoBehaviour
         //Calculate Movement Direction
         moveDirection = orientation.forward * inputY + orientation.right * inputX;
 
-        rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+        if (grounded)
+        {
+            rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+        }
+        else
+        {
+            rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+        }
     }
 
     private void SpeedControl()
@@ -94,5 +113,28 @@ public class FPMove : MonoBehaviour
             Vector3 limitedVel = flatVel.normalized * moveSpeed;
             rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
         }
+    }
+
+    private void Jump(InputAction.CallbackContext context)
+    {
+        if(readyToJump && grounded)
+        {
+            Debug.Log("Jump has been triggered");
+            readyToJump = false;
+            Invoke(nameof(ResetJump), jumpCooldown);
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        }
+        else
+        {
+            Debug.Log("Grounded Status: " + grounded);
+            Debug.Log("ReadyToJump Status: " + readyToJump);
+        }
+    }
+
+    public void ResetJump()
+    {
+        readyToJump = true;
     }
 }
