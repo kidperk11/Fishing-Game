@@ -113,7 +113,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   harpoonGun: {fileID: 0}
   rb: {fileID: 1808680612172250662}
-  harpoonSpeed: 30
+  harpoonSpeed: 60
 --- !u!54 &1808680612172250662
 Rigidbody:
   m_ObjectHideFlags: 0
