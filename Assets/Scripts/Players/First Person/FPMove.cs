@@ -13,21 +13,33 @@ public class FPMove : MonoBehaviour
     public float jumpCooldown;
     public float airMultiplier;
     bool readyToJump;
+    float inputX;
+    float inputY;
+    public FPPlayerActions moveActions;
+    private InputAction movePlayer;
+    private InputAction jump;
+    Vector3 moveDirection;
+    Rigidbody rb;
 
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask whatIsGround;
     bool grounded;
 
-    float inputX;
-    float inputY;
-    public FPPlayerActions moveActions;
-    private InputAction movePlayer;
-    private InputAction jump;
+    [Header("Camera Movement")]
+    public Camera fpsCam;
+    public float mouseSenseX;
+    public float mouseSenseY;
+    public Vector2 controllerSenseScale;
+    public FPPlayerActions cameraControls;
+    public PlayerInput playerInput;
+    float xRotation;
+    float yRotation;
+    private InputAction moveCam;
 
-    Vector3 moveDirection;
 
-    Rigidbody rb;
+
+
 
     private void OnEnable()
     {
@@ -35,6 +47,8 @@ public class FPMove : MonoBehaviour
         movePlayer.Enable();
         jump = moveActions.Player.Jump;
         jump.Enable();
+        moveCam = cameraControls.Player.Look;
+        moveCam.Enable();
 
         jump.performed += Jump;
     }
@@ -43,11 +57,13 @@ public class FPMove : MonoBehaviour
     {
         movePlayer.Disable();
         jump.Disable();
+        moveCam.Disable();
     }
 
     private void Awake()
     {
         moveActions = new FPPlayerActions();
+        cameraControls = new FPPlayerActions();
     }
 
     // Start is called before the first frame update
@@ -56,6 +72,10 @@ public class FPMove : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
+
+        //Locks cursor to middle of screen and makes it invisible
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     // Update is called once per frame
@@ -65,6 +85,7 @@ public class FPMove : MonoBehaviour
         //This check makes a line that is a little longer than half of the player's body.
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
 
+        MoveCamera();
         CurrentInput();
         SpeedControl();
 
@@ -100,6 +121,53 @@ public class FPMove : MonoBehaviour
         else
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+        }
+    }
+
+    private void MoveCamera()
+    {
+        float inputX;
+        float inputY;
+
+        //This code will scale the controller's sensitivity to the mouse to make
+        //it feel like the same speed as the mouse.
+        if (playerInput.currentControlScheme == "Gamepad")
+        {
+            //Get a reference to the current camera input
+            inputX = moveCam.ReadValue<Vector2>().x * mouseSenseX * controllerSenseScale.x;
+            inputY = moveCam.ReadValue<Vector2>().y * mouseSenseY * controllerSenseScale.y;
+
+
+        }
+        else
+        {
+            //Get a reference to the current camera input
+            inputX = moveCam.ReadValue<Vector2>().x * Time.deltaTime * mouseSenseX;
+            inputY = moveCam.ReadValue<Vector2>().y * Time.deltaTime * mouseSenseY;
+        }
+
+
+        yRotation += inputX;
+        xRotation -= inputY;
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+        if (playerInput.currentControlScheme == "Gamepad")
+        {
+            //Rotate camera
+            fpsCam.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+
+            //Rotate player
+            orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+
+            //NOTE: Add code for auto aim on controller
+        }
+        else
+        {
+            //Rotate camera
+            fpsCam.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+
+            //Rotate player
+            orientation.rotation = Quaternion.Euler(0, yRotation, 0);
         }
     }
 
