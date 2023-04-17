@@ -3,20 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
 public class FPCam : MonoBehaviour
 {
-
+    public Camera fpsCam;
     public float mouseSenseX;
     public float mouseSenseY;
     public Vector2 controllerSenseScale;
     public FPPlayerActions cameraControls;
     public PlayerInput playerInput;
+    
     //public string currentControlScheme { get; }
 
     public Transform orientation;
     float xRotation;
     float yRotation;
-
+    //public Magnetism magnet;
     private InputAction moveCam;
 
     private void OnEnable()
@@ -56,6 +58,8 @@ public class FPCam : MonoBehaviour
             //Get a reference to the current camera input
             inputX = moveCam.ReadValue<Vector2>().x * mouseSenseX * controllerSenseScale.x;
             inputY = moveCam.ReadValue<Vector2>().y * mouseSenseY * controllerSenseScale.y;
+
+
         }
         else
         {
@@ -70,10 +74,33 @@ public class FPCam : MonoBehaviour
         xRotation -= inputY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        //Rotate camera
-        transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+        if(playerInput.currentControlScheme == "Gamepad")
+        {
+            //Rotate camera
+            transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
 
-        //Rotate player
-        orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+            //Rotate player
+            orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+
+            //// get the assisted angles, using the player MOVEMENT input as parameter
+            //var aimAssist = magnet.AssistAim(new Vector2());
+
+            //// add turn addition
+            //var turnAddition = Quaternion.Euler(aimAssist.TurnAddition);
+            //rb.MoveRotation(rb.rotation * turnAddition);
+
+            //// add pitch addition
+            //cinemachineTargetPitch += aimAssist.PitchAdditionInDegrees;
+            //cinemachineTargetPitch = ClampAngle(cinemachineTargetPitch, BottomClamp, TopClamp);
+            //CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(cinemachineTargetPitch, 0f, 0f);
+        }
+        else
+        {
+            //Rotate camera
+            transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+
+            //Rotate player
+            orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+        } 
     }
 }
