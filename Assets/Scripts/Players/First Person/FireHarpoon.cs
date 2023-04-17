@@ -10,6 +10,7 @@ public class FireHarpoon : MonoBehaviour
     private InputAction fireHarpoon;
     private InputAction reelHarpoon;
     public Camera fpsCam;
+    public QTETickerController ticker;
 
     public GameObject harpoon;
     public Transform harpoonSpawnPoint;
@@ -46,19 +47,13 @@ public class FireHarpoon : MonoBehaviour
     void Start()
     {
         readyToFire = true;
+        readyToReel = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        //Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        //RaycastHit hit;
-        //Vector3 targetPoint;
-
-        //if (Physics.Raycast(ray, out hit))
-        //{
-        //    hit.transform.gameObject.CompareTag("Enemy")
-        //}
+        
     }
 
     private void Fire(InputAction.CallbackContext context)
@@ -96,12 +91,34 @@ public class FireHarpoon : MonoBehaviour
 
     private void Reel(InputAction.CallbackContext context)
     {
+        Debug.Log("Now attempting reel...");
+        Debug.Log("readyToReel Value: " + readyToReel);
+        Debug.Log("ticker.currentActivationBox Value: " + ticker.currentActivationBox);
 
+        if (readyToReel)
+        {
+            if(ticker.currentActivationBox != null)
+            {
+                Debug.Log("Reel input successful. Sending data to ticker.");
+                ticker.SuccessfulInput();
+            }
+            else { ticker.FailTicker(); }
+        }
     }
 
     public void ResetFire()
     {
         readyToFire = true;
+    }
+
+    public void ResetReel()
+    {
+        readyToReel = false;
+    }
+
+    public void ActivateReel()
+    {
+        readyToReel = true;
     }
     
 }
