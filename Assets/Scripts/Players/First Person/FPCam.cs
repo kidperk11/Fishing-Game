@@ -58,8 +58,6 @@ public class FPCam : MonoBehaviour
             //Get a reference to the current camera input
             inputX = moveCam.ReadValue<Vector2>().x * mouseSenseX * controllerSenseScale.x;
             inputY = moveCam.ReadValue<Vector2>().y * mouseSenseY * controllerSenseScale.y;
-
-
         }
         else
         {
