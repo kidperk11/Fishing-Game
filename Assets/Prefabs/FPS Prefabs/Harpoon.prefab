@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5954195885653974816}
   - component: {fileID: 4751681471745233371}
   - component: {fileID: 1808680612172250662}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Harpoon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -113,6 +113,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   harpoonGun: {fileID: 0}
   rb: {fileID: 1808680612172250662}
+  sphereCollider: {fileID: 5954195885653974816}
+  ticker: {fileID: 0}
   harpoonSpeed: 60
 --- !u!54 &1808680612172250662
 Rigidbody:

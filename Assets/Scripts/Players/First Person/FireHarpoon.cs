@@ -7,6 +7,7 @@ public class FireHarpoon : MonoBehaviour
 {
     private HarpoonController harpoonInstance;
     public FPPlayerActions playerActions;
+    public CapsuleCollider playerCollider;
     private InputAction fireHarpoon;
     private InputAction reelHarpoon;
     public Camera fpsCam;
