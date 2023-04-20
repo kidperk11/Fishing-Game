@@ -13,21 +13,18 @@ public class FPMove : MonoBehaviour
     public float jumpCooldown;
     public float airMultiplier;
     bool readyToJump;
-
-    [Header("Ground Check")]
-    public float playerHeight;
-    public LayerMask whatIsGround;
-    bool grounded;
-
     float inputX;
     float inputY;
     public FPPlayerActions moveActions;
     private InputAction movePlayer;
     private InputAction jump;
-
     Vector3 moveDirection;
-
     Rigidbody rb;
+
+    [Header("Ground Check")]
+    public float playerHeight;
+    public LayerMask whatIsGround;
+    bool grounded;
 
     private void OnEnable()
     {
@@ -35,7 +32,6 @@ public class FPMove : MonoBehaviour
         movePlayer.Enable();
         jump = moveActions.Player.Jump;
         jump.Enable();
-
         jump.performed += Jump;
     }
 
@@ -56,6 +52,10 @@ public class FPMove : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
+
+        //Locks cursor to middle of screen and makes it invisible
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     // Update is called once per frame
