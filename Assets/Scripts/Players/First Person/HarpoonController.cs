@@ -10,6 +10,16 @@ public class HarpoonController : MonoBehaviour
     public QTETickerController ticker;
     private bool touchingPlayer;
     private Collision playerCollision;
+    private bool reeling;
+    private EnemyHealthAndQTE hitEnemy;
+
+    [SerializeField] private Vector3 startScale;
+    [SerializeField] private Vector3 endScale;
+
+    [SerializeField] private float maxReelTime;
+    private float reelTimer;
+    private Transform startPoint;
+    private Transform endPoint;
 
     bool enemyHit;
     public float harpoonSpeed;
@@ -17,15 +27,37 @@ public class HarpoonController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
         enemyHit = false;
         ticker = harpoonGun.ticker;
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
-        
+        endPoint = harpoonGun.harpoonSpawnPoint;
+        if (reeling)
+        {
+            reelTimer += Time.deltaTime;
+            float percentageComplete = reelTimer / maxReelTime;
+            this.transform.position = Vector3.Lerp(startPoint.position, endPoint.position, percentageComplete);
+            hitEnemy.transform.localScale = Vector3.Lerp(startScale, endScale, percentageComplete);
+            hitEnemy.transform.position = this.transform.position;
+            if (this.transform.position == endPoint.position)
+            {
+                //NOTE: Consider making a lerp for the enemy as well to make them scale down in size while flying at the player so 
+                //the player's FOV is not obstructed
+
+                //NOTE: Add a function for Fish-O-Pedia logging
+
+                harpoonGun.ResetFire();
+                harpoonGun.ResetReel();
+                Destroy(hitEnemy.gameObject);
+                hitEnemy = null;
+                Destroy(this.gameObject);
+            }
+            
+
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -36,6 +68,7 @@ public class HarpoonController : MonoBehaviour
             Debug.Log("Enemy hit with harpoon");
             enemyHit = true;
             EnemyHealthAndQTE enemyHealth = collision.gameObject.GetComponent<EnemyHealthAndQTE>();
+            hitEnemy = enemyHealth;
             ticker.ActivateTicker(enemyHealth, this);
             harpoonGun.ActivateReel();
             Destroy(rb);
@@ -53,8 +86,11 @@ public class HarpoonController : MonoBehaviour
     public void ResetHarpoon()
     {
         transform.parent = null;
-        harpoonGun.ResetFire();
-        harpoonGun.ResetReel();
-        Destroy(this.gameObject);
+        hitEnemy.boxCollider.enabled = false;
+        startPoint = this.transform;
+        //harpoonGun.ResetFire();
+        //harpoonGun.ResetReel();
+        //Destroy(this.gameObject);
+        reeling = true;
     }
 }

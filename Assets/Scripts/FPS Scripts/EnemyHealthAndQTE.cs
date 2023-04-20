@@ -6,6 +6,7 @@ public class EnemyHealthAndQTE : MonoBehaviour
 {
     public GameObject boxPattern;
     public List<QTEActivationBox> allBoxes;
+    public BoxCollider boxCollider;
 
     // Start is called before the first frame update
     void Start()
