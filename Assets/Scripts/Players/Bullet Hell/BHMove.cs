@@ -6,35 +6,44 @@ using UnityEngine.InputSystem;
 
 public class BHMove : MonoBehaviour
 {
-
+    public bool allowVertical;
+    public bool allowHorizontal;
 
     [Header("Verical Movement")]
-    float inputY;
     public float verticalMoveSpeed;
     [Range(0.6f, .999f)]
     public float dragCoefficient = 0.95f;
+    private float inputY;
 
-
-
+    [Space(10)]
     [Header("Horizontal Movement")]
-    float inputX;
-    public float horizontalMoveSpeed;
     public Transform center;
-    public Vector3 axis = Vector3.up;
-    public Vector3 desiredPosition;
+    public bool autoRotate;
+    public bool applyDampen;
     public float radius = 2.0f;
     public float radiusSpeed = 0.5f;
-    public float rotationSpeed = 80.0f;
+    public float horizontalMoveSpeed = 80.0f;
+    private float inputX;
+    private Vector3 axis = Vector3.up;
+    private Vector3 desiredPosition;
+    float currentSpeed = 0.0f;
+    float targetSpeed = 0.0f;
+    float smoothTime = 0.2f;
+    float currentVelocity = 0.0f;
 
+    public float rotationDamping = 2f;
+    public float movementDamping = 2;
 
+    [Space(10)]
     [Header("Sprites")]
-    public GameObject submarineSprite;
+    public SpriteRenderer submarine;
+    public SpriteRenderer rotor;
 
 
-
+    //Player Inputs
     public BHPlayerActions moveActions;
     private InputAction movePlayer;
-    Rigidbody rigidBody;
+    public Rigidbody rigidBody;
 
     private void Awake()
     {
@@ -49,7 +58,7 @@ public class BHMove : MonoBehaviour
 
     private void Start()
     {
-        rigidBody = GetComponent<Rigidbody>();
+        //rigidBody = GetComponent<Rigidbody>();
         transform.position = (transform.position - center.position).normalized * radius + center.position;
     }
 
@@ -61,13 +70,25 @@ public class BHMove : MonoBehaviour
     private void Update()
     {
         CurrentInput();
+
+        // Update target speed based on input
+        targetSpeed = inputX * horizontalMoveSpeed;
     }
 
     private void FixedUpdate()
     {   
         // Move the player
-        PlayerHeight();
-        PlayerRotation();
+        if(allowVertical)
+            PlayerHeight();
+
+
+        if (allowHorizontal)
+        {
+            if (applyDampen)
+                PlayerRotationWithDampen();
+            else
+                PlayerRotation();
+        }
     }
 
     private void CurrentInput()
@@ -81,16 +102,39 @@ public class BHMove : MonoBehaviour
         if (inputY != 0)
             inputY = Mathf.Sign(inputY);
 
-        Debug.Log(String.Format("InputX: {0} InputY {1}", inputX, inputY));
+        //Debug.Log(String.Format("InputX: {0} InputY {1}", inputX, inputY));
     }
 
 
     private void PlayerRotation()
     {
-        //center.transform.Rotate(new Vector3(0, (-inputX * horizontalMoveSpeed), 0));
-        transform.RotateAround(center.position, axis, -inputX * rotationSpeed * Time.deltaTime);
+        if (!autoRotate)
+        {
+            transform.RotateAround(center.position, axis, -inputX * horizontalMoveSpeed * Time.deltaTime);
+
+        }
+        else
+        {
+            transform.RotateAround(center.position, axis, horizontalMoveSpeed * Time.deltaTime);
+        }
+
         desiredPosition = (transform.position - center.position).normalized * radius + center.position;
         transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * radiusSpeed);
+
+        Debug.Log(String.Format("InputX: {0} InputY {1}", radiusSpeed, desiredPosition));
+    }
+
+    private void PlayerRotationWithDampen()
+    {
+        // Accelerate/decelerate towards target speed
+        currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref currentVelocity, smoothTime);
+
+        // Rotate player around center
+        transform.RotateAround(center.position, axis, -currentSpeed * Time.deltaTime);
+
+        // Move player towards desired position
+        desiredPosition = (transform.position - center.position).normalized * radius + center.position;
+        transform.position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * currentSpeed);
     }
 
     private void PlayerHeight()
@@ -101,7 +145,10 @@ public class BHMove : MonoBehaviour
         // Reduce velocity gradually when no input is given
         if  (inputY == 0)
         {
-            rigidBody.velocity *= dragCoefficient; // 0.9f is the drag coefficient
+            if (!applyDampen)
+                rigidBody.velocity *= 0;
+            else
+                rigidBody.velocity *= dragCoefficient;
         }
 
         UpdateSprite();
@@ -109,16 +156,13 @@ public class BHMove : MonoBehaviour
 
     private void UpdateSprite()
     {
-        // Change sprite depending on movement direction
-        Vector3 scaleHolder = submarineSprite.transform.localScale;
-
         if (inputX > 0)
         {
-            submarineSprite.transform.localScale = (new Vector3(-0.77f, scaleHolder.y, scaleHolder.z));
+            submarine.flipX = true;
         }
         else if (inputX < 0)
         {
-            submarineSprite.transform.localScale = (new Vector3(0.77f, scaleHolder.y, scaleHolder.z));
+            submarine.flipX = false;
         }
     }
 }
