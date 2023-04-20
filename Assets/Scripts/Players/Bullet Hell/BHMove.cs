@@ -6,24 +6,26 @@ using UnityEngine.InputSystem;
 
 public class BHMove : MonoBehaviour
 {
-    public bool allowVertical;
-    public bool allowHorizontal;
+    public bool allowVertical; // Can submarine travel vertically
+    public bool allowHorizontal; // Can submarine travel horizontally
 
+    [Space(10)]
     [Header("Verical Movement")]
-    public float verticalMoveSpeed;
+    public float verticalMoveSpeed; // Speed submarine travels vertically
     [Range(0.6f, .999f)]
-    public float dragCoefficient = 0.95f;
-    private float inputY;
+    public float dragCoefficient = 0.95f; // Resistance submarine has when coming to a stop
+    private float inputY; // User input on up and down
 
     [Space(10)]
     [Header("Horizontal Movement")]
-    public Transform center;
-    public bool autoRotate;
-    public bool applyDampen;
-    public float radius = 2.0f;
-    public float radiusSpeed = 0.5f;
-    public float horizontalMoveSpeed = 80.0f;
-    private float inputX;
+    public Transform center; // Center of rotation
+    public bool autoRotate; // enable/disable submarine traveling left horizontally automatically
+    public bool applyDampen; // enable/disable instant stopping
+    public float radius = 2.0f; // Distance from Center of city
+    public float newRadiusSpeed = 0.5f; // Speed submarine travels to new radius
+    public float horizontalMoveSpeed = 80.0f; // Speed submarine travels horizontally
+    private float inputX; // User input on left and right
+
     private Vector3 axis = Vector3.up;
     private Vector3 desiredPosition;
     float currentSpeed = 0.0f;
@@ -36,8 +38,8 @@ public class BHMove : MonoBehaviour
 
     [Space(10)]
     [Header("Sprites")]
-    public SpriteRenderer submarine;
-    public SpriteRenderer rotor;
+    public SpriteRenderer submarine; // Submarine Sprite
+    public SpriteRenderer rotor; // Submarine Rotor Sprite
 
 
     //Player Inputs
@@ -73,6 +75,8 @@ public class BHMove : MonoBehaviour
 
         // Update target speed based on input
         targetSpeed = inputX * horizontalMoveSpeed;
+
+        Debug.Log(String.Format("Target: {0} Current: {1}", targetSpeed, currentSpeed));
     }
 
     private void FixedUpdate()
@@ -115,13 +119,12 @@ public class BHMove : MonoBehaviour
         }
         else
         {
+            applyDampen = false;
             transform.RotateAround(center.position, axis, horizontalMoveSpeed * Time.deltaTime);
         }
 
         desiredPosition = (transform.position - center.position).normalized * radius + center.position;
-        transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * radiusSpeed);
-
-        Debug.Log(String.Format("InputX: {0} InputY {1}", radiusSpeed, desiredPosition));
+        transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * newRadiusSpeed);
     }
 
     private void PlayerRotationWithDampen()
