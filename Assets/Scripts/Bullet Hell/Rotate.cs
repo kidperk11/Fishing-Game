@@ -6,50 +6,22 @@ using UnityEngine.InputSystem;
 
 public class Rotate : MonoBehaviour
 {
-    public float moveSpeed;
-    float inputX;
-    float inputY;
-    public BHPlayerActions moveActions;
-    private InputAction movePlayer;
-    private Rigidbody rb;
+    public Transform center;
+    public Vector3 axis = Vector3.up;
+    public Vector3 desiredPosition;
+    public float radius = 2.0f;
+    public float radiusSpeed = 0.5f;
+    public float rotationSpeed = 80.0f;
 
-    [Range(0.6f, .999f)]
-    public float dragCoefficient = 0.95f;
-
-    private void Awake()
+    void Start()
     {
-        moveActions = new BHPlayerActions();
-        rb = GetComponent<Rigidbody>();
+        transform.position = (transform.position - center.position).normalized * radius + center.position;
     }
 
-    private void OnEnable()
+    void FixedUpdate()
     {
-        movePlayer = moveActions.Player.Move;
-        movePlayer.Enable();
-    }
-
-    private void OnDisable()
-    {
-        movePlayer.Disable();
-    }
-
-    private void Update()
-    {
-        inputX = movePlayer.ReadValue<Vector2>().x;
-        inputY = movePlayer.ReadValue<Vector2>().y;
-    }
-
-    private void FixedUpdate()
-    {
-        // Apply movement force to the Rigidbody
-        rb.AddForce(new Vector2(inputX, inputY) * moveSpeed);
-
-        // Reduce velocity gradually when no input is given
-        if (inputX == 0 && inputY == 0)
-        {
-            rb.velocity *= dragCoefficient; // 0.9f is the drag coefficient
-        }
-
-        Debug.Log(String.Format("InputX: {0} InputY {1}", inputX, inputY));
+        transform.RotateAround(center.position, axis, rotationSpeed * Time.deltaTime);
+        desiredPosition = (transform.position - center.position).normalized * radius + center.position;
+        transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * radiusSpeed);
     }
 }
