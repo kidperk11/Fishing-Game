@@ -108,10 +108,11 @@ public class QTETickerController : MonoBehaviour
                 box.gameObject.SetActive(true);
             }
             currentEnemy.boxPattern.SetActive(false);
+            currentEnemy.transform.parent = currentHarpoon.transform;
             currentHarpoon.ResetHarpoon();
             currentHarpoon = null;
             QTETimer = 0;
-            Destroy(currentEnemy.gameObject);
+            //Destroy(currentEnemy.gameObject);
             currentEnemy = null;
 
         }
