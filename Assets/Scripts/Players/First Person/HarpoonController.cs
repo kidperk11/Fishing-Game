@@ -10,7 +10,8 @@ public class HarpoonController : MonoBehaviour
     public QTETickerController ticker;
     private bool touchingPlayer;
     private Collision playerCollision;
-    private bool reeling;
+    private bool reelSuccess;
+    private bool reelFail;
     private EnemyHealthAndQTE hitEnemy;
 
     [SerializeField] private Vector3 startScale;
@@ -35,7 +36,7 @@ public class HarpoonController : MonoBehaviour
     void Update()
     {
         endPoint = harpoonGun.harpoonSpawnPoint;
-        if (reeling)
+        if (reelSuccess)
         {
             reelTimer += Time.deltaTime;
             float percentageComplete = reelTimer / maxReelTime;
@@ -55,8 +56,19 @@ public class HarpoonController : MonoBehaviour
                 hitEnemy = null;
                 Destroy(this.gameObject);
             }
-            
+        }
 
+        if (reelFail)
+        {
+            reelTimer += Time.deltaTime;
+            float percentageComplete = reelTimer / maxReelTime;
+            this.transform.position = Vector3.Lerp(startPoint.position, endPoint.position, percentageComplete);
+            if (this.transform.position == endPoint.position)
+            {
+                harpoonGun.ResetFire();
+                harpoonGun.ResetReel();
+                Destroy(this.gameObject);
+            }
         }
     }
 
@@ -79,18 +91,27 @@ public class HarpoonController : MonoBehaviour
         if(collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Wall"))
         {
             Debug.Log("Failed Hit on: " + collision.gameObject.tag + ". Harpoon will now be destroyed.");
-            ResetHarpoon();
+            ResetHarpoon(false);
         }
     }
 
-    public void ResetHarpoon()
+    public void ResetHarpoon(bool caughtEnemy)
     {
         transform.parent = null;
-        hitEnemy.boxCollider.enabled = false;
-        startPoint = this.transform;
-        //harpoonGun.ResetFire();
-        //harpoonGun.ResetReel();
-        //Destroy(this.gameObject);
-        reeling = true;
+        if (caughtEnemy)
+        {
+            hitEnemy.boxCollider.enabled = false;
+            startPoint = this.transform;
+            //harpoonGun.ResetFire();
+            //harpoonGun.ResetReel();
+            //Destroy(this.gameObject);
+            reelSuccess = true;
+        }
+        else 
+        {
+            startPoint = this.transform;
+            reelFail = true; 
+        }
+        
     }
 }
