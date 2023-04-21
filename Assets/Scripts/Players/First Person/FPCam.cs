@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 
 public class FPCam : MonoBehaviour
@@ -12,6 +13,8 @@ public class FPCam : MonoBehaviour
     public Vector2 controllerSenseScale;
     public FPPlayerActions cameraControls;
     public PlayerInput playerInput;
+
+    public Image innerCrosshair;
     
 
     //public string currentControlScheme { get; }
