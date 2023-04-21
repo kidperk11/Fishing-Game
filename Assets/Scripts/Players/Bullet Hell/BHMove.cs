@@ -6,9 +6,6 @@ using UnityEngine.InputSystem;
 
 public class BHMove : MonoBehaviour
 {
-    public bool allowVertical;
-    public bool allowHorizontal;
-
     [Header("Verical Movement")]
     public float verticalMoveSpeed;
     [Range(0.6f, .999f)]
@@ -35,15 +32,14 @@ public class BHMove : MonoBehaviour
     public float movementDamping = 2;
 
     [Space(10)]
-    [Header("Sprites")]
-    public SpriteRenderer submarine;
-    public SpriteRenderer rotor;
-
+    [Header("Other")]
+    public SubmarineAnimationController animationController;
+    public Rigidbody rigidBody;
 
     //Player Inputs
     public BHPlayerActions moveActions;
     private InputAction movePlayer;
-    public Rigidbody rigidBody;
+
 
     private void Awake()
     {
@@ -58,7 +54,6 @@ public class BHMove : MonoBehaviour
 
     private void Start()
     {
-        //rigidBody = GetComponent<Rigidbody>();
         transform.position = (transform.position - center.position).normalized * radius + center.position;
     }
 
@@ -70,25 +65,13 @@ public class BHMove : MonoBehaviour
     private void Update()
     {
         CurrentInput();
-
-        // Update target speed based on input
-        targetSpeed = inputX * horizontalMoveSpeed;
     }
 
     private void FixedUpdate()
     {   
         // Move the player
-        if(allowVertical)
-            PlayerHeight();
-
-
-        if (allowHorizontal)
-        {
-            if (applyDampen)
-                PlayerRotationWithDampen();
-            else
-                PlayerRotation();
-        }
+        PlayerHeight();
+        PlayerRotation();
     }
 
     private void CurrentInput()
@@ -102,29 +85,12 @@ public class BHMove : MonoBehaviour
         if (inputY != 0)
             inputY = Mathf.Sign(inputY);
 
-        //Debug.Log(String.Format("InputX: {0} InputY {1}", inputX, inputY));
+        // Update target speed based on input
+        targetSpeed = inputX * horizontalMoveSpeed;
     }
 
 
     private void PlayerRotation()
-    {
-        if (!autoRotate)
-        {
-            transform.RotateAround(center.position, axis, -inputX * horizontalMoveSpeed * Time.deltaTime);
-
-        }
-        else
-        {
-            transform.RotateAround(center.position, axis, horizontalMoveSpeed * Time.deltaTime);
-        }
-
-        desiredPosition = (transform.position - center.position).normalized * radius + center.position;
-        transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * radiusSpeed);
-
-        Debug.Log(String.Format("InputX: {0} InputY {1}", radiusSpeed, desiredPosition));
-    }
-
-    private void PlayerRotationWithDampen()
     {
         // Accelerate/decelerate towards target speed
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref currentVelocity, smoothTime);
@@ -137,6 +103,8 @@ public class BHMove : MonoBehaviour
         transform.position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * currentSpeed);
     }
 
+
+
     private void PlayerHeight()
     {
         // Apply movement force to the Rigidbody
@@ -145,10 +113,7 @@ public class BHMove : MonoBehaviour
         // Reduce velocity gradually when no input is given
         if  (inputY == 0)
         {
-            if (!applyDampen)
-                rigidBody.velocity *= 0;
-            else
-                rigidBody.velocity *= dragCoefficient;
+            rigidBody.velocity *= dragCoefficient;
         }
 
         UpdateSprite();
@@ -156,14 +121,7 @@ public class BHMove : MonoBehaviour
 
     private void UpdateSprite()
     {
-        if (inputX > 0)
-        {
-            submarine.flipX = true;
-        }
-        else if (inputX < 0)
-        {
-            submarine.flipX = false;
-        }
+        animationController.Flip(inputX);
     }
 }
 
