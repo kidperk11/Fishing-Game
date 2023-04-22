@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class FireHarpoon : MonoBehaviour
 {
@@ -13,8 +14,15 @@ public class FireHarpoon : MonoBehaviour
     public Camera fpsCam;
     public QTETickerController ticker;
 
+    public Image crosshair;
+
+    public Color defaultCrosshairColor;
+    public Color enemyCrosshairColor;
+
     public GameObject harpoon;
     public Transform harpoonSpawnPoint;
+
+    [SerializeField] private float harpoonRange;
 
     bool readyToFire;
     bool readyToReel;
@@ -54,7 +62,7 @@ public class FireHarpoon : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        CrosshairColor();
     }
 
     private void Fire(InputAction.CallbackContext context)
@@ -81,6 +89,8 @@ public class FireHarpoon : MonoBehaviour
             harpoonInstance.gameObject.transform.forward = directionWithoutSpread.normalized;
             harpoonInstance.rb.AddForce(directionWithoutSpread.normalized * harpoonInstance.harpoonSpeed, ForceMode.Impulse);
             harpoonInstance.harpoonGun = this;
+            harpoonInstance.harpoonRange = this.harpoonRange;
+            harpoonInstance.initialPlayerPosition = this.transform.position;
             readyToFire = false;
             Debug.Log("Harpoon has been fired");
         }
@@ -104,6 +114,27 @@ public class FireHarpoon : MonoBehaviour
                 ticker.SuccessfulInput();
             }
             else { ticker.FailTicker(); }
+        }
+    }
+
+    private void CrosshairColor()
+    {
+        Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        RaycastHit hit;
+        Vector3 targetPoint;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            if (Vector3.Distance(this.transform.position, hit.transform.position) <= harpoonRange)
+            {
+                //Add additional colors for additional tags here
+                if (hit.transform.gameObject.CompareTag("Enemy"))
+                {
+                    crosshair.color = enemyCrosshairColor;
+                }
+                else { crosshair.color = defaultCrosshairColor; }
+            }
+            else { crosshair.color = defaultCrosshairColor; }
         }
     }
 

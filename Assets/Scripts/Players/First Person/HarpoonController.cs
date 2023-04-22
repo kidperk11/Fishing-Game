@@ -5,6 +5,8 @@ using UnityEngine;
 public class HarpoonController : MonoBehaviour
 {
     public FireHarpoon harpoonGun;
+    public float harpoonRange = 100;
+    public Vector3 initialPlayerPosition;
     public Rigidbody rb;
     public SphereCollider sphereCollider;
     public QTETickerController ticker;
@@ -69,6 +71,10 @@ public class HarpoonController : MonoBehaviour
                 harpoonGun.ResetReel();
                 Destroy(this.gameObject);
             }
+        }
+        if(Vector3.Distance(initialPlayerPosition, this.transform.position) >= harpoonRange)
+        {
+            ResetHarpoon(false);
         }
     }
 
