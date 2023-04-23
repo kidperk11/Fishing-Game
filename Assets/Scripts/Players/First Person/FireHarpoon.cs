@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,45 +7,37 @@ using UnityEngine.UI;
 
 public class FireHarpoon : MonoBehaviour
 {
-    private HarpoonController harpoonInstance;
     public FPPlayerActions playerActions;
-    public CapsuleCollider playerCollider;
+    public Rigidbody playerRB;
     private InputAction fireHarpoon;
-    private InputAction reelHarpoon;
     public Camera fpsCam;
-    public QTETickerController ticker;
-
-    public Image crosshair;
-
-    public Color defaultCrosshairColor;
-    public Color enemyCrosshairColor;
-
-    public GameObject harpoon;
-    public Transform harpoonSpawnPoint;
-
-    [SerializeField] private float harpoonRange;
-
-    bool readyToFire;
-    bool readyToReel;
     
 
+    //Crosshair
+    public Image crosshair;
+    public Color defaultCrosshairColor;
+    public Color enemyCrosshairColor;
+    public Color grapplePointCrosshairColor;
+
+
+    //Harpoon
+    private HarpoonController harpoonInstance;
+    public GameObject harpoon;
+    public Transform harpoonSpawnPoint;
+    [SerializeField] private float harpoonRange;
+    public bool readyToFire;
+    
     private void OnEnable()
     {
-        fireHarpoon = playerActions.Player.Fire;
+        fireHarpoon = playerActions.Player.Harpoon;
         fireHarpoon.Enable();
-        reelHarpoon = playerActions.Player.Reel;
-        reelHarpoon.Enable();
 
-
-        //NOTE: Uncomment this code to add the functions for jump and reel
-        reelHarpoon.performed += Reel;
         fireHarpoon.performed += Fire;
     }
 
     private void OnDisable()
     {
         fireHarpoon.Disable();
-        reelHarpoon.Disable();
     }
 
     private void Awake()
@@ -56,13 +49,12 @@ public class FireHarpoon : MonoBehaviour
     void Start()
     {
         readyToFire = true;
-        readyToReel = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        CrosshairColor();
+        CrosshairColor();   
     }
 
     private void Fire(InputAction.CallbackContext context)
@@ -100,37 +92,23 @@ public class FireHarpoon : MonoBehaviour
         }
     }
 
-    private void Reel(InputAction.CallbackContext context)
-    {
-        Debug.Log("Now attempting reel...");
-        Debug.Log("readyToReel Value: " + readyToReel);
-        Debug.Log("ticker.currentActivationBox Value: " + ticker.currentActivationBox);
-
-        if (readyToReel)
-        {
-            if(ticker.currentActivationBox != null)
-            {
-                Debug.Log("Reel input successful. Sending data to ticker.");
-                ticker.SuccessfulInput();
-            }
-            else { ticker.FailTicker(); }
-        }
-    }
-
     private void CrosshairColor()
     {
         Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
-        Vector3 targetPoint;
 
         if (Physics.Raycast(ray, out hit))
         {
             if (Vector3.Distance(this.transform.position, hit.transform.position) <= harpoonRange)
             {
                 //Add additional colors for additional tags here
-                if (hit.transform.gameObject.CompareTag("Enemy"))
+                if (hit.transform.gameObject.CompareTag("Enemy") && hit.transform.gameObject.GetComponent<EnemyHealthAndQTE>().harpoonable)
                 {
                     crosshair.color = enemyCrosshairColor;
+                }
+                else if (hit.transform.gameObject.CompareTag("GrapplePoint"))
+                {
+                    crosshair.color = grapplePointCrosshairColor;
                 }
                 else { crosshair.color = defaultCrosshairColor; }
             }
@@ -141,16 +119,5 @@ public class FireHarpoon : MonoBehaviour
     public void ResetFire()
     {
         readyToFire = true;
-    }
-
-    public void ResetReel()
-    {
-        readyToReel = false;
-    }
-
-    public void ActivateReel()
-    {
-        readyToReel = true;
-    }
-    
+    }   
 }

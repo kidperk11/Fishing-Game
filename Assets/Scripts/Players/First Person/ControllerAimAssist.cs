@@ -19,7 +19,6 @@ public class ControllerAimAssist : MonoBehaviour
         {
             Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
             RaycastHit hit;
-            Vector3 targetPoint;
 
             if (Physics.SphereCast(ray, 1, out hit, 10f))
             {

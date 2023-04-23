@@ -112,13 +112,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   harpoonGun: {fileID: 0}
+  harpoonRange: 100
+  initialPlayerPosition: {x: 0, y: 0, z: 0}
   rb: {fileID: 1808680612172250662}
   sphereCollider: {fileID: 5954195885653974816}
-  ticker: {fileID: 0}
+  harpoonSpeed: 60
   startScale: {x: 1, y: 1, z: 1}
   endScale: {x: 0, y: 0, z: 0}
   maxReelTime: 0.3
-  harpoonSpeed: 60
+  grapplePoint: {fileID: 0}
+  grappleTrajectory: {x: 0, y: 0, z: 0}
+  grappleSpeed: 1
+  state: 0
 --- !u!54 &1808680612172250662
 Rigidbody:
   m_ObjectHideFlags: 0
