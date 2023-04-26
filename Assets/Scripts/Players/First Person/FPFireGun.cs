@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class FPFireGun : MonoBehaviour
 {
@@ -11,10 +12,16 @@ public class FPFireGun : MonoBehaviour
     public Camera fpsCam;
     public Transform gunFireTransform;
     public bool readyToFire;
-
     public int gunDamage;
-
     public GameObject bulletImpact;
+    public TextMeshProUGUI hudBulletText;
+    
+
+    [Header("Prefabs for different bullets")]
+    public GameObject pufferBombPrefab;
+    public string specialBullet;
+
+    
 
     private void OnEnable()
     {
@@ -33,6 +40,7 @@ public class FPFireGun : MonoBehaviour
     void Start()
     {
         readyToFire = true;
+        specialBullet = null;
     }
 
     private void Awake()
@@ -48,7 +56,7 @@ public class FPFireGun : MonoBehaviour
 
     private void Fire(InputAction.CallbackContext context)
     {
-        if (readyToFire)
+        if (readyToFire && specialBullet == null)
         {
             Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
             RaycastHit hit;
@@ -66,6 +74,14 @@ public class FPFireGun : MonoBehaviour
             }
             readyToFire = false;
             StartCoroutine(GunCooldown());
+        }else if(readyToFire && specialBullet != null)
+        {
+            //Each of these cases will fire the bullet with a different set of circumstances
+            //depending on what type of bullet is stored in the "specialBullet" string.
+            if(specialBullet == "puffer")
+            {
+                Instantiate(pufferBombPrefab, gunFireTransform.position, Quaternion.identity);
+            }
         }
     }
 
@@ -78,5 +94,11 @@ public class FPFireGun : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(0.2f);
         readyToFire = true;
+    }
+
+    public void SetSpecialBullet(string bulletType)
+    {
+        specialBullet = bulletType;
+        hudBulletText.text = new string(specialBullet + " bullet is now active.");
     }
 }
