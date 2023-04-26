@@ -29,6 +29,7 @@ public class SpecialPufferBulletAI : MonoBehaviour
             //NOTE: Add code for an explosion animation, potentially a coroutine 
             Destroy(rb);
             damageZone.SetActive(true);
+            Destroy(this.gameObject, 3);
         }
     }
 

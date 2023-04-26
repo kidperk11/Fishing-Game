@@ -11,6 +11,7 @@ public class FireHarpoon : MonoBehaviour
     public Rigidbody playerRB;
     private InputAction fireHarpoon;
     public Camera fpsCam;
+    public FPFireGun fireGun;
     
 
     //Crosshair
@@ -119,5 +120,10 @@ public class FireHarpoon : MonoBehaviour
     public void ResetFire()
     {
         readyToFire = true;
-    }   
+    }
+
+    public void SendBulletToGun(string bulletType)
+    {
+        fireGun.SetSpecialBullet(bulletType);
+    }
 }

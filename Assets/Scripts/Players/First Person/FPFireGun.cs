@@ -80,8 +80,27 @@ public class FPFireGun : MonoBehaviour
             //depending on what type of bullet is stored in the "specialBullet" string.
             if(specialBullet == "puffer")
             {
-                Instantiate(pufferBombPrefab, gunFireTransform.position, Quaternion.identity);
+                Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+                RaycastHit hit;
+                Vector3 targetPoint;
+
+                if (Physics.Raycast(ray, out hit))
+                {
+                    targetPoint = hit.point;
+                }
+                else
+                {
+                    targetPoint = ray.GetPoint(75); //This is just a point 75m from the player's LOS
+                }
+
+                Vector3 directionWithoutSpread = targetPoint - gunFireTransform.position;
+                SpecialPufferBulletAI bullet = Instantiate(pufferBombPrefab, gunFireTransform.position, Quaternion.identity).gameObject.GetComponent<SpecialPufferBulletAI>();
+                bullet.transform.forward = directionWithoutSpread.normalized;
+                bullet.rb.AddForce(transform.forward * bullet.bulletSpeed, ForceMode.Impulse);
             }
+
+            specialBullet = null;
+            hudBulletText.text = new string("No special bullet active.");
         }
     }
 

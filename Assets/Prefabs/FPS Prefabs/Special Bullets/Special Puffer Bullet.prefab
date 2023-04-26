@@ -181,9 +181,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 571cd3fa7320aad4fa099ae4aa2a06c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletSpeed: 0
-  rb: {fileID: 0}
-  damageZone: {fileID: 0}
+  bulletSpeed: 5
+  rb: {fileID: 4150400449645342286}
+  damageZone: {fileID: 4150400449631189494}
 --- !u!212 &4150400449645342277
 SpriteRenderer:
   m_ObjectHideFlags: 0

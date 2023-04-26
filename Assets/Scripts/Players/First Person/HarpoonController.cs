@@ -11,6 +11,7 @@ public class HarpoonController : MonoBehaviour
     public Rigidbody rb;
     public SphereCollider sphereCollider;
     public float harpoonSpeed;
+    
 
     //HitEnemyAI
     private EnemyHealthAndQTE hitEnemy;
@@ -93,7 +94,7 @@ public class HarpoonController : MonoBehaviour
             //the player's FOV is not obstructed
 
             //NOTE: Add a function for Fish-O-Pedia logging
-
+            harpoonGun.SendBulletToGun(hitEnemy.bulletType);
             harpoonGun.ResetFire();
             Destroy(hitEnemy.gameObject);
             hitEnemy = null;

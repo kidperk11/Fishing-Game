@@ -25,7 +25,7 @@ public class FPSFlatDamageZone : MonoBehaviour
         lifeTimer -= Time.deltaTime;
         if(lifeTimer <= 0)
         {
-            Destroy(this.transform.parent.gameObject);
+            Destroy(this.gameObject);
         }
     }
 
