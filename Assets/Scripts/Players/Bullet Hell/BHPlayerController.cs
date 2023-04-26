@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class BHMove : MonoBehaviour
+public class BHPlayerController : MonoBehaviour
 {
-    public bool allowVertical;
-    public bool allowHorizontal;
+    public bool autoRotate;
 
     [Header("Verical Movement")]
     public float verticalMoveSpeed;
@@ -18,13 +17,11 @@ public class BHMove : MonoBehaviour
     [Space(10)]
     [Header("Horizontal Movement")]
     public Transform center;
-    public bool autoRotate;
-    public bool applyDampen;
+
     public float radius = 2.0f;
     public float radiusSpeed = 0.5f;
     public float horizontalMoveSpeed = 80.0f;
     private float inputX;
-    private Vector3 axis = Vector3.up;
     private Vector3 desiredPosition;
     float currentSpeed = 0.0f;
     float targetSpeed = 0.0f;
@@ -40,6 +37,8 @@ public class BHMove : MonoBehaviour
     public SpriteRenderer rotor;
 
 
+    protected static BHPlayerController s_Instance;
+    public static BHPlayerController instance { get { return s_Instance; } }
     //Player Inputs
     public BHPlayerActions moveActions;
     private InputAction movePlayer;
@@ -58,6 +57,7 @@ public class BHMove : MonoBehaviour
 
     private void Start()
     {
+        s_Instance = this;
         //rigidBody = GetComponent<Rigidbody>();
         transform.position = (transform.position - center.position).normalized * radius + center.position;
     }
@@ -78,17 +78,8 @@ public class BHMove : MonoBehaviour
     private void FixedUpdate()
     {   
         // Move the player
-        if(allowVertical)
-            PlayerHeight();
-
-
-        if (allowHorizontal)
-        {
-            if (applyDampen)
-                PlayerRotationWithDampen();
-            else
-                PlayerRotation();
-        }
+        PlayerHeight();
+        PlayerRotate();
     }
 
     private void CurrentInput()
@@ -101,40 +92,26 @@ public class BHMove : MonoBehaviour
             inputX = Mathf.Sign(inputX);
         if (inputY != 0)
             inputY = Mathf.Sign(inputY);
-
-        //Debug.Log(String.Format("InputX: {0} InputY {1}", inputX, inputY));
     }
 
-
-    private void PlayerRotation()
-    {
-        if (!autoRotate)
-        {
-            transform.RotateAround(center.position, axis, -inputX * horizontalMoveSpeed * Time.deltaTime);
-
-        }
-        else
-        {
-            transform.RotateAround(center.position, axis, horizontalMoveSpeed * Time.deltaTime);
-        }
-
-        desiredPosition = (transform.position - center.position).normalized * radius + center.position;
-        transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * radiusSpeed);
-
-        Debug.Log(String.Format("InputX: {0} InputY {1}", radiusSpeed, desiredPosition));
-    }
-
-    private void PlayerRotationWithDampen()
+    private void PlayerRotate()
     {
         // Accelerate/decelerate towards target speed
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref currentVelocity, smoothTime);
 
-        // Rotate player around center
-        transform.RotateAround(center.position, axis, -currentSpeed * Time.deltaTime);
+        if (autoRotate)
+        {
+            transform.RotateAround(center.position, Vector3.up, horizontalMoveSpeed * Time.deltaTime);
+        }
+        else
+        {
+            // Rotate player around center
+            transform.RotateAround(center.position, Vector3.up, -currentSpeed * Time.deltaTime);
+        }
 
         // Move player towards desired position
         desiredPosition = (transform.position - center.position).normalized * radius + center.position;
-        transform.position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * currentSpeed);
+        transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * radiusSpeed);
     }
 
     private void PlayerHeight()
@@ -145,10 +122,7 @@ public class BHMove : MonoBehaviour
         // Reduce velocity gradually when no input is given
         if  (inputY == 0)
         {
-            if (!applyDampen)
-                rigidBody.velocity *= 0;
-            else
-                rigidBody.velocity *= dragCoefficient;
+            rigidBody.velocity *= dragCoefficient;
         }
 
         UpdateSprite();
