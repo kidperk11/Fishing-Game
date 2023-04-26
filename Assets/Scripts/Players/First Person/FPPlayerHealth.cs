@@ -2,17 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyHealthAndQTE : MonoBehaviour
+public class FPPlayerHealth : MonoBehaviour
 {
-    public GameObject boxPattern;
-    public List<QTEActivationBox> allBoxes;
-    public BoxCollider boxCollider;
-    public bool harpoonable;
-    public bool isDead;
-
     public int currentHealth;
-    public int harpoonHealthRange;
     [SerializeField] private int maxHealth;
+
+    public bool isDead;
 
     // Start is called before the first frame update
     void Start()
@@ -32,9 +27,10 @@ public class EnemyHealthAndQTE : MonoBehaviour
         if(currentHealth <= 0)
         {
             isDead = true;
-        } else if(currentHealth <= harpoonHealthRange)
-        {
-            harpoonable = true;
+
+            //NOTE: Update this to throw to a Game Over Screen when one
+            //is added to the game.
+            GameManager.LoadScene("FPS Level");
         }
     }
 }
