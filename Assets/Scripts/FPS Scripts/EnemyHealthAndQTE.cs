@@ -9,6 +9,7 @@ public class EnemyHealthAndQTE : MonoBehaviour
     public BoxCollider boxCollider;
     public bool harpoonable;
     public bool isDead;
+    public string bulletType;
 
     public int currentHealth;
     public int harpoonHealthRange;
