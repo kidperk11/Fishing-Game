@@ -15,6 +15,7 @@ public class FPFireGun : MonoBehaviour
     public int gunDamage;
     public GameObject bulletImpact;
     public TextMeshProUGUI hudBulletText;
+
     
 
     [Header("Prefabs for different bullets")]
@@ -94,9 +95,9 @@ public class FPFireGun : MonoBehaviour
                 }
 
                 Vector3 directionWithoutSpread = targetPoint - gunFireTransform.position;
-                SpecialPufferBulletAI bullet = Instantiate(pufferBombPrefab, gunFireTransform.position, Quaternion.identity).gameObject.GetComponent<SpecialPufferBulletAI>();
-                bullet.transform.forward = directionWithoutSpread.normalized;
-                bullet.rb.AddForce(transform.forward * bullet.bulletSpeed, ForceMode.Impulse);
+                SpecialPufferBulletAI bulletInstance = Instantiate(pufferBombPrefab, gunFireTransform.position, Quaternion.identity).gameObject.GetComponent<SpecialPufferBulletAI>();
+                bulletInstance.gameObject.transform.forward = directionWithoutSpread.normalized;
+                //bulletInstance.rb.AddForce(directionWithoutSpread.normalized * bulletInstance.bulletSpeed, ForceMode.Impulse);
             }
 
             specialBullet = null;
