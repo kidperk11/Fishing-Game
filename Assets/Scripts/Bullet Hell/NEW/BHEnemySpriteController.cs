@@ -22,6 +22,10 @@ public class BHEnemySpriteController : MonoBehaviour
     public float radius;
 
     private float circumference;
+    private float distanceHolder;
+    private float sideHolder;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -37,66 +41,65 @@ public class BHEnemySpriteController : MonoBehaviour
 
     private void UpdateSprite()
     {
+        //Possible Solution. 
         float distance;
         float side;
         distance = GetPlayerDistance();
-        side = GetPlayerSide();
+        Sprite spriteToDisplay = null; 
+        bool backRotorActive = false;
+        bool sideRotorActive = false;
+        bool shouldFlipX = false;
+        Vector3 rotorPosition = new Vector3();
 
-        if(side < 0f)
+
+        if(distance < 2.5f)
         {
-            if (distance < 2.5)
-            {
-                //Right Side Back
-                body.sprite = sideSprite;
-                body.flipX = false;
-                backRotors.SetActive(false);
-                sideRotors.SetActive(true);
-            }
-            else if (distance > 2.5 && distance < 9)
-            {
-                //Right Front
-                body.sprite = frontSprite;
-                backRotors.SetActive(false);
-                sideRotors.SetActive(false);
-            }
-            else// (distance > 9)
-            {
-                //Right Side Front
-                body.sprite = sideSprite;
-                rotor.transform.position = rotorRight.transform.position;
-                backRotors.SetActive(false);
-                sideRotors.SetActive(true);
-            }
+
+            spriteToDisplay = sideSprite;
+            shouldFlipX = false;
+            rotorPosition = rotorRight.transform.position;
+            backRotorActive = false;
+            sideRotorActive = true;
+
         }
-        else
+        
+        if(distance >= 2.5f && distance <= 6)
         {
-            if (distance < 2.5)
+            side = GetPlayerSide();
+            if (side > 0f)
             {
-                body.sprite = sideSprite;
-                rotor.transform.position = rotorRight.transform.position;
-                backRotors.SetActive(false);
-                sideRotors.SetActive(true);
+                spriteToDisplay = backSprite;
+                backRotorActive = true;
             }
-            else if (distance > 2.5f && distance < 7)
+            else
             {
-                body.sprite = backSprite;
-                backRotors.SetActive(true);
-                sideRotors.SetActive(false);
+                spriteToDisplay = frontSprite;
+                backRotorActive = false;
             }
-            else// (distance > 7)
-            {
-                body.sprite = sideSprite;
-                body.flipX = true;
-                rotor.transform.position = rotorLeft.transform.position;
-                backRotors.SetActive(false);
-                sideRotors.SetActive(true);
-            }
+
+            shouldFlipX = false;
+            sideRotorActive = false;
         }
 
+        if(distance > 6)
+        {
+            spriteToDisplay = sideSprite;
+            shouldFlipX = true;
+            rotorPosition = rotorLeft.transform.position;
+            backRotorActive = false;
+            sideRotorActive = true;
+        }
 
+        UpdateSprite(rotorPosition, shouldFlipX, spriteToDisplay, backRotorActive, sideRotorActive);
+    }
 
-
-
+    private void UpdateSprite(Vector3 rotorPosition, bool shouldFlipx, Sprite bodySprite, bool backRotor, bool sideRotor)
+    {
+        rotor.transform.position = rotorPosition;
+        body.flipX = shouldFlipx;
+        body.sprite = bodySprite;
+        backRotors.SetActive(backRotor);
+        sideRotors.SetActive(sideRotor);
     }
 
     private float GetPlayerDistance()
@@ -109,28 +112,6 @@ public class BHEnemySpriteController : MonoBehaviour
         float distance = (angle / 360f) * circumference;
 
         return distance;
-    }
-
-    public void FacePlayer(Vector3 playerPosition)
-    {
-        float playerSide = GetPlayerSide(playerPosition);
-
-        if (playerSide > 0f)
-        {
-            body.flipX = true;
-            rotor.flipX = true;
-            rotor.transform.position = rotorLeft.transform.position;
-        }
-        else if (playerSide < 0f)
-        {
-            body.flipX = false;
-            rotor.flipX = true;
-            rotor.transform.position = rotorRight.transform.position;
-        }
-        else
-        {
-            Debug.Log(0f);
-        }
     }
 
     private float GetPlayerSide()
@@ -151,5 +132,34 @@ public class BHEnemySpriteController : MonoBehaviour
         return direction;
     }
 
+
+
+    /*
+     *     This is to be used when the enemy is chasing the player. 
+     *     Submarine will face which direction it is moving
+     * 
+     */
+
+    //public void FacePlayer(Vector3 playerPosition)
+    //{
+    //    float playerSide = GetPlayerSide(playerPosition);
+
+    //    if (playerSide > 0f)
+    //    {
+    //        body.flipX = true;
+    //        rotor.flipX = true;
+    //        rotor.transform.position = rotorLeft.transform.position;
+    //    }
+    //    else if (playerSide < 0f)
+    //    {
+    //        body.flipX = false;
+    //        rotor.flipX = true;
+    //        rotor.transform.position = rotorRight.transform.position;
+    //    }
+    //    else
+    //    {
+    //        Debug.Log(0f);
+    //    }
+    //}
 
 }
