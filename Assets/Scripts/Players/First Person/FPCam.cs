@@ -2,21 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+
 
 public class FPCam : MonoBehaviour
 {
-
+    public Camera fpsCam;
     public float mouseSenseX;
     public float mouseSenseY;
     public Vector2 controllerSenseScale;
     public FPPlayerActions cameraControls;
     public PlayerInput playerInput;
+
+    public Image innerCrosshair;
+    
+
     //public string currentControlScheme { get; }
 
     public Transform orientation;
     float xRotation;
     float yRotation;
-
     private InputAction moveCam;
 
     private void OnEnable()
@@ -70,10 +75,23 @@ public class FPCam : MonoBehaviour
         xRotation -= inputY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        //Rotate camera
-        transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+        if(playerInput.currentControlScheme == "Gamepad")
+        {
+            ////Rotate camera
+            transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
 
-        //Rotate player
-        orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+            ////Rotate player
+            orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+
+            //NOTE: Add code for auto aim on controller
+        }
+        else
+        {
+            //Rotate camera
+            transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+
+            //Rotate player
+            orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+        } 
     }
 }
