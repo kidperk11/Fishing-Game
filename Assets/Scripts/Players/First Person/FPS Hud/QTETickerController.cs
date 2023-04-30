@@ -43,7 +43,6 @@ public class QTETickerController : MonoBehaviour
                 Debug.Log("Ticker has reached the end point, now failing Ticker");
                 FailTicker();
             }
-            Debug.Log("Count for currentEnemy.allBoxes: " + currentEnemy.allBoxes.Count);
         }
     }
 
@@ -77,7 +76,7 @@ public class QTETickerController : MonoBehaviour
         }
         currentEnemy.boxPattern.SetActive(false);
         currentEnemy = null;
-        currentHarpoon.ResetHarpoon();
+        
         currentHarpoon = null;
         QTETimer = 0;
         activateTicker = false;
@@ -108,10 +107,11 @@ public class QTETickerController : MonoBehaviour
                 box.gameObject.SetActive(true);
             }
             currentEnemy.boxPattern.SetActive(false);
-            currentHarpoon.ResetHarpoon();
+            currentEnemy.transform.parent = currentHarpoon.transform;
+           
             currentHarpoon = null;
             QTETimer = 0;
-            Destroy(currentEnemy.gameObject);
+            //Destroy(currentEnemy.gameObject);
             currentEnemy = null;
 
         }

@@ -46,7 +46,7 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Fire"",
+                    ""name"": ""Gun"",
                     ""type"": ""Button"",
                     ""id"": ""7bd17673-ca1c-4700-8e20-299d3faacdcd"",
                     ""expectedControlType"": ""Button"",
@@ -64,7 +64,7 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Reel"",
+                    ""name"": ""Harpoon"",
                     ""type"": ""Button"",
                     ""id"": ""0d75022b-e669-49df-866b-dbb29ffc77a9"",
                     ""expectedControlType"": ""Button"",
@@ -213,7 +213,7 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Fire"",
+                    ""action"": ""Gun"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -224,7 +224,7 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""Fire"",
+                    ""action"": ""Gun"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -235,7 +235,7 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Touch"",
-                    ""action"": ""Fire"",
+                    ""action"": ""Gun"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -268,7 +268,7 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Reel"",
+                    ""action"": ""Harpoon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -279,7 +279,7 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""Reel"",
+                    ""action"": ""Harpoon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -770,9 +770,9 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
-        m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
+        m_Player_Gun = m_Player.FindAction("Gun", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
-        m_Player_Reel = m_Player.FindAction("Reel", throwIfNotFound: true);
+        m_Player_Harpoon = m_Player.FindAction("Harpoon", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -848,18 +848,18 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Look;
-    private readonly InputAction m_Player_Fire;
+    private readonly InputAction m_Player_Gun;
     private readonly InputAction m_Player_Jump;
-    private readonly InputAction m_Player_Reel;
+    private readonly InputAction m_Player_Harpoon;
     public struct PlayerActions
     {
         private @FPPlayerActions m_Wrapper;
         public PlayerActions(@FPPlayerActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Look => m_Wrapper.m_Player_Look;
-        public InputAction @Fire => m_Wrapper.m_Player_Fire;
+        public InputAction @Gun => m_Wrapper.m_Player_Gun;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
-        public InputAction @Reel => m_Wrapper.m_Player_Reel;
+        public InputAction @Harpoon => m_Wrapper.m_Player_Harpoon;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -875,15 +875,15 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
-            @Fire.started += instance.OnFire;
-            @Fire.performed += instance.OnFire;
-            @Fire.canceled += instance.OnFire;
+            @Gun.started += instance.OnGun;
+            @Gun.performed += instance.OnGun;
+            @Gun.canceled += instance.OnGun;
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
-            @Reel.started += instance.OnReel;
-            @Reel.performed += instance.OnReel;
-            @Reel.canceled += instance.OnReel;
+            @Harpoon.started += instance.OnHarpoon;
+            @Harpoon.performed += instance.OnHarpoon;
+            @Harpoon.canceled += instance.OnHarpoon;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -894,15 +894,15 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
-            @Fire.started -= instance.OnFire;
-            @Fire.performed -= instance.OnFire;
-            @Fire.canceled -= instance.OnFire;
+            @Gun.started -= instance.OnGun;
+            @Gun.performed -= instance.OnGun;
+            @Gun.canceled -= instance.OnGun;
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
-            @Reel.started -= instance.OnReel;
-            @Reel.performed -= instance.OnReel;
-            @Reel.canceled -= instance.OnReel;
+            @Harpoon.started -= instance.OnHarpoon;
+            @Harpoon.performed -= instance.OnHarpoon;
+            @Harpoon.canceled -= instance.OnHarpoon;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1069,9 +1069,9 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
-        void OnFire(InputAction.CallbackContext context);
+        void OnGun(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
-        void OnReel(InputAction.CallbackContext context);
+        void OnHarpoon(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
