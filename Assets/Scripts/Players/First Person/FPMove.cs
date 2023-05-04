@@ -7,6 +7,9 @@ public class FPMove : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed;
+    public float walkSpeed;
+    public float wallRunSpeed;
+
     public Transform orientation;
     public float groundDrag;
     public float jumpForce;
@@ -15,6 +18,17 @@ public class FPMove : MonoBehaviour
     bool readyToJump;
     float inputX;
     float inputY;
+    public bool wallRunning;
+
+    public MovementState state;
+    public enum MovementState
+    {
+        walking, 
+        air,
+        wallRunning
+    }
+
+
     public FPPlayerActions moveActions;
     private InputAction movePlayer;
     private InputAction jump;
@@ -74,6 +88,7 @@ public class FPMove : MonoBehaviour
 
         CurrentInput();
         SpeedControl();
+        StateHandler();
 
         //Handle Drag
         if (grounded)
@@ -82,6 +97,28 @@ public class FPMove : MonoBehaviour
         }
         else { rb.drag = 0; }
         //else if(rb.velocity.y > 0) { rb.drag = 2; }
+    }
+
+    private void StateHandler()
+    {
+        //Walk State
+        if (grounded)
+        {
+            state = MovementState.walking;
+            moveSpeed = walkSpeed;
+        }
+
+        //Wall Run State
+        if (wallRunning)
+        {
+            state = MovementState.wallRunning;
+            moveSpeed = wallRunSpeed;
+        }
+
+        else
+        {
+            state = MovementState.air;
+        }
     }
 
     private void FixedUpdate()
