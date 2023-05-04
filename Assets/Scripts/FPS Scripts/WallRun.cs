@@ -9,6 +9,8 @@ public class WallRun : MonoBehaviour
     public LayerMask whatIsWall;
     public LayerMask whatIsGround;
     public float wallRunForce;
+    public float wallJumpUpForce;
+    public float wallJumpSideForce;
     public float maxWallRunTime;
     private float wallRunTimer;
 
@@ -17,6 +19,8 @@ public class WallRun : MonoBehaviour
     public float inputY;
     public FPPlayerActions moveActions;
     private InputAction movePlayer;
+    private InputAction wallJump;
+
 
     [Header("Detection")]
     public float wallCheckDistance;
@@ -35,6 +39,9 @@ public class WallRun : MonoBehaviour
     {
         movePlayer = moveActions.Player.Move;
         movePlayer.Enable();
+        wallJump = moveActions.Player.Jump;
+        wallJump.Enable();
+        wallJump.performed += WallJump;
     }
 
     private void OnDisable()
@@ -77,7 +84,7 @@ public class WallRun : MonoBehaviour
 
     private bool AboveGround()
     {
-        return !Physics.Raycast(transform.position, Vector3.down, out rightWallHit, minJumpHeight, whatIsWall);
+        return !Physics.Raycast(transform.position, Vector3.down, minJumpHeight, whatIsGround);
     }
 
     private void StateMachine()
@@ -118,6 +125,7 @@ public class WallRun : MonoBehaviour
 
     private void WallRunningMovement()
     {
+        
         rb.useGravity = false;
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
@@ -133,15 +141,23 @@ public class WallRun : MonoBehaviour
             wallForward = -wallForward;
         }
 
-        //Push towards curved walls
+        //Pushes towards curved walls and allows you to look away from flat walls a bit
         if (!(wallLeft && inputX > 0) && !(wallRight && inputX < 0))
         {
-            Debug.Log("Wall Left: " + wallLeft);
-            Debug.Log("Wall Right: " + wallRight);
             rb.AddForce(-wallNormal * 100, ForceMode.Force);
         }
             
-
+        //Normal forward force for the wall run.
         rb.AddForce(wallForward * wallRunForce, ForceMode.Force);
+    }
+
+    private void WallJump(InputAction.CallbackContext context)
+    {
+        Vector3 wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
+
+        Vector3 forceToApply = transform.up * wallJumpUpForce + wallNormal * wallJumpSideForce;
+
+        rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+        rb.AddForce(forceToApply, ForceMode.Force);
     }
 }
