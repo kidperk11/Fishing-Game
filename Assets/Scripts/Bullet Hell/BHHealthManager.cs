@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class HealthManager : MonoBehaviour
+public class BHHealthManager : MonoBehaviour
 {
     public int maxHitPoints;
 

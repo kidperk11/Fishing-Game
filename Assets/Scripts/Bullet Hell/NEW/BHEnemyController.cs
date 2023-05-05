@@ -15,7 +15,8 @@ public enum EnemyState
     ReturnToIdle,
     Follow,
     Die,
-    Attack
+    Attack,
+    RadiusChange,
 };
 
 public enum EnemyMovementType
@@ -73,24 +74,32 @@ public class BHEnemyController : MonoBehaviour
     [Header("Other Components")]
     public BHEnemySpriteController spriteController;
     public Rigidbody rigidBody;
+    public bool overrideSpriteFlip;
 
     private float m_TimerSinceLostTarget = 0.0f;
     private BHPlayerController target { get { return m_Target; } }
     private BHPlayerController m_Target = null;
-
+    private Rigidbody targetRigidBody = null;
     private bool canAttack = false;
+
+    private void OnEnable()
+    {
+        spriteController.circleRadius = radius;
+    }
 
     private void Start()
     {
         currentState = EnemyState.Swim;
         //rigidBody = GetComponent<Rigidbody>();
         transform.position = (transform.position - center.position).normalized * radius + center.position;
+
     }
 
     // Update is called once per frame
     void Update()
     {
         targetSpeed = horizontalMoveSpeed;
+        spriteController.SpriteFlip = overrideSpriteFlip;
     }
 
     private void FixedUpdate()
@@ -98,6 +107,7 @@ public class BHEnemyController : MonoBehaviour
         switch (currentState)
         {
             case (EnemyState.Swim):
+                //Runs until target is found
                 Swimming();
                 break;
             case (EnemyState.Spotted):
@@ -105,22 +115,26 @@ public class BHEnemyController : MonoBehaviour
                 Spotted();
                 break;
             case (EnemyState.Pursuit):
+                //Runs until target is lost
                 Pursuit();
                 break;
             case (EnemyState.ReturnToIdle):
                 StopPursuit();
+                break;
+            case (EnemyState.RadiusChange):
+                NewRadius();
                 break;
         }
     }
 
     private void Swimming()
     {
-        if(tracking)
+        if (tracking)
             FindTarget();
-        if(vertical)
+        if (vertical)
             UpdateHeight();
-        if(horizontal)
-            UpdateRotate();
+        if (horizontal)
+            SwimRotate();
     }
 
     private void Spotted()
@@ -136,19 +150,37 @@ public class BHEnemyController : MonoBehaviour
 
     private void StopPursuit()
     {
-        currentState = EnemyState.ReturnToIdle;
+        targetRigidBody = null;
+        currentState = EnemyState.Swim;
         canAttack = false;
     }
 
     private void StartPursuit()
     {
+        targetRigidBody = target.GetComponentInChildren<Rigidbody>();
         currentState = EnemyState.Pursuit;
         canAttack = true;
     }
 
     private void Pursuit()
     {
-        currentState = EnemyState.Swim;
+        FindTarget();
+        if (target == null)
+        {
+            StopPursuit();
+        }
+        float side = GetPlayerSide();
+        PursuitRotate(side);
+        ChaseHeight();
+    }
+
+    private float GetPlayerSide()
+    {
+        Vector3 heading = target.transform.position - transform.position;
+        Vector3 perp = Vector3.Cross(transform.forward, heading);
+        float direction = Vector3.Dot(perp, transform.up);
+
+        return direction;
     }
 
     private void FindTarget()
@@ -192,17 +224,71 @@ public class BHEnemyController : MonoBehaviour
         }
     }
 
-    private void UpdateRotate()
+    private void SwimRotate()
     {
         // Accelerate/decelerate towards target speed
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref currentVelocity, smoothTime);
 
-        transform.RotateAround(center.position, Vector3.up, horizontalMoveSpeed * Time.deltaTime);
+        transform.RotateAround(center.position, Vector3.up, currentSpeed * Time.deltaTime);
+    }
 
+    private void PursuitRotate(float targetSide)
+    {
+        // Accelerate/decelerate towards target speed
+        //currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref currentVelocity, smoothTime);
+
+        if (targetSide > 0f)
+        {
+            transform.RotateAround(center.position, Vector3.up, -horizontalMoveSpeed * Time.deltaTime);
+        }
+        if (targetSide < 0f)
+        {
+            transform.RotateAround(center.position, Vector3.up, horizontalMoveSpeed * Time.deltaTime);
+        }
+
+        spriteController.FacePlayer();
+    }
+
+    private void ChaseHeight()
+    {
+        float inputY = 0;
+
+        if (rigidBody.position.y > targetRigidBody.transform.position.y)
+        {
+            //Below
+            inputY = -1;
+            overrideSpriteFlip = true;
+        }
+        else if (rigidBody.position.y < targetRigidBody.transform.position.y)
+        {
+            //Above
+            inputY = 1;
+            overrideSpriteFlip = true;
+        }
+        else
+        {
+            //Same Height
+            inputY = 0;
+            overrideSpriteFlip = false;
+        }
+
+        // Apply movement force to the Rigidbody
+        rigidBody.AddForce(new Vector2(0, inputY) * verticalMoveSpeed);
+
+        // Reduce velocity gradually when no input is given
+        if (inputY == 0)
+        {
+            rigidBody.velocity *= dragCoefficient;
+        }
+    }
+
+    private void NewRadius()
+    {
         // Move enemy towards desired position
         desiredPosition = (transform.position - center.position).normalized * radius + center.position;
         transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * radiusSpeed);
     }
+
 
     private void UpdateHeight()
     {
@@ -220,6 +306,8 @@ public class BHEnemyController : MonoBehaviour
         {
             inputY = 0;
         }
+
+        Debug.Log(inputY);
 
         // Apply movement force to the Rigidbody
         rigidBody.AddForce(new Vector2(0, inputY) * verticalMoveSpeed);

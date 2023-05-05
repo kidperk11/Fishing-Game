@@ -109,6 +109,10 @@ public class BHPlayerController : MonoBehaviour
             transform.RotateAround(center.position, Vector3.up, -currentSpeed * Time.deltaTime);
         }
 
+    }
+
+    private void NewRadius()
+    {
         // Move player towards desired position
         desiredPosition = (transform.position - center.position).normalized * radius + center.position;
         transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * radiusSpeed);

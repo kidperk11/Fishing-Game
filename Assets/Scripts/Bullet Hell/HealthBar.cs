@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HealthBar : MonoBehaviour
 {
-    [SerializeField] HealthManager healthManager = null;
+    [SerializeField] BHHealthManager healthManager = null;
     [SerializeField] RectTransform forground = null;
     [SerializeField] Canvas rootCanvas = null;
 
