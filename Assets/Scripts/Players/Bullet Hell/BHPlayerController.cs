@@ -32,17 +32,16 @@ public class BHPlayerController : MonoBehaviour
     public float movementDamping = 2;
 
     [Space(10)]
-    [Header("Sprites")]
-    public SpriteRenderer submarine;
-    public SpriteRenderer rotor;
-
+    [Header("Other")]
+    public BHPlayerSpriteController spriteController;
+    public Rigidbody rigidBody;
 
     protected static BHPlayerController s_Instance;
     public static BHPlayerController instance { get { return s_Instance; } }
     //Player Inputs
     public BHPlayerActions moveActions;
     private InputAction movePlayer;
-    public Rigidbody rigidBody;
+
 
     private void Awake()
     {
@@ -53,6 +52,7 @@ public class BHPlayerController : MonoBehaviour
     {
         movePlayer = moveActions.Player.Move;
         movePlayer.Enable();
+
     }
 
     private void Start()
@@ -92,6 +92,9 @@ public class BHPlayerController : MonoBehaviour
             inputX = Mathf.Sign(inputX);
         if (inputY != 0)
             inputY = Mathf.Sign(inputY);
+
+
+        spriteController.FlipSprite(inputX);
     }
 
     private void PlayerRotate()
@@ -128,20 +131,8 @@ public class BHPlayerController : MonoBehaviour
         {
             rigidBody.velocity *= dragCoefficient;
         }
-
-        UpdateSprite();
     }
 
-    private void UpdateSprite()
-    {
-        if (inputX > 0)
-        {
-            submarine.flipX = true;
-        }
-        else if (inputX < 0)
-        {
-            submarine.flipX = false;
-        }
-    }
+
 }
 

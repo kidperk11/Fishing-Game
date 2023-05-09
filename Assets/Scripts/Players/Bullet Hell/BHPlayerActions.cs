@@ -35,6 +35,24 @@ public partial class @BHPlayerActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ShootLeft"",
+                    ""type"": ""Value"",
+                    ""id"": ""26afee06-6133-446c-9ffa-17e1a87943f9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ShootRight"",
+                    ""type"": ""Value"",
+                    ""id"": ""fd3b558e-d587-4241-8aff-a71482e91e18"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -147,6 +165,50 @@ public partial class @BHPlayerActions: IInputActionCollection2, IDisposable
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7899e843-b358-44b8-b880-401f9e22567e"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShootLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c01cc230-dde0-490a-af27-e64ca7d8e07b"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShootLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d48918e1-7fac-40fc-bcd9-9b39489b6703"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShootRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9b6e1fd3-2c03-4deb-b4d0-d3e8795cf4a2"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShootRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -156,6 +218,8 @@ public partial class @BHPlayerActions: IInputActionCollection2, IDisposable
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
+        m_Player_ShootLeft = m_Player.FindAction("ShootLeft", throwIfNotFound: true);
+        m_Player_ShootRight = m_Player.FindAction("ShootRight", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -218,11 +282,15 @@ public partial class @BHPlayerActions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Move;
+    private readonly InputAction m_Player_ShootLeft;
+    private readonly InputAction m_Player_ShootRight;
     public struct PlayerActions
     {
         private @BHPlayerActions m_Wrapper;
         public PlayerActions(@BHPlayerActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
+        public InputAction @ShootLeft => m_Wrapper.m_Player_ShootLeft;
+        public InputAction @ShootRight => m_Wrapper.m_Player_ShootRight;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -235,6 +303,12 @@ public partial class @BHPlayerActions: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
+            @ShootLeft.started += instance.OnShootLeft;
+            @ShootLeft.performed += instance.OnShootLeft;
+            @ShootLeft.canceled += instance.OnShootLeft;
+            @ShootRight.started += instance.OnShootRight;
+            @ShootRight.performed += instance.OnShootRight;
+            @ShootRight.canceled += instance.OnShootRight;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -242,6 +316,12 @@ public partial class @BHPlayerActions: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
+            @ShootLeft.started -= instance.OnShootLeft;
+            @ShootLeft.performed -= instance.OnShootLeft;
+            @ShootLeft.canceled -= instance.OnShootLeft;
+            @ShootRight.started -= instance.OnShootRight;
+            @ShootRight.performed -= instance.OnShootRight;
+            @ShootRight.canceled -= instance.OnShootRight;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -262,5 +342,7 @@ public partial class @BHPlayerActions: IInputActionCollection2, IDisposable
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
+        void OnShootLeft(InputAction.CallbackContext context);
+        void OnShootRight(InputAction.CallbackContext context);
     }
 }
