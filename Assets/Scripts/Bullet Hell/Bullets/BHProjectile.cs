@@ -11,7 +11,7 @@ public class BHProjectile : MonoBehaviour
     public float damage = 1f;
     public Vector3 bulletDirection;
     public float bulletSize = 1f;
-    public SpriteRenderer spriteRenderer;
+    public MeshRenderer meshRenderer;
     public ParticleSystem partSystem;
     public AudioSource bulletAudio;
     public AudioClip impactSoundEffect;
@@ -55,6 +55,11 @@ public class BHProjectile : MonoBehaviour
         {
             transform.RotateAround(rotation.position, Vector3.up, bulletSpeed * Time.deltaTime);
         }
+
+        if(Input.GetKey(KeyCode.T))
+        {
+            partSystem.Play();
+        }
     }
 
     IEnumerator DeathDelay()
@@ -62,10 +67,11 @@ public class BHProjectile : MonoBehaviour
         yield return new WaitForSeconds(lifeTime);
         bulletSpeed /= 2;
         m_RigidBody.useGravity = true;
+        StartCoroutine(DelayedDestroy(5f));
     }
-    private IEnumerator DelayedDestroy()
+    private IEnumerator DelayedDestroy(float destroyTime)
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(destroyTime);
         Destroy(gameObject);
     }
 
@@ -108,7 +114,7 @@ public class BHProjectile : MonoBehaviour
 
         StartCoroutine(DeathDelay());
 
-        StartCoroutine(DelayedDestroy());
+
     }
 
     private void OnTriggerEnter(Collider collider)
@@ -117,17 +123,26 @@ public class BHProjectile : MonoBehaviour
         {
             if (collider.tag == "Player" && isEnemyBullet)
             {
-                collider.GetComponent<BHHealthManager>().ApplyDamage(damage);
-                bulletAudio.clip = impactSoundEffect;
-                spriteRenderer.enabled = false;
-                partSystem.Play();
-                bulletAudio.Play();
-                StartCoroutine(DelayedDestroy());
+
+                Debug.Log("Hit Player");
+                //    collider.GetComponent<BHHealthManager>().ApplyDamage(damage);
+                //    bulletAudio.clip = impactSoundEffect;
+                //    spriteRenderer.enabled = false;
+                //    partSystem.Play();
+                //    bulletAudio.Play();
+                //    StartCoroutine(DelayedDestroy());
             }
 
             if (collider.tag == "EnemyCollider" && !isEnemyBullet)
             {
-                collider.GetComponentInParent<BHHealthManager>().ApplyDamage(bulletDamage);
+
+                Debug.Log("Hit Enemy");
+                bulletSpeed = 0;
+                partSystem.Play();
+                MeshRenderer mr = GetComponentInChildren<MeshRenderer>();
+                mr.enabled = false;
+                StartCoroutine(DelayedDestroy(2f));
+                //    collider.GetComponentInParent<BHHealthManager>().ApplyDamage(bulletDamage);
 
             }
         }

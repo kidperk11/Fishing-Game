@@ -9,9 +9,8 @@ using UnityEngine;
 [Serializable]
 public class BHShooter
 {
-    [SerializeField] public BHShooterScriptableObject shooterScriptableObject;
-
     public string name = "Main Bullet";
+    [SerializeField] public BHShooterScriptableObject shooterScriptableObject;
 
     public void PrepareBullet(GameObject bullet, float playerX, float playerZ, int bulletNumber)
     {

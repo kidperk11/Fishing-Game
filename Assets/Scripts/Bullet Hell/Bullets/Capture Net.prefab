@@ -9755,7 +9755,7 @@ GameObject:
   - component: {fileID: 4636751724886023847}
   - component: {fileID: 3583917575999672813}
   m_Layer: 0
-  m_Name: Torpedo
+  m_Name: Capture Net
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14770,7 +14770,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 214ea8920978c6343850685b305d4599, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: a5e2d3eb63d588348ac42a0710167cb6, type: 2}
+      objectReference: {fileID: 2100000, guid: 589e4df159b0478438c38ffa1afa836f, type: 2}
     - target: {fileID: 919132149155446097, guid: 214ea8920978c6343850685b305d4599, type: 3}
       propertyPath: m_Name
       value: Torpedo
