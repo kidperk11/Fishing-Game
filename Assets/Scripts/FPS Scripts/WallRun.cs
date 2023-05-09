@@ -26,6 +26,10 @@ public class WallRun : MonoBehaviour
     public float exitWallTime;
     public float exitWallTimer;
 
+    [Header("Gravity")]
+    public bool useGravity;
+    public float gravityCounterForce;
+
 
     [Header("Detection")]
     public float wallCheckDistance;
@@ -151,18 +155,20 @@ public class WallRun : MonoBehaviour
     {
         moveScript.wallRunning = true;
         wallRunTimer = maxWallRunTime;
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
     }
 
     private void StopWallRun()
     {
         moveScript.wallRunning = false;
+
     }
 
     private void WallRunningMovement()
     {
         
-        rb.useGravity = false;
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        rb.useGravity = useGravity;
+        
 
         //Vector3.Cross takes the up and right direction to find the forward direction.
         //"?" can be used as an operator, and it says "if the first value is null, use this other value"
@@ -180,6 +186,11 @@ public class WallRun : MonoBehaviour
         if (!(wallLeft && inputX > 0) && !(wallRight && inputX < 0))
         {
             rb.AddForce(-wallNormal * 100, ForceMode.Force);
+        }
+
+        if (useGravity)
+        {
+            rb.AddForce(transform.up * gravityCounterForce, ForceMode.Force);
         }
             
         //Normal forward force for the wall run.

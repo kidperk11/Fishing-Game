@@ -126,7 +126,7 @@ public class FPMove : MonoBehaviour
         MovePlayer();
 
         //This code adjusts the fall speed of the player's jump
-        if ((rb.velocity.y < 0 || rb.velocity.y > 0))
+        if ((rb.velocity.y < 0 || rb.velocity.y > 0) && !OnSlope())
         {
             rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
         }
@@ -171,7 +171,7 @@ public class FPMove : MonoBehaviour
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
         }
 
-        rb.useGravity = !OnSlope();
+        if(!wallRunning) rb.useGravity = !OnSlope();
     }
 
     private void SpeedControl()
@@ -221,6 +221,7 @@ public class FPMove : MonoBehaviour
         {
             //Measures how steep the slope is
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            Debug.Log("On a slope angle: " + angle);
 
             //Returns true if the angle is smaller than the max angle and not zero
             return angle < maxSlopeAngle && angle != 0;
