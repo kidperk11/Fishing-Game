@@ -21,6 +21,11 @@ public class WallRun : MonoBehaviour
     private InputAction movePlayer;
     private InputAction wallJump;
 
+    [Header("Exiting")]
+    private bool exitingWall;
+    public float exitWallTime;
+    public float exitWallTimer;
+
 
     [Header("Detection")]
     public float wallCheckDistance;
@@ -47,6 +52,7 @@ public class WallRun : MonoBehaviour
     private void OnDisable()
     {
         movePlayer.Disable();
+        wallJump.Disable();
     }
 
     private void Awake()
@@ -94,12 +100,40 @@ public class WallRun : MonoBehaviour
         inputY = movePlayer.ReadValue<Vector2>().y;
 
         //Wallrunning State
-        if((wallLeft || wallRight) && inputY > 0 && AboveGround())
+        if((wallLeft || wallRight) && inputY > 0 && AboveGround() && !exitingWall)
         {
+            if(wallRunTimer > 0)
+            {
+                wallRunTimer -= Time.deltaTime;
+                if(wallRunTimer <= 0 && moveScript.wallRunning)
+                {
+                    exitingWall = true;
+                    exitWallTimer = exitWallTime;
+                }
+            }
             //Start Wallrun
             if (!moveScript.wallRunning)
             {
                 StartWallRun();
+            }
+        }
+
+        //Exit State
+        else if (exitingWall)
+        {
+            if (moveScript.wallRunning)
+            {
+                StopWallRun();
+            }
+
+            if(exitWallTimer > 0)
+            {
+                exitWallTimer -= Time.deltaTime;
+            }
+
+            if(exitWallTimer <= 0)
+            {
+                exitingWall = false;
             }
         }
 
@@ -116,6 +150,7 @@ public class WallRun : MonoBehaviour
     private void StartWallRun()
     {
         moveScript.wallRunning = true;
+        wallRunTimer = maxWallRunTime;
     }
 
     private void StopWallRun()
@@ -153,11 +188,19 @@ public class WallRun : MonoBehaviour
 
     private void WallJump(InputAction.CallbackContext context)
     {
-        Vector3 wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
+        if (moveScript.wallRunning)
+        {
+            exitingWall = true;
+            exitWallTimer = exitWallTime;
+            Debug.Log("WallJump has been started");
+            Vector3 wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
 
-        Vector3 forceToApply = transform.up * wallJumpUpForce + wallNormal * wallJumpSideForce;
+            Vector3 forceToApply = transform.up * wallJumpUpForce + wallNormal * wallJumpSideForce;
+            Debug.Log(forceToApply);
 
-        rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-        rb.AddForce(forceToApply, ForceMode.Force);
+            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+            rb.AddForce(forceToApply, ForceMode.Impulse);
+        }
+        
     }
 }
