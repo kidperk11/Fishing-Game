@@ -153,17 +153,6 @@ public class BHEnemySpriteController : MonoBehaviour
         return direction;
     }
 
-    private float GetPlayerSide(Vector3 playerPosition)
-    {
-        Vector3 heading = playerPosition - transform.position;
-        Vector3 perp = Vector3.Cross(transform.forward, heading);
-        float direction = Vector3.Dot(perp, transform.up);
-
-        return direction;
-    }
-
-
-
     /*
      *     This is to be used when the enemy is chasing the player. 
      *     Submarine will face which direction it is moving
@@ -176,14 +165,14 @@ public class BHEnemySpriteController : MonoBehaviour
 
         if (playerSide > 0f)
         {
-            Debug.Log("Left Side");
+            //Right Side
             body.flipX = true;
             rotor.flipX = true;
             rotor.transform.position = rotorLeft.transform.position;
         }
         else if (playerSide < 0f)
         {
-            Debug.Log("Right Side");
+            //Right Side
             body.flipX = false;
             rotor.flipX = true;
             rotor.transform.position = rotorRight.transform.position;

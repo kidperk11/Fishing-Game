@@ -30,13 +30,13 @@ public class BHProjectile : MonoBehaviour
     {
         m_EnvironmentLayer = 1 << LayerMask.NameToLayer("Environment");
         m_RigidBody = GetComponent<Rigidbody>();
-        m_RigidBody.detectCollisions = false;
+        //m_RigidBody.detectCollisions = false;
     }
 
 
     private void OnEnable()
     {
-        m_RigidBody.collisionDetectionMode = CollisionDetectionMode.Discrete;
+        m_RigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         //m_RigidBody.isKinematic = true;
         m_SinceFired = 0.0f;
 
@@ -65,9 +65,9 @@ public class BHProjectile : MonoBehaviour
     IEnumerator DeathDelay()
     {
         yield return new WaitForSeconds(lifeTime);
-        bulletSpeed /= 2;
+        //bulletSpeed /= 2;
         m_RigidBody.useGravity = true;
-        StartCoroutine(DelayedDestroy(5f));
+        StartCoroutine(DelayedDestroy(3f));
     }
     private IEnumerator DelayedDestroy(float destroyTime)
     {
@@ -84,6 +84,7 @@ public class BHProjectile : MonoBehaviour
         bulletSpeed = speed;
         bulletSize = size;
         lifeTime = bulletLife;
+        bulletDamage = damage;
 
         //m_RigidBody.isKinematic = false;
 
@@ -142,7 +143,7 @@ public class BHProjectile : MonoBehaviour
                 MeshRenderer mr = GetComponentInChildren<MeshRenderer>();
                 mr.enabled = false;
                 StartCoroutine(DelayedDestroy(2f));
-                //    collider.GetComponentInParent<BHHealthManager>().ApplyDamage(bulletDamage);
+                collider.GetComponentInParent<BHHealthManager>().ApplyDamage(bulletDamage);
 
             }
         }

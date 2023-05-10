@@ -307,8 +307,6 @@ public class BHEnemyController : MonoBehaviour
             inputY = 0;
         }
 
-        Debug.Log(inputY);
-
         // Apply movement force to the Rigidbody
         rigidBody.AddForce(new Vector2(0, inputY) * verticalMoveSpeed);
 
