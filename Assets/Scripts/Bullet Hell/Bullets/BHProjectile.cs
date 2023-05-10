@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
+
 public class BHProjectile : MonoBehaviour
 {
 
@@ -12,6 +13,7 @@ public class BHProjectile : MonoBehaviour
     public Vector3 bulletDirection;
     public float bulletSize = 1f;
     public MeshRenderer meshRenderer;
+    public SpriteRenderer spriteRenderer;
     public ParticleSystem partSystem;
     public AudioSource bulletAudio;
     public AudioClip impactSoundEffect;
@@ -20,6 +22,7 @@ public class BHProjectile : MonoBehaviour
     private float bulletSpeed;
     private bool startRotate;
     private Transform rotation;
+    private SubmarineWeapons weaponType;
 
     protected float m_SinceFired;
 
@@ -55,11 +58,6 @@ public class BHProjectile : MonoBehaviour
         {
             transform.RotateAround(rotation.position, Vector3.up, bulletSpeed * Time.deltaTime);
         }
-
-        if(Input.GetKey(KeyCode.T))
-        {
-            partSystem.Play();
-        }
     }
 
     IEnumerator DeathDelay()
@@ -75,8 +73,9 @@ public class BHProjectile : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void Shoot(float z, float speed, float size, float damage, float bulletLife, Transform center)
+    public void Shoot(float z, float speed, float size, float damage, float bulletLife, Transform center, SubmarineWeapons type)
     {
+        weaponType = type;
         //bulletDamage = damage;
         //bulletDirection.x = z;
         //bulletDirection.y = 0;
@@ -120,48 +119,47 @@ public class BHProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        if(partSystem != null)
+        if (collider.tag == "Player" && isEnemyBullet)
         {
-            if (collider.tag == "Player" && isEnemyBullet)
-            {
+            PlayerCollide(collider);
+        }
 
-                Debug.Log("Hit Player");
-                //    collider.GetComponent<BHHealthManager>().ApplyDamage(damage);
-                //    bulletAudio.clip = impactSoundEffect;
-                //    spriteRenderer.enabled = false;
-                //    partSystem.Play();
-                //    bulletAudio.Play();
-                //    StartCoroutine(DelayedDestroy());
-            }
+        if (collider.tag == "EnemyCollider" && !isEnemyBullet)
+        {
 
-            if (collider.tag == "EnemyCollider" && !isEnemyBullet)
-            {
+            EnemyCollide(collider);
+        }
+    }
 
-                Debug.Log("Hit Enemy");
+    private void PlayerCollide(Collider collider)
+    {
+        //    collider.GetComponent<BHHealthManager>().ApplyDamage(damage);
+        //    bulletAudio.clip = impactSoundEffect;
+        //    spriteRenderer.enabled = false;
+        //    partSystem.Play();
+        //    bulletAudio.Play();
+        //    StartCoroutine(DelayedDestroy());
+    }
+
+    private void EnemyCollide(Collider collider)
+    {
+        switch (weaponType)
+        {
+            case SubmarineWeapons.explosive:
                 bulletSpeed = 0;
-                partSystem.Play();
-                MeshRenderer mr = GetComponentInChildren<MeshRenderer>();
-                mr.enabled = false;
+                meshRenderer.enabled = false;
                 StartCoroutine(DelayedDestroy(2f));
                 collider.GetComponentInParent<BHHealthManager>().ApplyDamage(bulletDamage);
-
-            }
+                break;
+            case SubmarineWeapons.retractable:
+                meshRenderer.enabled = false;
+                break;
+            case SubmarineWeapons.specialAbility:
+                break;
         }
-        else
-        {
-            if (collider.tag == "Player" && isEnemyBullet)
-            {
 
-                collider.GetComponent<BHHealthManager>().ApplyDamage(damage);
-                Destroy(gameObject);
-            }
-
-            if (collider.tag == "EnemyCollider" && !isEnemyBullet)
-            {
-                collider.GetComponentInParent<BHHealthManager>().ApplyDamage(bulletDamage);
-                Destroy(gameObject);
-            }
-        }
+        if (partSystem != null)
+            partSystem.Play();
     }
 
 

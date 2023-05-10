@@ -6,9 +6,16 @@ using UnityEngine.InputSystem;
 
 public enum SubmarineWeapons
 {
-    torpedo,
-    captureNet,
+    explosive,
+    retractable,
+    specialAbility
+}
 
+public enum SpecialAbilities
+{
+    pufferFish,
+    anglerFish,
+    swordFish,
 }
 
 public class BHShooterController : MonoBehaviour
@@ -34,12 +41,11 @@ public class BHShooterController : MonoBehaviour
     private InputAction shootLeft;
     private InputAction shootRight;
     private InputAction weaponSwap;
-    private bool isShootLeft;
-    private bool isShootRight;
     private bool coolDownAttack = true;
     private float lastFire;
     private SubmarineWeapons currentWeapon;
     private int currentWeaponIndex;
+    private int shootVector;
 
     private void Awake()
     {
@@ -63,7 +69,7 @@ public class BHShooterController : MonoBehaviour
         shootRight.Enable();
         weaponSwap.Enable();
 
-        currentWeapon = SubmarineWeapons.torpedo;
+        currentWeapon = SubmarineWeapons.explosive;
         currentWeaponIndex = 0;
     }
 
@@ -84,68 +90,73 @@ public class BHShooterController : MonoBehaviour
     {
         if (context.action == shootLeft)
         {
-            isShootLeft = true;
+            shootVector = -1;
         }
         if (context.action == shootRight)
         {
-            isShootRight = true;
+            shootVector = 1;
         }
     }
 
     private void OnShootEnd(InputAction.CallbackContext context)
     {
-        isShootLeft = false;
-        isShootRight = false;
+        shootVector = 0;
     }
     
     private void SwapWeapon(InputAction.CallbackContext context)
     {
-        if(currentWeapon == SubmarineWeapons.torpedo)
+        switch(currentWeapon)
         {
-            currentWeapon = SubmarineWeapons.captureNet;
-            currentWeaponIndex = 1;
-            Debug.Log("Current Weapon: " + currentWeapon);
-            return;
+            case SubmarineWeapons.explosive:
+                currentWeapon = SubmarineWeapons.retractable;
+                currentWeaponIndex = 1;
+                Debug.Log("Current Weapon: " + currentWeapon);
+                break;
+            case SubmarineWeapons.retractable:
+                currentWeapon = SubmarineWeapons.explosive;
+                currentWeaponIndex = 0;
+                Debug.Log("Current Weapon: " + currentWeapon);
+                break;
         }
-
-        if(currentWeapon == SubmarineWeapons.captureNet)
-        {
-            currentWeapon = SubmarineWeapons.torpedo;
-            currentWeaponIndex = 0;
-            Debug.Log("Current Weapon: " + currentWeapon);
-            return;
-        }
-
     }
 
     void Update()
     {
-        if(isShootLeft || isShootRight)
+        if (shootVector != 0)
             Attack();
-
     }
 
     private void Attack()
     {
         float shootHor = 1f;
-
+        Transform bulletSpawnLocation = null;
+        
         if (Time.time > lastFire + fireDelay)
         {
-            if(isShootLeft)
+
+            GameObject bullet = shooters[currentWeaponIndex].shooterScriptableObject.BulletPrefab;
+            bulletSpeed = shooters[currentWeaponIndex].shooterScriptableObject.bulletSpeed;
+
+            switch (shootVector)
             {
-                Debug.Log("Current Weapon: " + currentWeapon + " with index of " + currentWeaponIndex);
-                GameObject bullet = shooters[currentWeaponIndex].shooterScriptableObject.BulletPrefab;
-                bullet = Instantiate(bullet, bulletSpawnLeft.position, bulletSpawnLeft.transform.rotation) as GameObject;
-                bullet.GetComponent<BHProjectile>().isEnemyBullet = false;
-                bullet.GetComponent<BHProjectile>().Shoot(shootHor, bulletSpeed, bulletSize, bulletDamage, bulletLife, cityCenter);
+                case -1:
+                    
+                    bulletSpeed = Mathf.Abs(bulletSpeed);
+                    bulletSpawnLocation = bulletSpawnLeft;
+                    break;
+
+                case 1:
+
+                    if (bulletSpeed >= 0)
+                        bulletSpeed = -bulletSpeed;
+                   
+                    bulletSpawnLocation = bulletSpawnRight;
+                    break;
             }
-            if (isShootRight)
-            {
-                GameObject bullet = shooters[currentWeaponIndex].shooterScriptableObject.BulletPrefab;
-                bullet = Instantiate(bullet, bulletSpawnRight.position, bulletSpawnRight.transform.rotation) as GameObject;
-                bullet.GetComponent<BHProjectile>().isEnemyBullet = false;
-                bullet.GetComponent<BHProjectile>().Shoot(shootHor, -bulletSpeed, bulletSize, bulletDamage, bulletLife, cityCenter);
-            }
+
+            bullet = Instantiate(bullet, bulletSpawnLocation.position, bulletSpawnLocation.rotation) as GameObject;
+            bullet.GetComponent<BHProjectile>().isEnemyBullet = false;
+            bullet.GetComponent<BHProjectile>().Shoot(shootHor, bulletSpeed, bulletSize, bulletDamage, bulletLife, cityCenter, currentWeapon);
 
             lastFire = Time.time;
             StartCoroutine(CoolDown());

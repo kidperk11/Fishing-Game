@@ -79,7 +79,7 @@ public class BHEnemyController : MonoBehaviour
     private float m_TimerSinceLostTarget = 0.0f;
     private BHPlayerController target { get { return m_Target; } }
     private BHPlayerController m_Target = null;
-    private Rigidbody targetRigidBody = null;
+    public Rigidbody targetRigidBody = null;
     private bool canAttack = false;
 
     private void OnEnable()
@@ -271,6 +271,7 @@ public class BHEnemyController : MonoBehaviour
             inputY = 0;
             overrideSpriteFlip = false;
         }
+
 
         // Apply movement force to the Rigidbody
         rigidBody.AddForce(new Vector2(0, inputY) * verticalMoveSpeed);
