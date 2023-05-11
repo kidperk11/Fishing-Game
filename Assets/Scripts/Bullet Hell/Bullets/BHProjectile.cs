@@ -76,39 +76,13 @@ public class BHProjectile : MonoBehaviour
     public void Shoot(float z, float speed, float size, float damage, float bulletLife, Transform center, SubmarineWeapons type)
     {
         weaponType = type;
-        //bulletDamage = damage;
-        //bulletDirection.x = z;
-        //bulletDirection.y = 0;
-        //bulletDirection.z = 0;
         bulletSpeed = speed;
         bulletSize = size;
         lifeTime = bulletLife;
         bulletDamage = damage;
 
-        //m_RigidBody.isKinematic = false;
-
-        //m_RigidBody.detectCollisions = false;
-
-        //if (isEnemyBullet)
-        //{
-        //    m_RigidBody.velocity = new Vector3(bulletDirection.x * bulletSpeed, 0, bulletDirection.z * bulletSpeed);
-        //}
-        //else
-        //{
-        //    m_RigidBody.velocity = new Vector3(
-        //        (bulletDirection.x < 0) ? Mathf.Floor(bulletDirection.x) * bulletSpeed : Mathf.Ceil(bulletDirection.x) * bulletSpeed,
-        //        0,
-        //        (bulletDirection.z < 0) ? Mathf.Floor(bulletDirection.z) * bulletSpeed : Mathf.Ceil(bulletDirection.z) * bulletSpeed
-        //    );
-        //}
-
-
-        // Accelerate/decelerate towards target speed
-        //currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref currentVelocity, smoothTime);
-
         rotation = center;
         startRotate = true;
-        //transform.RotateAround(center.position, Vector3.up, bulletSpeed * Time.deltaTime);
 
         transform.localScale = new Vector3(bulletSize, bulletSize, bulletSize);
 
