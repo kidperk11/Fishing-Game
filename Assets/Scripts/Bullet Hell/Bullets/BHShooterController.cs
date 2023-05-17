@@ -41,7 +41,7 @@ public class BHShooterController : MonoBehaviour
     private InputAction shootLeft;
     private InputAction shootRight;
     private InputAction weaponSwap;
-    private bool coolDownAttack = true;
+    private bool coolDownAttack;
     private float lastFire;
     private SubmarineWeapons currentWeapon;
     private int currentWeaponIndex;
@@ -50,6 +50,7 @@ public class BHShooterController : MonoBehaviour
     private void Awake()
     {
         moveActions = new BHPlayerActions();
+        coolDownAttack = false;
     }
 
     private void OnEnable()
