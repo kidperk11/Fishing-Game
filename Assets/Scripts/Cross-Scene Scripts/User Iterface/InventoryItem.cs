@@ -18,13 +18,13 @@ public class InventoryItem : ScriptableObject
     [Tooltip("Where are we allowed to put this item.")]
     [SerializeField] EquipLocation allowedEquipLocation = EquipLocation.A;
 
-    //public Pickup SpawnPickup(Vector3 position, int number)
-    //{
-    //    var pickup = Instantiate(this.pickup);
-    //    pickup.transform.position = position;
-    //    pickup.Setup(this, number);
-    //    return pickup;
-    //}
+    public Pickup SpawnPickup(Vector3 position, int number)
+    {
+        var pickup = Instantiate(this.pickup);
+        pickup.transform.position = position;
+        pickup.Setup(this, number);
+        return pickup;
+    }
 
     public Sprite GetIcon()
     {
