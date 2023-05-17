@@ -8,6 +8,8 @@ using UnityEngine.InputSystem;
 public class SandwitchPiece : MonoBehaviour
 {
     [Header("Movement")]
+    private Tween tween;
+    public Transform leftHoverPoint;
     public Transform rightHoverPoint;
     private Rigidbody2D rb;
     public float cycleTime;
@@ -18,6 +20,7 @@ public class SandwitchPiece : MonoBehaviour
     [Header("Sound Effects")]
     public AudioSource successSound;
     public AudioSource failureSound;
+    public AudioSource beatMiniGameSound;
 
     [Header("Input Actions")]
     public FPPlayerActions moveActions;
@@ -26,7 +29,7 @@ public class SandwitchPiece : MonoBehaviour
 
     private void OnEnable()
     {   
-        actionButton = moveActions.Player.Jump;
+        actionButton = moveActions.Player.Gun;
         actionButton.Enable();
         actionButton.performed += ActionInput;
     }
@@ -44,10 +47,11 @@ public class SandwitchPiece : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        actionReady = true;
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 1;
         rb.freezeRotation = true;
-        transform.DOMove(rightHoverPoint.position, cycleTime).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+        tween = transform.DOMove(rightHoverPoint.position, cycleTime).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
     }
 
     // Update is called once per frame
@@ -58,18 +62,45 @@ public class SandwitchPiece : MonoBehaviour
 
     private void ActionInput(InputAction.CallbackContext context)
     {
-
+        if (actionReady)
+        {
+            actionReady = false;
+            tween.Kill();
+            rb.velocity = Vector2.zero;
+        }
     }
 
 
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        
+        if (collision.gameObject.CompareTag("Meat"))
+        {
+            
+            Destroy(rb);
+            if(nextPiece != null)
+            {
+                successSound.Play();
+                nextPiece.SetActive(true);
+                Destroy(this);
+            }
+            else
+            {
+                beatMiniGameSound.Play();
+                //Add code to sequence to the next mini game;
+            }
+        }
+        else if (collision.gameObject.CompareTag("Table"))
+        {
+            failureSound.Play();
+            this.transform.position = leftHoverPoint.position;
+            tween = transform.DOMove(rightHoverPoint.position, cycleTime).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+            ResetActionInput();
+        }
     }
 
     private void ResetActionInput()
     {
-        
+        actionReady = true;
     }
 }
