@@ -1,5 +1,11 @@
 ﻿using UnityEngine;
 
+
+/// <summary>
+/// To be placed at the root of a Pickup prefab. Contains the data about the
+/// pickup such as the type of item and the number.
+/// </summary> 
+
 public class Pickup : MonoBehaviour, IRaycastable
 {
 

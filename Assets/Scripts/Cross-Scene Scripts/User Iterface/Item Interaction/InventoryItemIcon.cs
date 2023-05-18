@@ -3,6 +3,11 @@ using UnityEngine.UI;
 using TMPro;
 
 
+
+/// <summary>
+/// When a item that can be stacked has 2 or more in the inventory, 
+/// display an indicator with the ammount in the stack
+/// </summary>
 [RequireComponent(typeof(Image))]
 public class InventoryItemIcon : MonoBehaviour
 {

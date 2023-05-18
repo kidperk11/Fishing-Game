@@ -3,6 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// Allows a UI element to be dragged and dropped from and to a container.
+/// 
+/// Create a subclass for the type you want to be draggable. Then place on
+/// the UI element you want to make draggable.
+/// 
+/// During dragging, the item is reparented to the parent canvas.
+/// 
+/// After the item is dropped it will be automatically return to the
+/// original UI parent. It is the job of components implementing `IDragContainer`,
+/// `IDragDestination and `IDragSource` to update the interface after a drag
+/// has occurred.
+/// </summary>
+/// <typeparam name="T">The type that represents the item being dragged.</typeparam>
+
 public class DragItem<T> : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler where T : class
 {
     // PRIVATE STATE
