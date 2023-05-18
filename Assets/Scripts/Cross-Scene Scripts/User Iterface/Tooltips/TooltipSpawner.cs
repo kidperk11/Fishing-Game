@@ -87,8 +87,8 @@ public class TooltipSpawner : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public bool CanCreateTooltip()
     {
-    //    var item = GetComponent<IItemHolder>().GetItem();
-    //    if (!item) return false;
+        var item = GetComponent<IItemHolder>().GetItem();
+        if (!item) return false;
 
         return true;
     }
@@ -98,10 +98,8 @@ public class TooltipSpawner : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         var itemTooltip = tooltip.GetComponent<ItemTooltip>();
         if (!itemTooltip) return;
 
-        //var item = GetComponent<IItemHolder>().GetItem();
+        var item = GetComponent<IItemHolder>().GetItem();
 
-        //itemTooltip.Setup(item);
-
-        itemTooltip.Setup();
+        itemTooltip.Setup(item);
     }
 }

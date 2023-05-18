@@ -150,6 +150,7 @@ GameObject:
   - component: {fileID: 3110681501976194519}
   - component: {fileID: 3110681501976194518}
   - component: {fileID: 3110681501976194517}
+  - component: {fileID: 1581031855971600391}
   m_Layer: 5
   m_Name: ItemToolTip
   m_TagString: Untagged
@@ -257,6 +258,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &1581031855971600391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3110681501976194600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9baad601964d8454385ea63001c34950, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  titleText: {fileID: 3110681501998468906}
+  bodyText: {fileID: 3110681501596080597}
 --- !u!1 &3110681501998468908
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,11 +8,9 @@ public class ItemTooltip : MonoBehaviour
     [SerializeField] TextMeshProUGUI bodyText = null;
 
 
-    public void Setup( )//InventoryItem item)
+    public void Setup( InventoryItem item)
     {
-        titleText.text = "I enjoy Potatos";
-        bodyText.text = "I enjoy Potatos";
-            //titleText.text = item.GetDisplayName();
-            //bodyText.text = item.GetDescription();
+        titleText.text = item.GetDisplayName();
+        bodyText.text = item.GetDescription();
     }
 }

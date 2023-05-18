@@ -47,7 +47,6 @@ public class CursorController : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                Debug.Log("UI Clicked");
                 isDraggingUI = true;
             }
 

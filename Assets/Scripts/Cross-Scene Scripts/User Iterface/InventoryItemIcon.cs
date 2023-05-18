@@ -14,7 +14,7 @@ public class InventoryItemIcon : MonoBehaviour
 
     public void SetItem(InventoryItem item)
     {
-        SetItem(item, 4);
+        SetItem(item, 0);
     }
 
     public void SetItem(InventoryItem item, int number)
