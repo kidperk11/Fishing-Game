@@ -10,15 +10,19 @@ public class InventoryItem : ScriptableObject
     [SerializeField][TextArea] string description = null;
     [Tooltip("The UI icon to represent this item in the inventory.")]
     [SerializeField] Sprite icon = null;
+
+
     [Tooltip("The prefab that should be spawned when this item is dropped.")]
-    public Pickup pickup = null;
+    public WorldItemPickup pickup = null;
+
+
     [Tooltip("If true, multiple items of this type can be stacked in the same inventory slot.")]
     [SerializeField] bool stackable = false;
 
     [Tooltip("Where are we allowed to put this item.")]
     [SerializeField] EquipLocation allowedEquipLocation = EquipLocation.A;
 
-    public Pickup SpawnPickup(Vector3 position, int number)
+    public WorldItemPickup SpawnPickup(Vector3 position, int number)
     {
         var pickup = Instantiate(this.pickup);
         pickup.transform.position = position;

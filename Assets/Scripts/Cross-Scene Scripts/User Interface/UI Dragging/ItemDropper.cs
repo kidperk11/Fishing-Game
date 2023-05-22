@@ -9,7 +9,7 @@ using UnityEngine;
 public class ItemDropper : MonoBehaviour
 {
 
-    private List<Pickup> droppedItems = new List<Pickup>();
+    private List<WorldItemPickup> droppedItems = new List<WorldItemPickup>();
 
 
 

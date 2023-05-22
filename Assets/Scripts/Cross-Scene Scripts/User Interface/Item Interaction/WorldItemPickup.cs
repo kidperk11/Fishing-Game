@@ -6,7 +6,7 @@
 /// pickup such as the type of item and the number.
 /// </summary> 
 
-public class Pickup : MonoBehaviour, IRaycastable
+public class WorldItemPickup : MonoBehaviour, IRaycastable
 {
 
     [SerializeField] InventoryItem item = null;
