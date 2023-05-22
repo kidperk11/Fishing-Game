@@ -5,8 +5,9 @@ using DG.Tweening;
 using UnityEngine.InputSystem;
 
 
-public class SandwitchPiece : MonoBehaviour
+public class SandwichPiece : MonoBehaviour
 {
+    public MiniGameManager miniGameManager;
     [Header("Movement")]
     private Tween tween;
     public Transform leftHoverPoint;
@@ -88,6 +89,7 @@ public class SandwitchPiece : MonoBehaviour
             {
                 beatMiniGameSound.Play();
                 //Add code to sequence to the next mini game;
+                miniGameManager.StartChangeGame();
             }
         }
         else if (collision.gameObject.CompareTag("Table"))
