@@ -12,13 +12,13 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] InventorySlotUI InventoryItemPrefab = null;
 
     // CACHE
-    Inventory playerInventory;
+    InventoryController playerInventory;
 
     // LIFECYCLE METHODS
 
     private void Awake() 
     {
-        playerInventory = Inventory.GetPlayerInventory();
+        playerInventory = InventoryController.GetPlayerInventory();
         playerInventory.inventoryUpdated += Redraw;
     }
 

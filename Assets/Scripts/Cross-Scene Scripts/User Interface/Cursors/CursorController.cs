@@ -21,18 +21,19 @@ public class CursorController : MonoBehaviour
     }
 
     [SerializeField] CursorMapping[] cursorMappings = null;
-
-
     [SerializeField] float raycastRadius = 1f;
 
+    public bool useCursors = false;
     bool isDraggingUI = false;
 
     private void Update()
     {
         if (InteractWithUI()) return;
+
         if (InteractWithComponent()) return;
 
         SetCursor(CursorType.None);
+        
     }
 
     private bool InteractWithUI()
@@ -51,6 +52,7 @@ public class CursorController : MonoBehaviour
             }
 
             SetCursor(CursorType.UI);
+            
             return true;
         }
 
@@ -95,8 +97,12 @@ public class CursorController : MonoBehaviour
 
     private void SetCursor(CursorType type)
     {
-        CursorMapping mapping = GetCursorMapping(type);
-        Cursor.SetCursor(mapping.texture, mapping.hotspot, CursorMode.Auto);
+        if(useCursors)
+        {
+            CursorMapping mapping = GetCursorMapping(type);
+            Cursor.SetCursor(mapping.texture, mapping.hotspot, CursorMode.Auto);
+        }
+        
     }
 
     private CursorMapping GetCursorMapping(CursorType type)

@@ -9,16 +9,16 @@ public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<Invent
 
     int index;
     InventoryItem item;
-    Inventory inventory;
-    Equipment playerEquipment;
+    InventoryController inventory;
+    InventoryController playerEquipment;
 
 
     private void Awake()
     {
         if (slotType == SlotType.Equipment)
         {
-            var player = GameObject.FindGameObjectWithTag("Player");
-            playerEquipment = player.GetComponent<Equipment>();
+            var player = GameObject.FindGameObjectWithTag("InventoryContainer");
+            playerEquipment = player.GetComponent<InventoryController>();
             playerEquipment.equipmentUpdated += RedrawUI;
         }
     }
@@ -29,7 +29,7 @@ public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<Invent
             RedrawUI();
     }
 
-    public void Setup(Inventory inventory, int index)
+    public void Setup(InventoryController inventory, int index)
     {
         this.inventory = inventory;
         this.index = index;
@@ -60,7 +60,7 @@ public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<Invent
     public void AddItems(InventoryItem item, int number)
     {
         if (slotType == SlotType.Equipment)
-            playerEquipment.AddItem(equipLocation, (InventoryItem)item);
+            playerEquipment.EquipmentAddItem(equipLocation, (InventoryItem)item);
         else
             inventory.AddItemToSlot(index, item, number);
     }
@@ -100,7 +100,7 @@ public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<Invent
     public void RemoveItems(int number)
     {
         if (slotType == SlotType.Equipment)
-            playerEquipment.RemoveItem(equipLocation);
+            playerEquipment.EquipmentRemoveItem(equipLocation);
         else
             inventory.RemoveFromSlot(index, number);
     }

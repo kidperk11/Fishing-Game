@@ -1,8 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Inventory : MonoBehaviour
+#region Enums
+
+    public enum SlotType
+    {
+        Inventory,
+        Equipment,
+    }
+
+    public enum EquipLocation
+    {
+        A,
+        B,
+        C,
+        D,
+        All,
+    }
+
+#endregion
+
+public class InventoryController : MonoBehaviour
 {
+#region Inventory
     [Tooltip("Allowed size")]
     [SerializeField] int inventorySize = 16;
 
@@ -16,10 +37,10 @@ public class Inventory : MonoBehaviour
 
     public event Action inventoryUpdated;
 
-    public static Inventory GetPlayerInventory()
+    public static InventoryController GetPlayerInventory()
     {
-        var player = GameObject.FindWithTag("Player");
-        return player.GetComponent<Inventory>();
+        var player = GameObject.FindWithTag("InventoryContainer");
+        return player.GetComponent<InventoryController>();
     }
 
     public bool HasSpaceFor(InventoryItem item)
@@ -151,4 +172,43 @@ public class Inventory : MonoBehaviour
         }
         return -1;
     }
+#endregion
+
+#region Equipment
+
+    Dictionary<EquipLocation, InventoryItem> equippedItems = new Dictionary<EquipLocation, InventoryItem>();
+    public event Action equipmentUpdated;
+
+    public InventoryItem GetItemInSlot(EquipLocation equipLocation)
+    {
+        if (!equippedItems.ContainsKey(equipLocation))
+        {
+            return null;
+        }
+
+        return equippedItems[equipLocation];
+    }
+
+    public void EquipmentAddItem(EquipLocation slot, InventoryItem item)
+    {
+        Debug.Assert(item.GetAllowedEquipLocation() == slot);
+
+        equippedItems[slot] = item;
+
+        if (equipmentUpdated != null)
+        {
+            equipmentUpdated();
+        }
+    }
+
+    public void EquipmentRemoveItem(EquipLocation slot)
+    {
+        equippedItems.Remove(slot);
+        if (equipmentUpdated != null)
+        {
+            equipmentUpdated();
+        }
+    }
+
+#endregion
 }

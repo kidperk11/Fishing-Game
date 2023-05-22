@@ -12,12 +12,12 @@ public class WorldItemPickup : MonoBehaviour, IRaycastable
     [SerializeField] InventoryItem item = null;
     int number = 1;
 
-    Inventory inventory;
+    InventoryController inventory;
 
     private void Awake()
     {
-        var player = GameObject.FindGameObjectWithTag("Player");
-        inventory = player.GetComponent<Inventory>();
+        var player = GameObject.FindGameObjectWithTag("InventoryContainer");
+        inventory = player.GetComponent<InventoryController>();
     }
 
     public void Setup(InventoryItem item, int number)
