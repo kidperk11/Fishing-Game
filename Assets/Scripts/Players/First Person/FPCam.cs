@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using DG.Tweening;
 
 
 public class FPCam : MonoBehaviour
@@ -20,6 +21,8 @@ public class FPCam : MonoBehaviour
     //public string currentControlScheme { get; }
 
     public Transform orientation;
+    public Transform camHolder;
+
     float xRotation;
     float yRotation;
     private InputAction moveCam;
@@ -78,7 +81,7 @@ public class FPCam : MonoBehaviour
         if(playerInput.currentControlScheme == "Gamepad")
         {
             ////Rotate camera
-            transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+            camHolder.rotation = Quaternion.Euler(xRotation, yRotation, 0);
 
             ////Rotate player
             orientation.rotation = Quaternion.Euler(0, yRotation, 0);
@@ -88,10 +91,21 @@ public class FPCam : MonoBehaviour
         else
         {
             //Rotate camera
-            transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+            camHolder.rotation = Quaternion.Euler(xRotation, yRotation, 0);
 
             //Rotate player
             orientation.rotation = Quaternion.Euler(0, yRotation, 0);
         } 
+    }
+
+    public void DoFOV(float endValue)
+    {
+        GetComponent<Camera>().DOFieldOfView(endValue, 0.25f);
+        Debug.Log("Field of view adjustment to: " + endValue);
+    }
+
+    public void DoTilt(float zTilt)
+    {
+        transform.DOLocalRotate(new Vector3(0, 0, zTilt), 0.25f);
     }
 }

@@ -43,6 +43,7 @@ public class WallRun : MonoBehaviour
     public Transform orientation;
     public FPMove moveScript;
     private Rigidbody rb;
+    public FPCam cam;
 
     private void OnEnable()
     {
@@ -156,11 +157,19 @@ public class WallRun : MonoBehaviour
         moveScript.wallRunning = true;
         wallRunTimer = maxWallRunTime;
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+        //camera effects
+        cam.DoFOV(70f);
+        if (wallLeft) cam.DoTilt(-5f);
+        if (wallRight) cam.DoTilt(5f);
     }
 
     private void StopWallRun()
     {
         moveScript.wallRunning = false;
+
+        cam.DoFOV(60f);
+        cam.DoTilt(0);
 
     }
 
