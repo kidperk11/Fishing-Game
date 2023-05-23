@@ -54,8 +54,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 4682078510951145368}
-  equipLocation: 0
-  slotType: 0
+  equipLocation: 5
 --- !u!222 &2923644355164732530
 CanvasRenderer:
   m_ObjectHideFlags: 0

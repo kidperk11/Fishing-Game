@@ -1,44 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class MousePosition : MonoBehaviour
 {
-    public Camera mainCamera;
+    private Vector3 m_MousePosition;
 
-    private Vector3 mousePosition;
-    public Vector3 WorldPosition;
+    public Vector3 mousePosition { get { return m_MousePosition; } }
 
     public GameObject UIPrefab;
     public GameObject UIPrefabTransform;
 
+    public bool placeObject;
+
     private void Update()
     {
-        GetMousePosition();
+        m_MousePosition = Input.mousePosition;
+        m_MousePosition.x -= (Screen.width / 2);
+        m_MousePosition.y -= (Screen.height / 2);
+        m_MousePosition.z = 0;
 
-        //GetWorldMousePosition();
-
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && placeObject)
         {
             SpawnUIElement();
         }
     }
 
-    private void GetWorldMousePosition()
-    {
-        mousePosition = Input.mousePosition;
-        mousePosition.z = 0;
-    }
-
-    private void GetMousePosition()
-    {
-        mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        Debug.Log(mousePosition);
-    }
-
     private void SpawnUIElement()
     {
-        GameObject newUIElement = Instantiate(UIPrefab, WorldPosition, Quaternion.identity) as GameObject;
+        GameObject newUIElement = Instantiate(UIPrefab, m_MousePosition, Quaternion.identity) as GameObject;
         newUIElement.transform.SetParent(UIPrefabTransform.transform, false);
     }
 }

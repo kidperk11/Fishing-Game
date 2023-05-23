@@ -2,24 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-#region Enums
 
-    public enum SlotType
-    {
-        Inventory,
-        Equipment,
-    }
 
-    public enum EquipLocation
-    {
-        A,
-        B,
-        C,
-        D,
-        All,
-    }
+public enum EquipLocation
+{
+    A,
+    B,
+    C,
+    D,
+    Any,
+    Inventory,
+}
 
-#endregion
+
 
 public class InventoryController : MonoBehaviour
 {

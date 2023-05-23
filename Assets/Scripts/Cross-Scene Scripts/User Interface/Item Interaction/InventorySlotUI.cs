@@ -5,28 +5,28 @@ public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<Invent
 {
     [SerializeField] InventoryItemIcon icon = null;
     [SerializeField] EquipLocation equipLocation = EquipLocation.A;
-    [SerializeField] SlotType slotType = SlotType.Inventory;
 
     int index;
-    InventoryItem item;
     InventoryController inventory;
-    InventoryController playerEquipment;
 
 
     private void Awake()
     {
-        if (slotType == SlotType.Equipment)
+        if (equipLocation != EquipLocation.Inventory)
         {
             var player = GameObject.FindGameObjectWithTag("InventoryContainer");
-            playerEquipment = player.GetComponent<InventoryController>();
-            playerEquipment.equipmentUpdated += RedrawUI;
+            inventory = player.GetComponent<InventoryController>();
+            inventory.equipmentUpdated += RedrawUI;
+            return;
         }
     }
 
     private void Start()
     {
-        if (slotType == SlotType.Equipment)
+        if (equipLocation != EquipLocation.Inventory)
+        {
             RedrawUI();
+        }
     }
 
     public void Setup(InventoryController inventory, int index)
@@ -38,7 +38,16 @@ public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<Invent
 
     public int MaxAcceptable(InventoryItem item)
     {
-        if (slotType == SlotType.Equipment)
+        if (equipLocation == EquipLocation.Inventory)
+        {
+            if (inventory.HasSpaceFor(item))
+            {
+                return int.MaxValue;
+            }
+            return 0;
+
+        }
+        else
         {
             InventoryItem equipableItem = item as InventoryItem;
             if (equipableItem == null) return 0;
@@ -47,66 +56,61 @@ public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<Invent
 
             return 1;
         }
-        else
-        {
-            if (inventory.HasSpaceFor(item))
-            {
-                return int.MaxValue;
-            }
-            return 0;
-        }
     }
 
     public void AddItems(InventoryItem item, int number)
     {
-        if (slotType == SlotType.Equipment)
-            playerEquipment.EquipmentAddItem(equipLocation, (InventoryItem)item);
-        else
+        if (equipLocation == EquipLocation.Inventory)
+        {
             inventory.AddItemToSlot(index, item, number);
+        }
+        else
+        {
+            inventory.EquipmentAddItem(equipLocation, (InventoryItem)item);
+        }
     }
 
     public InventoryItem GetItem()
     {
-        if (slotType == SlotType.Equipment)
-        {
-            return playerEquipment.GetItemInSlot(equipLocation);
-        }
-        else
+        if (equipLocation == EquipLocation.Inventory)
         {
             return inventory.GetItemInSlot(index);
         }
-
+        else
+        {
+            return inventory.GetItemInSlot(equipLocation);
+        }
     }
 
     public int GetNumber()
     {
-        if (slotType == SlotType.Equipment)
+        if (equipLocation == EquipLocation.Inventory)
         {
-            if (GetItem() != null)
-            {
-                return 1;
-            }
-            else
-            {
-                return 0;
-            }
+            return inventory.GetNumberInSlot(index);
         }
         else
         {
-            return inventory.GetNumberInSlot(index);
+            if (GetItem() != null)
+                return 1;
+            else
+                return 0;
         }
     }
 
     public void RemoveItems(int number)
     {
-        if (slotType == SlotType.Equipment)
-            playerEquipment.EquipmentRemoveItem(equipLocation);
-        else
+        if (equipLocation == EquipLocation.Inventory)
+        {
             inventory.RemoveFromSlot(index, number);
+        }
+        else
+        {
+            inventory.EquipmentRemoveItem(equipLocation);
+        }
     }
-
+     
     void RedrawUI()
     {
-        icon.SetItem(playerEquipment.GetItemInSlot(equipLocation));
+        icon.SetItem(inventory.GetItemInSlot(equipLocation));
     }
 }

@@ -32,7 +32,7 @@ public class DragItem<T> : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     private void Awake()
     {
         parentCanvas = GetComponentInParent<Canvas>();
-        source = GetComponentInParent<IDragSource<T>>();
+        source       = GetComponentInParent<IDragSource<T>>();
     }
 
     // PRIVATE
