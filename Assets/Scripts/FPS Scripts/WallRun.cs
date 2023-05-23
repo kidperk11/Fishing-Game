@@ -20,6 +20,7 @@ public class WallRun : MonoBehaviour
     public FPPlayerActions moveActions;
     private InputAction movePlayer;
     private InputAction wallJump;
+    public bool buttonHeld;
 
     [Header("Exiting")]
     private bool exitingWall;
@@ -51,7 +52,8 @@ public class WallRun : MonoBehaviour
         movePlayer.Enable();
         wallJump = moveActions.Player.Jump;
         wallJump.Enable();
-        wallJump.performed += WallJump;
+        wallJump.started += JumpHeld;
+        wallJump.canceled += WallJump;
     }
 
     private void OnDisable()
@@ -105,7 +107,7 @@ public class WallRun : MonoBehaviour
         inputY = movePlayer.ReadValue<Vector2>().y;
 
         //Wallrunning State
-        if((wallLeft || wallRight) && inputY > 0 && AboveGround() && !exitingWall)
+        if((wallLeft || wallRight) && buttonHeld && AboveGround() && !exitingWall)
         {
             if(wallRunTimer > 0)
             {
@@ -208,6 +210,7 @@ public class WallRun : MonoBehaviour
 
     private void WallJump(InputAction.CallbackContext context)
     {
+        buttonHeld = false;
         if (moveScript.wallRunning)
         {
             exitingWall = true;
@@ -222,5 +225,11 @@ public class WallRun : MonoBehaviour
             rb.AddForce(forceToApply, ForceMode.Impulse);
         }
         
+    }
+
+    private void JumpHeld(InputAction.CallbackContext context)
+    {
+        buttonHeld = true;
+        Debug.Log("Button Held Value: " + buttonHeld);
     }
 }
