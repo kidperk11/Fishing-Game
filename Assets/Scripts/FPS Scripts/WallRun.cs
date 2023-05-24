@@ -161,17 +161,17 @@ public class WallRun : MonoBehaviour
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
         //camera effects
-        cam.DoFOV(70f);
-        if (wallLeft) cam.DoTilt(-5f);
-        if (wallRight) cam.DoTilt(5f);
+        //cam.DoFOV(70);
+        if (wallLeft) cam.DoWallTilt(-5f);
+        if (wallRight) cam.DoWallTilt(5f);
     }
 
     private void StopWallRun()
     {
         moveScript.wallRunning = false;
 
-        cam.DoFOV(60f);
-        cam.DoTilt(0);
+        //cam.DoFOV(60f);
+        cam.DoWallTilt(0);
 
     }
 

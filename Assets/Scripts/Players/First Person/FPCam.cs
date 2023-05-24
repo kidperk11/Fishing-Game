@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using DG.Tweening;
+using Cinemachine;
 
 
 public class FPCam : MonoBehaviour
 {
-    public Camera fpsCam;
+    public CinemachineVirtualCamera fpsCam;
     public float mouseSenseX;
     public float mouseSenseY;
     public Vector2 controllerSenseScale;
@@ -98,14 +99,19 @@ public class FPCam : MonoBehaviour
         } 
     }
 
-    public void DoFOV(float endValue)
-    {
-        GetComponent<Camera>().DOFieldOfView(endValue, 0.25f);
-        Debug.Log("Field of view adjustment to: " + endValue);
-    }
+    //NOTE: This code is unused for now, but if FOV needs to be adjusted with a tween,
+    //we can try re-implementing it.
 
-    public void DoTilt(float zTilt)
+    //public void DoFOV(float endValue)
+    //{
+        
+    //    Debug.Log("Field of view adjustment to: " + endValue);
+    //}
+
+    public void DoWallTilt(float zTilt)
     {
         transform.DOLocalRotate(new Vector3(0, 0, zTilt), 0.25f);
     }
+
+
 }
