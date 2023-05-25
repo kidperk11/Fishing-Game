@@ -8,14 +8,33 @@ using UnityEngine;
 public class UIItemPickup : MonoBehaviour, IRaycastable
 {
     [SerializeField] InventoryItem item = null;
+    public bool clickPickup = true;
     int number = 1;
 
-    InventoryController inventory;
+    private InventoryController inventory;
+    private MousePosition mousePosition;
+    private bool dragItem = false;
 
     private void Awake()
     {
-        var player = GameObject.FindGameObjectWithTag("InventoryContainer");
-        inventory = player.GetComponent<InventoryController>();
+        var inventory = GameObject.FindGameObjectWithTag("InventoryContainer");
+        this.inventory = inventory.GetComponent<InventoryController>();
+        this.mousePosition = inventory.GetComponentInParent<MousePosition>();
+    }
+
+    private void Update()
+    {
+
+        if (dragItem && Input.GetMouseButtonUp(0))
+        {
+            dragItem = false;
+        }
+        else if (dragItem)
+        {
+            Vector3 currentMousePosition = mousePosition.GetMousePosition();
+            transform.position = currentMousePosition;
+        }
+    
     }
 
     public void Setup(InventoryItem item, int number)
@@ -55,10 +74,21 @@ public class UIItemPickup : MonoBehaviour, IRaycastable
     public bool HandleRaycast(CursorController callingController)
     {
         if (Input.GetMouseButtonDown(0))
+            ItemAction();
+        
+        return true;
+    }
+
+    private void ItemAction()
+    {
+        if (clickPickup)
         {
             PickupItem();
         }
-        return true;
+        else
+        {
+            dragItem = true;
+        }
     }
 
     public CursorType GetCursorType()

@@ -43,9 +43,6 @@ public class DragItem<T> : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         startPosition = transform.position;
         originalParent = transform.parent;
 
-        Debug.Log("Start Position: " + startPosition);
-        Debug.Log("Original Position: " + originalParent);
-
         // Else won't get the drop event.
         GetComponent<CanvasGroup>().blocksRaycasts = false;
         transform.SetParent(parentCanvas.transform, true);
