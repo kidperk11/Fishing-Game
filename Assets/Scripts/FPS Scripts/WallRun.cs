@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using MoreMountains.Feedbacks;
+using MoreMountains.Feel;
+using MoreMountains.Tools;
 
 public class WallRun : MonoBehaviour
 {
@@ -45,6 +48,12 @@ public class WallRun : MonoBehaviour
     public FPMove moveScript;
     private Rigidbody rb;
     public FPCam cam;
+    public MMF_Player wallRunSoundStart;
+    public MMF_Player wallRunSoundEnd;
+
+    [Header("Timers")]
+    [SerializeField] private float soundTimer;
+    [SerializeField] private float soundInterval;
 
     private void OnEnable()
     {
@@ -162,8 +171,8 @@ public class WallRun : MonoBehaviour
 
         //camera effects
         //cam.DoFOV(70);
-        if (wallLeft) cam.DoWallTilt(-5f);
-        if (wallRight) cam.DoWallTilt(5f);
+        if (wallLeft) cam.DoWallTilt("right");
+        if (wallRight) cam.DoWallTilt("left");
     }
 
     private void StopWallRun()
@@ -171,13 +180,18 @@ public class WallRun : MonoBehaviour
         moveScript.wallRunning = false;
 
         //cam.DoFOV(60f);
-        cam.DoWallTilt(0);
+        cam.DoWallTilt("reset");
 
     }
 
     private void WallRunningMovement()
     {
-        
+        soundTimer += Time.deltaTime;
+        if(soundTimer >= soundInterval)
+        {
+            soundTimer = 0;
+            wallRunSoundStart.PlayFeedbacks();
+        }
         rb.useGravity = useGravity;
         
 

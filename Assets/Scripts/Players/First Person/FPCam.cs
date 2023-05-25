@@ -9,24 +9,24 @@ using Cinemachine;
 
 public class FPCam : MonoBehaviour
 {
+    [Header("Transform and Camera References")]
     public CinemachineVirtualCamera fpsCam;
+    public Image innerCrosshair;
+    public Transform orientation;
+    public Transform camHolder;
+
+    [Header("Inputs and Input Handling")]
     public float mouseSenseX;
     public float mouseSenseY;
     public Vector2 controllerSenseScale;
     public FPPlayerActions cameraControls;
     public PlayerInput playerInput;
-
-    public Image innerCrosshair;
-    
-
-    //public string currentControlScheme { get; }
-
-    public Transform orientation;
-    public Transform camHolder;
-
     float xRotation;
     float yRotation;
     private InputAction moveCam;
+
+    [Header("Animation")]
+    public Animator anim;
 
     private void OnEnable()
     {
@@ -108,9 +108,26 @@ public class FPCam : MonoBehaviour
     //    Debug.Log("Field of view adjustment to: " + endValue);
     //}
 
-    public void DoWallTilt(float zTilt)
+    public void DoWallTilt(string tiltDirection)
     {
-        transform.DOLocalRotate(new Vector3(0, 0, zTilt), 0.25f);
+        if (tiltDirection == "left")
+        {
+            anim.SetTrigger("wallTiltLeft");
+        }
+        if (tiltDirection == "right")
+        {
+            anim.SetTrigger("wallTiltRight");
+        }
+        if (tiltDirection == "reset")
+        {
+            anim.SetTrigger("resetTilt");
+        }
+    }
+
+    public void DoNormalLandTilt()
+    {
+        anim.SetTrigger("normalLand");
+        Debug.Log("Trigger normalLand has been set");
     }
 
 
