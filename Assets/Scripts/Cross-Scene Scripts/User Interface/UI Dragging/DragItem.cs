@@ -20,6 +20,8 @@ using UnityEngine.EventSystems;
 
 public class DragItem<T> : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler where T : class
 {
+    [SerializeField] MousePosition mousePos;
+
     // PRIVATE STATE
     Vector3 startPosition;
     Transform originalParent;
@@ -40,6 +42,10 @@ public class DragItem<T> : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         startPosition = transform.position;
         originalParent = transform.parent;
+
+        Debug.Log("Start Position: " + startPosition);
+        Debug.Log("Original Position: " + originalParent);
+
         // Else won't get the drop event.
         GetComponent<CanvasGroup>().blocksRaycasts = false;
         transform.SetParent(parentCanvas.transform, true);
@@ -47,7 +53,8 @@ public class DragItem<T> : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     void IDragHandler.OnDrag(PointerEventData eventData)
     {
-        transform.position = eventData.position;
+        //transform.position = eventData.position;
+        transform.position = mousePos.GetMousePosition();
     }
 
     void IEndDragHandler.OnEndDrag(PointerEventData eventData)

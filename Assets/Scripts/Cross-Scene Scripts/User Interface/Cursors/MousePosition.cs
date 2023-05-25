@@ -5,31 +5,20 @@ using UnityEngine.EventSystems;
 
 public class MousePosition : MonoBehaviour
 {
-    private Vector3 m_MousePosition;
+    public Vector3 newScreenPosition;
+    public Vector3 worldPosition;
+    public LayerMask layersToHit;
 
-    public Vector3 mousePosition { get { return m_MousePosition; } }
-
-    public GameObject UIPrefab;
-    public GameObject UIPrefabTransform;
-
-    public bool placeObject;
-
-    private void Update()
+    public Vector3 GetMousePosition()
     {
-        m_MousePosition = Input.mousePosition;
-        m_MousePosition.x -= (Screen.width / 2);
-        m_MousePosition.y -= (Screen.height / 2);
-        m_MousePosition.z = 0;
+        newScreenPosition = Input.mousePosition;
 
-        if (Input.GetMouseButtonDown(0) && placeObject)
+        Ray ray = Camera.main.ScreenPointToRay(newScreenPosition);
+        if (Physics.Raycast(ray, out RaycastHit hitData, 100f, layersToHit))
         {
-            SpawnUIElement();
+            worldPosition = hitData.point;
         }
-    }
 
-    private void SpawnUIElement()
-    {
-        GameObject newUIElement = Instantiate(UIPrefab, m_MousePosition, Quaternion.identity) as GameObject;
-        newUIElement.transform.SetParent(UIPrefabTransform.transform, false);
+        return worldPosition;
     }
 }

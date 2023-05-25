@@ -8,8 +8,10 @@ using UnityEngine;
 
 public class ItemDropper : MonoBehaviour
 {
+    public MousePosition mousePosition;
 
     private List<WorldItemPickup> droppedItems = new List<WorldItemPickup>();
+    private List<UIItemPickup> droppedUIItems = new List<UIItemPickup>();
 
 
 
@@ -23,7 +25,7 @@ public class ItemDropper : MonoBehaviour
     /// </param>
     public void DropItem(InventoryItem item, int number)
     {
-        SpawnPickup(item, GetDropLocation(), number);
+        SpawnPickup(item, GetDropLocation(item), number);
     }
 
 
@@ -33,21 +35,44 @@ public class ItemDropper : MonoBehaviour
     /// <param name="item">The item type for the pickup.</param>
     public void DropItem(InventoryItem item)
     {
-        SpawnPickup(item, GetDropLocation(), 1);
+        SpawnPickup(item, GetDropLocation(item), 1);
     }
 
     /// <summary>
     /// Override to set a custom method for locating a drop.
     /// </summary>
     /// <returns>The location the drop should be spawned.</returns>
-    protected virtual Vector3 GetDropLocation()
+    protected virtual Vector3 GetDropLocation(InventoryItem item)
     {
-        return transform.position;
+        switch(item.itemPickupType)
+        {
+            case PickupType.World:
+                return transform.position;
+            case PickupType.UI:
+                return Vector3.zero;
+            default:
+                return Vector3.zero;
+        }
     }
 
     public void SpawnPickup(InventoryItem item, Vector3 spawnLocation, int number)
     {
-        var pickup = item.SpawnPickup(spawnLocation, number);
-        droppedItems.Add(pickup);
+        switch(item.itemPickupType)
+        {
+            case PickupType.World:
+            {
+                    Vector3 whereToSpawn = mousePosition.GetMousePosition();
+                    var pickup = item.SpawnWorldPickup(whereToSpawn, number);
+                    droppedItems.Add(pickup);
+                    break;
+            }
+            case PickupType.UI:
+            {
+                    Vector3 whereToSpawn = mousePosition.GetMousePosition();
+                    var pickup = item.SpawnUIPickup(whereToSpawn, number);
+                    droppedUIItems.Add(pickup);
+                    break;
+            }
+        }
     }
 }
