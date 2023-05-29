@@ -8,12 +8,14 @@ using UnityEngine;
 public class UIItemPickup : MonoBehaviour, IRaycastable
 {
     [SerializeField] InventoryItem item = null;
+    [SerializeField] Rigidbody rigidbody = null;
     public bool clickPickup = true;
     int number = 1;
 
     private InventoryController inventory;
     private MousePosition mousePosition;
     private bool dragItem = false;
+    public int throwSpeed;
 
     private void Awake()
     {
@@ -24,15 +26,26 @@ public class UIItemPickup : MonoBehaviour, IRaycastable
 
     private void Update()
     {
+        Vector3 currentMousePosition = Vector3.zero;
 
+        //Left mouse button was released. dragItem is not longer true. Turn on gravity.
         if (dragItem && Input.GetMouseButtonUp(0))
         {
             dragItem = false;
+            rigidbody.useGravity = true;
+
+            currentMousePosition = mousePosition.GetMousePosition();
+
+            Vector3 throwDirection = (currentMousePosition - transform.position).normalized;
+            rigidbody.AddForce(throwDirection * 10f, ForceMode.Impulse);
+           
         }
+        //Left Mouse button is being held down. Continue to drag
         else if (dragItem)
         {
-            Vector3 currentMousePosition = mousePosition.GetMousePosition();
-            transform.position = currentMousePosition;
+            rigidbody.useGravity = false;
+            currentMousePosition = mousePosition.GetMousePosition();
+            rigidbody.MovePosition(currentMousePosition);
         }
     
     }
