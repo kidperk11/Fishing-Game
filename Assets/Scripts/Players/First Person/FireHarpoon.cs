@@ -27,7 +27,13 @@ public class FireHarpoon : MonoBehaviour
     public Transform harpoonSpawnPoint;
     [SerializeField] private float harpoonRange;
     public bool readyToFire;
-    
+
+
+    [Header("Sound Effects")]
+    public AudioSource fire;
+    public AudioSource reel;
+    public AudioSource clickIn;
+
     private void OnEnable()
     {
         fireHarpoon = playerActions.Player.Harpoon;
@@ -79,6 +85,7 @@ public class FireHarpoon : MonoBehaviour
             Vector3 directionWithoutSpread = targetPoint - harpoonSpawnPoint.position;
 
             harpoonInstance = Instantiate(harpoon, harpoonSpawnPoint.position, Quaternion.identity).GetComponent<HarpoonController>();
+            //fire.Play();
             harpoonInstance.gameObject.transform.forward = directionWithoutSpread.normalized;
             harpoonInstance.rb.AddForce(directionWithoutSpread.normalized * harpoonInstance.harpoonSpeed, ForceMode.Impulse);
             harpoonInstance.harpoonGun = this;

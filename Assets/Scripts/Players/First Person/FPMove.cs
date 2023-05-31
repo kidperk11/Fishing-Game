@@ -51,6 +51,9 @@ public class FPMove : MonoBehaviour
     [Header("Camera")]
     public FPCam cam;
 
+    [Header("Sound Effects")]
+    public AudioSource jumpSound;
+
     private void OnEnable()
     {
         movePlayer = moveActions.Player.Move;
@@ -205,7 +208,7 @@ public class FPMove : MonoBehaviour
             readyToJump = false;
             Invoke(nameof(ResetJump), jumpCooldown);
             rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-
+            jumpSound.Play();
             rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
         }
         else

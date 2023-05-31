@@ -19,9 +19,9 @@ public class HarpoonController : MonoBehaviour
     //ReelInAI
     [SerializeField] private Vector3 startScale;
     [SerializeField] private Vector3 endScale;
-    [SerializeField] private float maxReelTime;
+    private float maxReelTime;
     private float reelTimer;
-    private Transform startPoint;
+    private Vector3 startPoint;
     private Transform endPoint;
 
     //HitGrappleAI
@@ -41,15 +41,13 @@ public class HarpoonController : MonoBehaviour
         ReelIn
     }
 
-    [Header("Sound Effects")]
-    public AudioSource fire;
-    public AudioSource reel;
+    
 
 
     // Start is called before the first frame update
     void Start()
     {
-        reel.Play();
+        harpoonGun.reel.Play();
     }
 
     // Update is called once per frame
@@ -80,17 +78,19 @@ public class HarpoonController : MonoBehaviour
     {
         if (Vector3.Distance(initialPlayerPosition, this.transform.position) >= harpoonRange)
         {
-            startPoint = this.transform;
+            SetLerpProperties();
+            endPoint = harpoonGun.harpoonSpawnPoint;
+            startPoint = this.transform.position;
             state = State.ReelIn;
         }
     }
 
     private void HitEnemyAI()
     {
-        endPoint = harpoonGun.harpoonSpawnPoint;
+        
         reelTimer += Time.deltaTime;
         float percentageComplete = reelTimer / maxReelTime;
-        this.transform.position = Vector3.Lerp(startPoint.position, endPoint.position, percentageComplete);
+        this.transform.position = Vector3.Lerp(startPoint, endPoint.position, percentageComplete);
         hitEnemy.transform.localScale = Vector3.Lerp(startScale, endScale, percentageComplete);
         hitEnemy.transform.position = this.transform.position;
         if (this.transform.position == endPoint.position)
@@ -99,6 +99,8 @@ public class HarpoonController : MonoBehaviour
             //the player's FOV is not obstructed
 
             //NOTE: Add a function for Fish-O-Pedia logging
+            harpoonGun.reel.Stop();
+            harpoonGun.clickIn.Play();
             harpoonGun.SendBulletToGun(hitEnemy.bulletType);
             harpoonGun.ResetFire();
             Destroy(hitEnemy.gameObject);
@@ -117,6 +119,8 @@ public class HarpoonController : MonoBehaviour
         harpoonGun.playerRB.velocity = grappleTrajectory * grappleSpeed * 10f;
         if(Vector3.Distance(grapplePoint.transform.position, harpoonGun.transform.position) < 1)
         {
+            harpoonGun.reel.Stop();
+            harpoonGun.clickIn.Play();
             harpoonGun.playerRB.velocity = new Vector3(harpoonGun.playerRB.velocity.x, 15, harpoonGun.playerRB.velocity.z);
             harpoonGun.ResetFire();
             Destroy(this.gameObject);
@@ -126,13 +130,15 @@ public class HarpoonController : MonoBehaviour
     private void ReelInAI()
     {
         rb.velocity = Vector3.zero;
-        endPoint = harpoonGun.harpoonSpawnPoint;
+        
         reelTimer += Time.deltaTime;
         float percentageComplete = reelTimer / maxReelTime;
         Debug.Log(percentageComplete);
-        this.transform.position = Vector3.Lerp(startPoint.position, endPoint.position, percentageComplete);
+        this.transform.position = Vector3.Lerp(startPoint, endPoint.position, percentageComplete);
         if (this.transform.position == endPoint.position)
         {
+            harpoonGun.reel.Stop();
+            harpoonGun.clickIn.Play();
             harpoonGun.ResetFire();
             Destroy(this.gameObject);
         }
@@ -144,7 +150,8 @@ public class HarpoonController : MonoBehaviour
         {
             if (collision.gameObject.CompareTag("Enemy"))
             {
-                
+                SetLerpProperties();
+
                 rb.velocity = Vector3.zero;
                 Destroy(rb);
                 hitEnemy = collision.gameObject.GetComponent<EnemyHealthAndQTE>();
@@ -152,19 +159,22 @@ public class HarpoonController : MonoBehaviour
                 {
                     //hitEnemy.gameObject.transform.parent = this.transform;
                     hitEnemy.boxCollider.enabled = false;
-                    startPoint = this.transform;
+                    startPoint = this.transform.position;
+                    
                     state = State.HitEnemy;
                 }
                 else
                 {
-                    startPoint = this.transform;
+                    startPoint = this.transform.position;
+                    
                     state = State.ReelIn;
                 }
             }
 
             if (collision.gameObject.CompareTag("GrapplePoint"))
             {
-                
+                SetLerpProperties();
+
                 rb.velocity = Vector3.zero;
                 Destroy(rb);
                 grapplePoint = collision.gameObject;
@@ -174,9 +184,9 @@ public class HarpoonController : MonoBehaviour
 
             if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Wall"))
             {
-
+                SetLerpProperties();
                 Debug.Log("Failed Hit on: " + collision.gameObject.tag + ". Harpoon will now be reeled in.");
-                startPoint = this.transform;
+                startPoint = this.transform.position;
                 state = State.ReelIn;
             }
             if (collision.gameObject.CompareTag("Player"))
@@ -184,5 +194,18 @@ public class HarpoonController : MonoBehaviour
                 
             }
         }
+    }
+
+    private void SetLerpProperties()
+    {
+
+        maxReelTime = Vector3.Distance(harpoonGun.harpoonSpawnPoint.position, this.transform.position) / harpoonRange;
+        if(maxReelTime > 1)
+        {
+            maxReelTime = 1;
+        }
+        maxReelTime /= 4;
+        Debug.Log("Max Reel Time: " + maxReelTime);
+        endPoint = harpoonGun.harpoonSpawnPoint;
     }
 }

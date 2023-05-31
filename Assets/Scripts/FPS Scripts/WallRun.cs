@@ -55,6 +55,9 @@ public class WallRun : MonoBehaviour
     [SerializeField] private float soundTimer;
     [SerializeField] private float soundInterval;
 
+    [Header("Sound Effects")]
+    public AudioSource jumpSound;
+
     private void OnEnable()
     {
         movePlayer = moveActions.Player.Move;
@@ -168,15 +171,18 @@ public class WallRun : MonoBehaviour
         moveScript.wallRunning = true;
         wallRunTimer = maxWallRunTime;
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        
 
         //camera effects
         //cam.DoFOV(70);
         if (wallLeft) cam.DoWallTilt("right");
         if (wallRight) cam.DoWallTilt("left");
+        wallRunSoundStart.PlayFeedbacks();
     }
 
     private void StopWallRun()
     {
+        wallRunSoundEnd.PlayFeedbacks();
         moveScript.wallRunning = false;
 
         //cam.DoFOV(60f);
@@ -186,12 +192,12 @@ public class WallRun : MonoBehaviour
 
     private void WallRunningMovement()
     {
-        soundTimer += Time.deltaTime;
-        if(soundTimer >= soundInterval)
-        {
-            soundTimer = 0;
-            wallRunSoundStart.PlayFeedbacks();
-        }
+        //soundTimer += Time.deltaTime;
+        //if(soundTimer >= soundInterval)
+        //{
+        //    soundTimer = 0;
+        //    wallRunSoundStart.PlayFeedbacks();
+        //}
         rb.useGravity = useGravity;
         
 
@@ -227,6 +233,7 @@ public class WallRun : MonoBehaviour
         buttonHeld = false;
         if (moveScript.wallRunning)
         {
+            jumpSound.Play();
             exitingWall = true;
             exitWallTimer = exitWallTime;
             Debug.Log("WallJump has been started");
