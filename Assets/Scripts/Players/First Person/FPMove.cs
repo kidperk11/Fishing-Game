@@ -15,6 +15,7 @@ public class FPMove : MonoBehaviour
     public float jumpForce;
     public float jumpCooldown;
     public float airMultiplier;
+    [SerializeField] private float airTime;
     bool readyToJump;
     float inputX;
     float inputY;
@@ -46,6 +47,9 @@ public class FPMove : MonoBehaviour
     public float maxSlopeAngle;
     private RaycastHit slopeHit;
     private bool exitingSlope;
+
+    [Header("Camera")]
+    public FPCam cam;
 
     private void OnEnable()
     {
@@ -95,7 +99,11 @@ public class FPMove : MonoBehaviour
         {
             rb.drag = groundDrag;
         }
-        else { rb.drag = 0; }
+        else 
+        {
+            airTime += Time.deltaTime;
+            rb.drag = 0;
+        }
         //else if(rb.velocity.y > 0) { rb.drag = 2; }
     }
 
@@ -126,7 +134,7 @@ public class FPMove : MonoBehaviour
         MovePlayer();
 
         //This code adjusts the fall speed of the player's jump
-        if ((rb.velocity.y < 0 || rb.velocity.y > 0) && !OnSlope())
+        if ((rb.velocity.y < 0 || rb.velocity.y > 0) && !OnSlope() && state != MovementState.wallRunning)
         {
             rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
         }
@@ -137,14 +145,6 @@ public class FPMove : MonoBehaviour
     {
         inputX = movePlayer.ReadValue<Vector2>().x;
         inputY = movePlayer.ReadValue<Vector2>().y;
-
-
-        //if (inputX == 0 && inputY == 0 && grounded)
-        //{
-        //    rb.velocity = new Vector3(0, rb.velocity.y, 0);
-        //}
-        
-
     }
 
     private void MovePlayer()
@@ -221,7 +221,6 @@ public class FPMove : MonoBehaviour
         {
             //Measures how steep the slope is
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
-            Debug.Log("On a slope angle: " + angle);
 
             //Returns true if the angle is smaller than the max angle and not zero
             return angle < maxSlopeAngle && angle != 0;
@@ -238,6 +237,15 @@ public class FPMove : MonoBehaviour
     {
         readyToJump = true;
         exitingSlope = false;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.layer == 6 && airTime >= 0.5)
+        {
+            cam.DoNormalLandTilt();
+        }
+        airTime = 0;    
     }
 
 

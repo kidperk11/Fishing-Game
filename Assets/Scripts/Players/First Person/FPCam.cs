@@ -3,26 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using DG.Tweening;
+using Cinemachine;
 
 
 public class FPCam : MonoBehaviour
 {
-    public Camera fpsCam;
+    [Header("Transform and Camera References")]
+    public CinemachineVirtualCamera fpsCam;
+    public Image innerCrosshair;
+    public Transform orientation;
+    public Transform camHolder;
+
+    [Header("Inputs and Input Handling")]
     public float mouseSenseX;
     public float mouseSenseY;
     public Vector2 controllerSenseScale;
     public FPPlayerActions cameraControls;
     public PlayerInput playerInput;
-
-    public Image innerCrosshair;
-    
-
-    //public string currentControlScheme { get; }
-
-    public Transform orientation;
     float xRotation;
     float yRotation;
     private InputAction moveCam;
+
+    [Header("Animation")]
+    public Animator anim;
 
     private void OnEnable()
     {
@@ -78,7 +82,7 @@ public class FPCam : MonoBehaviour
         if(playerInput.currentControlScheme == "Gamepad")
         {
             ////Rotate camera
-            transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+            camHolder.rotation = Quaternion.Euler(xRotation, yRotation, 0);
 
             ////Rotate player
             orientation.rotation = Quaternion.Euler(0, yRotation, 0);
@@ -88,10 +92,43 @@ public class FPCam : MonoBehaviour
         else
         {
             //Rotate camera
-            transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+            camHolder.rotation = Quaternion.Euler(xRotation, yRotation, 0);
 
             //Rotate player
             orientation.rotation = Quaternion.Euler(0, yRotation, 0);
         } 
     }
+
+    //NOTE: This code is unused for now, but if FOV needs to be adjusted with a tween,
+    //we can try re-implementing it.
+
+    //public void DoFOV(float endValue)
+    //{
+        
+    //    Debug.Log("Field of view adjustment to: " + endValue);
+    //}
+
+    public void DoWallTilt(string tiltDirection)
+    {
+        if (tiltDirection == "left")
+        {
+            anim.SetTrigger("wallTiltLeft");
+        }
+        if (tiltDirection == "right")
+        {
+            anim.SetTrigger("wallTiltRight");
+        }
+        if (tiltDirection == "reset")
+        {
+            anim.SetTrigger("resetTilt");
+        }
+    }
+
+    public void DoNormalLandTilt()
+    {
+        anim.SetTrigger("normalLand");
+        Debug.Log("Trigger normalLand has been set");
+    }
+
+
 }

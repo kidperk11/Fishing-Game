@@ -8,6 +8,8 @@ public class MiniGameManager : MonoBehaviour
     public List<GameObject> miniGames;
     [TextArea(1,5)]
     public List<string> transitionTextList;
+    //NOTE: Add List for Transition Graphics
+
     private int index;
 
     public Animator anim;
