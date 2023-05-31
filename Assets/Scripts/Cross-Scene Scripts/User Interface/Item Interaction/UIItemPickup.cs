@@ -8,20 +8,42 @@ using UnityEngine;
 public class UIItemPickup : MonoBehaviour, IRaycastable
 {
     [SerializeField] InventoryItem item = null;
-    [SerializeField] Rigidbody rigidbody = null;
+    [SerializeField] Rigidbody rb = null;
+    [SerializeField] CursorSpeed cursorSpeed;
     public bool clickPickup = true;
     int number = 1;
 
     private InventoryController inventory;
     private MousePosition mousePosition;
     private bool dragItem = false;
-    public int throwSpeed;
+    public float throwForce;
+    public int gravityScale;
+    public int spriteStartIndex;
+    public SpriteSheetUpdate hasSpriteSheet;
+
+
+
+    public Vector3 lastMousePos;
+    public Vector3 mouseDelta;
+
+
+
 
     private void Awake()
     {
         var inventory = GameObject.FindGameObjectWithTag("InventoryContainer");
         this.inventory = inventory.GetComponent<InventoryController>();
         this.mousePosition = inventory.GetComponentInParent<MousePosition>();
+
+        if(hasSpriteSheet != null)
+        {
+            hasSpriteSheet.currentSprite = spriteStartIndex;
+        }
+    }
+
+    private void Start()
+    {
+        lastMousePos = Input.mousePosition;
     }
 
     private void Update()
@@ -31,23 +53,32 @@ public class UIItemPickup : MonoBehaviour, IRaycastable
         //Left mouse button was released. dragItem is not longer true. Turn on gravity.
         if (dragItem && Input.GetMouseButtonUp(0))
         {
+            mouseDelta = Input.mousePosition - lastMousePos;
+            rb.AddForce(mouseDelta * throwForce, ForceMode.Impulse);
+
             dragItem = false;
-            rigidbody.useGravity = true;
-
-            currentMousePosition = mousePosition.GetMousePosition();
-
-            Vector3 throwDirection = (currentMousePosition - transform.position).normalized;
-            rigidbody.AddForce(throwDirection * 10f, ForceMode.Impulse);
-           
+            rb.useGravity = true;
+            if (hasSpriteSheet != null)
+            {
+                hasSpriteSheet.NewSpriteIndex(0);
+            }
         }
         //Left Mouse button is being held down. Continue to drag
         else if (dragItem)
         {
-            rigidbody.useGravity = false;
+
+
+            rb.useGravity = false;
             currentMousePosition = mousePosition.GetMousePosition();
-            rigidbody.MovePosition(currentMousePosition);
+            rb.MovePosition(currentMousePosition);
+
+            if (hasSpriteSheet != null)
+            {
+                hasSpriteSheet.NewSpriteIndex(1);
+            }
         }
-    
+
+        lastMousePos = Input.mousePosition;
     }
 
     public void Setup(InventoryItem item, int number)
