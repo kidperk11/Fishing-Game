@@ -41,10 +41,15 @@ public class HarpoonController : MonoBehaviour
         ReelIn
     }
 
+    [Header("Sound Effects")]
+    public AudioSource fire;
+    public AudioSource reel;
+
+
     // Start is called before the first frame update
     void Start()
     {
-
+        reel.Play();
     }
 
     // Update is called once per frame
@@ -120,9 +125,11 @@ public class HarpoonController : MonoBehaviour
 
     private void ReelInAI()
     {
+        rb.velocity = Vector3.zero;
         endPoint = harpoonGun.harpoonSpawnPoint;
         reelTimer += Time.deltaTime;
         float percentageComplete = reelTimer / maxReelTime;
+        Debug.Log(percentageComplete);
         this.transform.position = Vector3.Lerp(startPoint.position, endPoint.position, percentageComplete);
         if (this.transform.position == endPoint.position)
         {
@@ -137,6 +144,7 @@ public class HarpoonController : MonoBehaviour
         {
             if (collision.gameObject.CompareTag("Enemy"))
             {
+                
                 rb.velocity = Vector3.zero;
                 Destroy(rb);
                 hitEnemy = collision.gameObject.GetComponent<EnemyHealthAndQTE>();
@@ -156,6 +164,7 @@ public class HarpoonController : MonoBehaviour
 
             if (collision.gameObject.CompareTag("GrapplePoint"))
             {
+                
                 rb.velocity = Vector3.zero;
                 Destroy(rb);
                 grapplePoint = collision.gameObject;
@@ -165,9 +174,14 @@ public class HarpoonController : MonoBehaviour
 
             if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Wall"))
             {
+
                 Debug.Log("Failed Hit on: " + collision.gameObject.tag + ". Harpoon will now be reeled in.");
                 startPoint = this.transform;
                 state = State.ReelIn;
+            }
+            if (collision.gameObject.CompareTag("Player"))
+            {
+                
             }
         }
     }
