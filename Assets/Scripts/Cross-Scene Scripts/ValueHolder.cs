@@ -13,4 +13,20 @@ public class ValueHolder : MonoBehaviour
     {
         integerValue += newValue;
     }
+
+    public void UpdateFloat(float newValue)
+    {
+        floatValue += newValue;
+    }
+
+    public void UpdateBoolean(bool newValue)
+    {
+        booleanValue = newValue;
+    }
+
+    public void UpdateString(string newValue)
+    {
+        stringValue = newValue;
+    }
+
 }

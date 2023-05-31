@@ -14,9 +14,13 @@ public class ColliderEvents : MonoBehaviour
         OnContact.Invoke();
     }
 
-    public void DestroyItem()
+    public void DestroyItem(string tag)
     {
-        Destroy(collision.gameObject);
-        collision = null;
+        if(collision.gameObject.tag == tag)
+        {
+            Destroy(collision.gameObject);
+            collision = null;
+        }
+        
     }
 }
