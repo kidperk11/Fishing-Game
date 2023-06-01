@@ -41,6 +41,14 @@ public class UIItemPickup : MonoBehaviour, IRaycastable
         }
     }
 
+    private void OnEnable()
+    {
+        if(cursorSpeed)
+        {
+            cursorSpeed = GameObject.FindGameObjectWithTag("Player").GetComponent<CursorSpeed>();
+        }
+    }
+
     private void Start()
     {
         lastMousePos = Input.mousePosition;

@@ -35,6 +35,7 @@ public class DragItem<T> : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         parentCanvas = GetComponentInParent<Canvas>();
         source       = GetComponentInParent<IDragSource<T>>();
+        mousePos     = GetComponentInParent<MousePosition>();
     }
 
     // PRIVATE
