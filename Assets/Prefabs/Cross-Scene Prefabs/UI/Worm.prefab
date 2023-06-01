@@ -156,13 +156,11 @@ MonoBehaviour:
   item: {fileID: 11400000, guid: c90bb1d07bfe23643b215f733e022ae4, type: 2}
   rb: {fileID: 4868798754274467825}
   cursorSpeed: {fileID: 0}
-  clickPickup: 0
+  clickPickup: 1
   throwForce: 0.5
   gravityScale: 0
   spriteStartIndex: 0
   hasSpriteSheet: {fileID: 7715430164498726596}
-  lastMousePos: {x: 0, y: 0, z: 0}
-  mouseDelta: {x: 0, y: 0, z: 0}
 --- !u!65 &8433338341304510151
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -10,24 +10,20 @@ public class UIItemPickup : MonoBehaviour, IRaycastable
     [SerializeField] InventoryItem item = null;
     [SerializeField] Rigidbody rb = null;
     [SerializeField] CursorSpeed cursorSpeed;
-    public bool clickPickup = true;
-    int number = 1;
+    [SerializeField] bool clickPickup = true;
+
+    [SerializeField] float throwForce;
+    [SerializeField] int gravityScale;
+    [SerializeField] int spriteStartIndex;
+    [SerializeField] SpriteSheetUpdate hasSpriteSheet;
 
     private InventoryController inventory;
     private MousePosition mousePosition;
+    private int number = 1;
     private bool dragItem = false;
-    public float throwForce;
-    public int gravityScale;
-    public int spriteStartIndex;
-    public SpriteSheetUpdate hasSpriteSheet;
-
-
-
-    public Vector3 lastMousePos;
-    public Vector3 mouseDelta;
-
-
-
+    private Vector3 lastMousePos;
+    private Vector3 mouseDelta;
+    private Vector3 currentMousePosition = Vector3.zero;
 
     private void Awake()
     {
@@ -45,48 +41,52 @@ public class UIItemPickup : MonoBehaviour, IRaycastable
     {
         if(cursorSpeed)
         {
-            cursorSpeed = GameObject.FindGameObjectWithTag("Player").GetComponent<CursorSpeed>();
+            cursorSpeed = GameObject.FindGameObjectWithTag("InventoryContainer").GetComponentInParent<CursorSpeed>();
         }
-    }
 
-    private void Start()
-    {
         lastMousePos = Input.mousePosition;
     }
 
     private void Update()
     {
-        Vector3 currentMousePosition = Vector3.zero;
 
         //Left mouse button was released. dragItem is not longer true. Turn on gravity.
         if (dragItem && Input.GetMouseButtonUp(0))
         {
-            mouseDelta = Input.mousePosition - lastMousePos;
-            rb.AddForce(mouseDelta * throwForce, ForceMode.Impulse);
-
-            dragItem = false;
-            rb.useGravity = true;
-            if (hasSpriteSheet != null)
-            {
-                hasSpriteSheet.NewSpriteIndex(0);
-            }
+            DropDraggedItem();
         }
         //Left Mouse button is being held down. Continue to drag
         else if (dragItem)
         {
-
-
-            rb.useGravity = false;
-            currentMousePosition = mousePosition.GetMousePosition();
-            rb.MovePosition(currentMousePosition);
-
-            if (hasSpriteSheet != null)
-            {
-                hasSpriteSheet.NewSpriteIndex(1);
-            }
+            PickupDragItem(currentMousePosition);
         }
 
         lastMousePos = Input.mousePosition;
+    }
+
+    private void DropDraggedItem()
+    {
+        mouseDelta = Input.mousePosition - lastMousePos;
+        rb.AddForce(mouseDelta * throwForce, ForceMode.Impulse);
+
+        dragItem = false;
+        rb.useGravity = true;
+        if (hasSpriteSheet != null)
+        {
+            hasSpriteSheet.NewSpriteIndex(0);
+        }
+    }
+
+    private void PickupDragItem(Vector3 dragPosition)
+    {
+        rb.useGravity = false;
+        dragPosition = mousePosition.GetMousePosition();
+        rb.MovePosition(dragPosition);
+
+        if (hasSpriteSheet != null)
+        {
+            hasSpriteSheet.NewSpriteIndex(1);
+        }
     }
 
     public void Setup(InventoryItem item, int number)
@@ -145,6 +145,14 @@ public class UIItemPickup : MonoBehaviour, IRaycastable
 
     public CursorType GetCursorType()
     {
-        return CursorType.Pickup;
+        if (dragItem)
+        {
+
+            return CursorType.Grab;
+        }
+        else
+        {
+            return CursorType.Open;
+        }
     }
 }

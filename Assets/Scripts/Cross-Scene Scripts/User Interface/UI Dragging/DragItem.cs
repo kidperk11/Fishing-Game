@@ -10,11 +10,6 @@ using UnityEngine.EventSystems;
 /// the UI element you want to make draggable.
 /// 
 /// During dragging, the item is reparented to the parent canvas.
-/// 
-/// After the item is dropped it will be automatically return to the
-/// original UI parent. It is the job of components implementing `IDragContainer`,
-/// `IDragDestination and `IDragSource` to update the interface after a drag
-/// has occurred.
 /// </summary>
 /// <typeparam name="T">The type that represents the item being dragged.</typeparam>
 
@@ -51,8 +46,8 @@ public class DragItem<T> : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     void IDragHandler.OnDrag(PointerEventData eventData)
     {
-        //transform.position = eventData.position;
-        transform.position = mousePos.GetMousePosition();
+        transform.position = eventData.position;
+        //transform.position = mousePos.GetMousePosition();
     }
 
     void IEndDragHandler.OnEndDrag(PointerEventData eventData)

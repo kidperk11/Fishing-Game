@@ -35,7 +35,7 @@ public class InventoryController : MonoBehaviour
     public static InventoryController GetPlayerInventory()
     {
         var player = GameObject.FindWithTag("InventoryContainer");
-        return player.GetComponent<InventoryController>();
+        return player.GetComponentInChildren<InventoryController>();
     }
 
     public bool HasSpaceFor(InventoryItem item)

@@ -63,6 +63,6 @@ public class WorldItemPickup : MonoBehaviour, IRaycastable
 
     public CursorType GetCursorType()
     {
-        return CursorType.Pickup;
+        return CursorType.Point;
     }
 }

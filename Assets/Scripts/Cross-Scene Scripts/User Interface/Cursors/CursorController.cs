@@ -6,7 +6,9 @@ public enum CursorType
 {
     None,
     UI,
-    Pickup,
+    Point,
+    Open,
+    Grab,
 }
 
 public class CursorController : MonoBehaviour
