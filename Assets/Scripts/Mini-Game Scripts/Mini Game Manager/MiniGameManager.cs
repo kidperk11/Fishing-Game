@@ -8,6 +8,8 @@ public class MiniGameManager : MonoBehaviour
     public List<GameObject> miniGames;
     [TextArea(1,5)]
     public List<string> transitionTextList;
+
+    public List<Sprite> backgrounds;
     //NOTE: Add List for Transition Graphics
 
     private int index;
@@ -15,6 +17,9 @@ public class MiniGameManager : MonoBehaviour
     public Animator anim;
 
     public TextMeshProUGUI transitionText;
+
+    public SpriteRenderer minigameBackground;
+
     // Start is called before the first frame update
     void Start()
     {
