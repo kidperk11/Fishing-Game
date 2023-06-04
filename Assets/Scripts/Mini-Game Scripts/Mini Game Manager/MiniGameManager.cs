@@ -5,13 +5,6 @@ using TMPro;
 
 public class MiniGameManager : MonoBehaviour
 {
-    public List<GameObject> miniGames;
-    [TextArea(1,5)]
-    public List<string> transitionTextList;
-
-    public List<Sprite> backgrounds;
-    //NOTE: Add List for Transition Graphics
-
     private int index;
 
     public Animator anim;
@@ -20,9 +13,18 @@ public class MiniGameManager : MonoBehaviour
 
     public SpriteRenderer minigameBackground;
 
+    public List<MiniGameScriptableObject> miniGame;
+
+    private GameObject currentGame;
+    private GameObject nextGame;
+
     // Start is called before the first frame update
     void Start()
     {
+        index = 0;
+
+        currentGame = Instantiate(miniGame[index].miniGamePrefab, Vector3.zero, Quaternion.identity);
+
         StartCoroutine(InitialTransition());
     }
 
@@ -39,9 +41,10 @@ public class MiniGameManager : MonoBehaviour
     
     public IEnumerator StartTransition()
     {
+
         //Wait for the little effects to wear off
         yield return new WaitForSecondsRealtime(2);
-        
+
         //Begin the "Transition" animation;
         anim.SetTrigger("transition");
         
@@ -52,24 +55,40 @@ public class MiniGameManager : MonoBehaviour
         Time.timeScale = 0;
 
         //Set the indexer, turn off the old mini game, and turn on the new one
-        miniGames[index].SetActive(false);
         index += 1;
-        miniGames[index].SetActive(true);
-        transitionText.text = transitionTextList[index];
+
+        //Prepare the next minigame
+        currentGame.SetActive(false);
+        nextGame.SetActive(true);
+        Destroy(currentGame);
+        currentGame = nextGame;
+
+        //Load in the next game in background to prevent visible loading
+        nextGame = Instantiate(miniGame[index + 1].miniGamePrefab, Vector3.zero, Quaternion.identity);
+        minigameBackground.sprite = miniGame[index].background;
+        nextGame.SetActive(false);
+
+        transitionText.text = miniGame[index].transitionText;
         
     }
 
     //This function should be called in the animation as an event;
     public void EndTransition()
     {
+
         //Set timescale back to normal
         Time.timeScale = 1;
     }
 
     public IEnumerator InitialTransition()
     {
+
         //Wait for the little effects to wear off
         yield return new WaitForSecondsRealtime(2);
+
+        //Load in the next game in background to prevent visible loading
+        nextGame = Instantiate(miniGame[index + 1].miniGamePrefab, Vector3.zero, Quaternion.identity);
+        nextGame.SetActive(false);
 
         //Begin the "Transition" animation;
         anim.SetTrigger("transition");
@@ -79,8 +98,9 @@ public class MiniGameManager : MonoBehaviour
 
         //Pause time
         Time.timeScale = 0;
+        minigameBackground.sprite = miniGame[index].background;
 
-        miniGames[index].SetActive(true);
-        transitionText.text = transitionTextList[index];
+        currentGame.SetActive(true);
+        transitionText.text = miniGame[index].transitionText;
     }
 }

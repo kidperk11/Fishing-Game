@@ -371,6 +371,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0169f0494f9a59d4b99578f0389cf720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  miniGameManager: {fileID: 0}
   leftHoverPoint: {fileID: 1338780672827298914}
   rightHoverPoint: {fileID: 1338780672110900408}
   cycleTime: 2
@@ -929,6 +930,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0169f0494f9a59d4b99578f0389cf720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  miniGameManager: {fileID: 0}
   leftHoverPoint: {fileID: 1338780672827298914}
   rightHoverPoint: {fileID: 1338780672110900408}
   cycleTime: 2

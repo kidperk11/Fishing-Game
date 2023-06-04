@@ -48,6 +48,8 @@ public class SandwichPiece : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        miniGameManager = GameObject.FindGameObjectWithTag("Austin-3").GetComponent<MiniGameManager>();
         actionReady = true;
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 1;

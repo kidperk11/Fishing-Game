@@ -48,6 +48,7 @@ public class BoatEngineNeedleTicker : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        miniGameManager = GameObject.FindGameObjectWithTag("Austin-3").GetComponent<MiniGameManager>();
         tween = transform.DORotate(new Vector3(0, 0, 360), cycleTime, RotateMode.FastBeyond360).SetLoops(-1).SetEase(Ease.Linear).SetRelative();
     }
 
