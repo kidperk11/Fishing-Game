@@ -1,4 +1,4 @@
 ﻿
-public class UIDragItem : DragItem<InventoryItem>
+public class UIDragItem : DragItem<InventoryItem3D>
 {
 }

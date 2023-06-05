@@ -17,12 +17,12 @@ public class InventoryItemIcon : MonoBehaviour
 
     // PUBLIC
 
-    public void SetItem(InventoryItem item)
+    public void SetItem(InventoryItem3D item)
     {
         SetItem(item, 0);
     }
 
-    public void SetItem(InventoryItem item, int number)
+    public void SetItem(InventoryItem3D item, int number)
     {
         var iconImage = GetComponent<Image>();
         if (item == null)

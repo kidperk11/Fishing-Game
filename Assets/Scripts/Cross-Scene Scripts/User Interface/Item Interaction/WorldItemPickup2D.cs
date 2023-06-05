@@ -1,13 +1,10 @@
-﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-/// <summary>
-/// To be placed at the root of a Pickup prefab. Contains the data about the
-/// pickup such as the type of item and the number.
-/// </summary> 
-
-public class WorldItemPickup : MonoBehaviour, IRaycastable
+public class WorldItemPickup2D : MonoBehaviour
 {
-    [SerializeField] InventoryItem item = null;
+    [SerializeField] InventoryItem2D item = null;
     int number = 1;
 
     InventoryController inventory;
@@ -18,7 +15,7 @@ public class WorldItemPickup : MonoBehaviour, IRaycastable
         inventory = player.GetComponent<InventoryController>();
     }
 
-    public void Setup(InventoryItem item, int number)
+    public void Setup(InventoryItem2D item, int number)
     {
         this.item = item;
         if (!item.IsStackable())
@@ -28,7 +25,7 @@ public class WorldItemPickup : MonoBehaviour, IRaycastable
         this.number = number;
     }
 
-    public InventoryItem GetItem()
+    public InventoryItem2D GetItem()
     {
         return item;
     }

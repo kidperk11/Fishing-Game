@@ -8,7 +8,7 @@ public class ItemTooltip : MonoBehaviour
     [SerializeField] TextMeshProUGUI bodyText = null;
 
 
-    public void Setup( InventoryItem item)
+    public void Setup( InventoryItem3D item)
     {
         titleText.text = item.GetDisplayName();
         bodyText.text = item.GetDescription();

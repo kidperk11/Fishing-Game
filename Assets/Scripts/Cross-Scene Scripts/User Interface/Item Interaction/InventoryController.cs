@@ -22,11 +22,18 @@ public class InventoryController : MonoBehaviour
     [Tooltip("Allowed size")]
     [SerializeField] int inventorySize = 16;
 
-    InventorySlot[] slots;
+    InventorySlot2D[] slots2D;
+    InventorySlot3D[] slots3D;
 
-    public struct InventorySlot
+    public struct InventorySlot2D
     {
-        public InventoryItem item;
+        public InventoryItem2D item;
+        public int number;
+    }
+
+    public struct InventorySlot3D
+    {
+        public InventoryItem3D item;
         public int number;
     }
 
@@ -38,17 +45,27 @@ public class InventoryController : MonoBehaviour
         return player.GetComponentInChildren<InventoryController>();
     }
 
-    public bool HasSpaceFor(InventoryItem item)
+    public bool HasSpaceFor(InventoryItem2D item)
     {
         return FindSlot(item) >= 0;
     }
 
-    public int GetSize()
+    public bool HasSpaceFor(InventoryItem3D item)
     {
-        return slots.Length;
+        return FindSlot(item) >= 0;
     }
 
-    public bool AddToFirstEmptySlot(InventoryItem item, int number)
+    public int GetSize2D()
+    {
+        return slots2D.Length;
+    }
+
+    public int GetSize3D()
+    {
+        return slots3D.Length;
+    }
+
+    public bool AddToFirstEmptySlot(InventoryItem2D item, int number)
     {
         int i = FindSlot(item);
 
@@ -57,8 +74,8 @@ public class InventoryController : MonoBehaviour
             return false;
         }
 
-        slots[i].item = item;
-        slots[i].number += number;
+        slots2D[i].item = item;
+        slots2D[i].number += number;
         if (inventoryUpdated != null)
         {
             inventoryUpdated();
@@ -66,11 +83,29 @@ public class InventoryController : MonoBehaviour
         return true;
     }
 
-    public bool HasItem(InventoryItem item)
+    public bool AddToFirstEmptySlot(InventoryItem3D item, int number)
     {
-        for (int i = 0; i < slots.Length; i++)
+        int i = FindSlot(item);
+
+        if (i < 0)
         {
-            if (object.ReferenceEquals(slots[i].item, item))
+            return false;
+        }
+
+        slots3D[i].item = item;
+        slots3D[i].number += number;
+        if (inventoryUpdated != null)
+        {
+            inventoryUpdated();
+        }
+        return true;
+    }
+
+    public bool HasItem(InventoryItem2D item)
+    {
+        for (int i = 0; i < slots2D.Length; i++)
+        {
+            if (object.ReferenceEquals(slots2D[i].item, item))
             {
                 return true;
             }
@@ -78,23 +113,45 @@ public class InventoryController : MonoBehaviour
         return false;
     }
 
-    public InventoryItem GetItemInSlot(int slot)
+    public bool HasItem(InventoryItem3D item)
     {
-        return slots[slot].item;
-    }
-
-    public int GetNumberInSlot(int slot)
-    {
-        return slots[slot].number;
-    }
-
-    public void RemoveFromSlot(int slot, int number)
-    {
-        slots[slot].number -= number;
-        if (slots[slot].number <= 0)
+        for (int i = 0; i < slots3D.Length; i++)
         {
-            slots[slot].number = 0;
-            slots[slot].item = null;
+            if (object.ReferenceEquals(slots3D[i].item, item))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public InventoryItem2D GetItemIdnSlot2D(int slot)
+    {
+        return slots2D[slot].item;
+    }
+
+    public InventoryItem3D GetItemInSlot3D(int slot)
+    {
+        return slots3D[slot].item;
+    }
+
+    public int GetNumberInSlot2D(int slot)
+    {
+        return slots2D[slot].number;
+    }
+
+    public int GetNumberInSlot3D(int slot)
+    {
+        return slots3D[slot].number;
+    }
+
+    public void RemoveFromSlot2D(int slot, int number)
+    {
+        slots2D[slot].number -= number;
+        if (slots2D[slot].number <= 0)
+        {
+            slots2D[slot].number = 0;
+            slots2D[slot].item = null;
         }
         if (inventoryUpdated != null)
         {
@@ -102,9 +159,23 @@ public class InventoryController : MonoBehaviour
         }
     }
 
-    public bool AddItemToSlot(int slot, InventoryItem item, int number)
+    public void RemoveFromSlot3D(int slot, int number)
     {
-        if (slots[slot].item != null)
+        slots3D[slot].number -= number;
+        if (slots3D[slot].number <= 0)
+        {
+            slots3D[slot].number = 0;
+            slots3D[slot].item = null;
+        }
+        if (inventoryUpdated != null)
+        {
+            inventoryUpdated();
+        }
+    }
+
+    public bool AddItemToSlot2D(int slot, InventoryItem2D item, int number)
+    {
+        if (slots2D[slot].item != null)
         {
             return AddToFirstEmptySlot(item, number); ;
         }
@@ -115,8 +186,30 @@ public class InventoryController : MonoBehaviour
             slot = i;
         }
 
-        slots[slot].item = item;
-        slots[slot].number += number;
+        slots2D[slot].item = item;
+        slots2D[slot].number += number;
+        if (inventoryUpdated != null)
+        {
+            inventoryUpdated();
+        }
+        return true;
+    }
+
+    public bool AddItemToSlot3D(int slot, InventoryItem3D item, int number)
+    {
+        if (slots3D[slot].item != null)
+        {
+            return AddToFirstEmptySlot(item, number); ;
+        }
+
+        var i = FindStack(item);
+        if (i >= 0)
+        {
+            slot = i;
+        }
+
+        slots3D[slot].item = item;
+        slots3D[slot].number += number;
         if (inventoryUpdated != null)
         {
             inventoryUpdated();
@@ -126,24 +219,35 @@ public class InventoryController : MonoBehaviour
 
     private void Awake()
     {
-        slots = new InventorySlot[inventorySize];
+        slots2D = new InventorySlot2D[inventorySize];
+        slots3D = new InventorySlot3D[inventorySize];
     }
 
-    private int FindSlot(InventoryItem item)
+    private int FindSlot(InventoryItem2D item)
     {
         int i = FindStack(item);
         if (i < 0)
         {
-            i = FindEmptySlot();
+            i = FindEmptySlot2D();
         }
         return i;
     }
 
-    private int FindEmptySlot()
+    private int FindSlot(InventoryItem3D item)
     {
-        for (int i = 0; i < slots.Length; i++)
+        int i = FindStack(item);
+        if (i < 0)
         {
-            if (slots[i].item == null)
+            i = FindEmptySlot3D();
+        }
+        return i;
+    }
+
+    private int FindEmptySlot2D()
+    {
+        for (int i = 0; i < slots2D.Length; i++)
+        {
+            if (slots2D[i].item == null)
             {
                 return i;
             }
@@ -151,44 +255,85 @@ public class InventoryController : MonoBehaviour
         return -1;
     }
 
-    private int FindStack(InventoryItem item)
+    private int FindEmptySlot3D()
+    {
+        for (int i = 0; i < slots3D.Length; i++)
+        {
+            if (slots3D[i].item == null)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int FindStack(InventoryItem2D item)
     {
         if (!item.IsStackable())
         {
             return -1;
         }
 
-        for (int i = 0; i < slots.Length; i++)
+        for (int i = 0; i < slots2D.Length; i++)
         {
-            if (object.ReferenceEquals(slots[i].item, item))
+            if (object.ReferenceEquals(slots2D[i].item, item))
             {
                 return i;
             }
         }
         return -1;
     }
-#endregion
 
-#region Equipment
+    private int FindStack(InventoryItem3D item)
+    {
+        if (!item.IsStackable())
+        {
+            return -1;
+        }
 
-    Dictionary<EquipLocation, InventoryItem> equippedItems = new Dictionary<EquipLocation, InventoryItem>();
+        for (int i = 0; i < slots3D.Length; i++)
+        {
+            if (object.ReferenceEquals(slots3D[i].item, item))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    #endregion
+
+    #region Equipment
+
+    Dictionary<EquipLocation, InventoryItem3D> equippedItems3D = new Dictionary<EquipLocation, InventoryItem3D>();
+    Dictionary<EquipLocation, InventoryItem2D> equippedItems2D = new Dictionary<EquipLocation, InventoryItem2D>();
     public event Action equipmentUpdated;
 
-    public InventoryItem GetItemInSlot(EquipLocation equipLocation)
+    public InventoryItem2D GetItemInSlot2D(EquipLocation equipLocation)
     {
-        if (!equippedItems.ContainsKey(equipLocation))
+        if (!equippedItems2D.ContainsKey(equipLocation))
         {
             return null;
         }
 
-        return equippedItems[equipLocation];
+        return equippedItems2D[equipLocation];
     }
 
-    public void EquipmentAddItem(EquipLocation slot, InventoryItem item)
+    public InventoryItem3D GetItemInSlot3D(EquipLocation equipLocation)
+    {
+        if (!equippedItems3D.ContainsKey(equipLocation))
+        {
+            return null;
+        }
+
+        return equippedItems3D[equipLocation];
+    }
+
+    public void EquipmentAddItem(EquipLocation slot, InventoryItem2D item)
     {
         Debug.Assert(item.GetAllowedEquipLocation() == slot);
 
-        equippedItems[slot] = item;
+        equippedItems2D[slot] = item;
 
         if (equipmentUpdated != null)
         {
@@ -196,9 +341,30 @@ public class InventoryController : MonoBehaviour
         }
     }
 
-    public void EquipmentRemoveItem(EquipLocation slot)
+    public void EquipmentAddItem(EquipLocation slot, InventoryItem3D item)
     {
-        equippedItems.Remove(slot);
+        Debug.Assert(item.GetAllowedEquipLocation() == slot);
+
+        equippedItems3D[slot] = item;
+
+        if (equipmentUpdated != null)
+        {
+            equipmentUpdated();
+        }
+    }
+
+    public void EquipmentRefmoveItem2D(EquipLocation slot)
+    {
+        equippedItems2D.Remove(slot);
+        if (equipmentUpdated != null)
+        {
+            equipmentUpdated();
+        }
+    }
+
+    public void EquipmentRemoveItem3D(EquipLocation slot)
+    {
+        equippedItems3D.Remove(slot);
         if (equipmentUpdated != null)
         {
             equipmentUpdated();

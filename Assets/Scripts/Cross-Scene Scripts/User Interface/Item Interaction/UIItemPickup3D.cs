@@ -5,9 +5,9 @@ using UnityEngine;
 /// pickup such as the type of item and the number.
 /// </summary> 
 
-public class UIItemPickup : MonoBehaviour, IRaycastable
+public class UIItemPickup3D : MonoBehaviour, IRaycastable
 {
-    [SerializeField] InventoryItem item = null;
+    [SerializeField] InventoryItem3D item = null;
     [SerializeField] Rigidbody rb = null;
     [SerializeField] CursorSpeed cursorSpeed;
     [SerializeField] bool clickPickup = true;
@@ -89,7 +89,7 @@ public class UIItemPickup : MonoBehaviour, IRaycastable
         }
     }
 
-    public void Setup(InventoryItem item, int number)
+    public void Setup(InventoryItem3D item, int number)
     {
         this.item = item;
         if (!item.IsStackable())
@@ -99,7 +99,7 @@ public class UIItemPickup : MonoBehaviour, IRaycastable
         this.number = number;
     }
 
-    public InventoryItem GetItem()
+    public InventoryItem3D GetItem()
     {
         return item;
     }

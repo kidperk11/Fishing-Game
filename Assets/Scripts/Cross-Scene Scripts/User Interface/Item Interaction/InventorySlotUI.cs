@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<InventoryItem>
+public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<InventoryItem3D>
 {
     [SerializeField] InventoryItemIcon icon = null;
     [SerializeField] EquipLocation equipLocation = EquipLocation.A;
@@ -33,10 +33,10 @@ public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<Invent
     {
         this.inventory = inventory;
         this.index = index;
-        icon.SetItem(inventory.GetItemInSlot(index), inventory.GetNumberInSlot(index));
+        icon.SetItem(inventory.GetItemInSlot3D(index), inventory.GetNumberInSlot3D(index));
     }
 
-    public int MaxAcceptable(InventoryItem item)
+    public int MaxAcceptable(InventoryItem3D item)
     {
         if (equipLocation == EquipLocation.Inventory)
         {
@@ -49,7 +49,7 @@ public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<Invent
         }
         else
         {
-            InventoryItem equipableItem = item as InventoryItem;
+            InventoryItem3D equipableItem = item as InventoryItem3D;
             if (equipableItem == null) return 0;
             if (equipableItem.GetAllowedEquipLocation() != equipLocation) return 0;
             if (GetItem() != null) return 0;
@@ -58,27 +58,27 @@ public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<Invent
         }
     }
 
-    public void AddItems(InventoryItem item, int number)
+    public void AddItems(InventoryItem3D item, int number)
     {
         if (equipLocation == EquipLocation.Inventory)
         {
-            inventory.AddItemToSlot(index, item, number);
+            inventory.AddItemToSlot3D(index, item, number);
         }
         else
         {
-            inventory.EquipmentAddItem(equipLocation, (InventoryItem)item);
+            inventory.EquipmentAddItem(equipLocation, (InventoryItem3D)item);
         }
     }
 
-    public InventoryItem GetItem()
+    public InventoryItem3D GetItem()
     {
         if (equipLocation == EquipLocation.Inventory)
         {
-            return inventory.GetItemInSlot(index);
+            return inventory.GetItemInSlot3D(index);
         }
         else
         {
-            return inventory.GetItemInSlot(equipLocation);
+            return inventory.GetItemInSlot3D(equipLocation);
         }
     }
 
@@ -86,7 +86,7 @@ public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<Invent
     {
         if (equipLocation == EquipLocation.Inventory)
         {
-            return inventory.GetNumberInSlot(index);
+            return inventory.GetNumberInSlot3D(index);
         }
         else
         {
@@ -101,16 +101,16 @@ public class InventorySlotUI : MonoBehaviour, IItemHolder, IDragContainer<Invent
     {
         if (equipLocation == EquipLocation.Inventory)
         {
-            inventory.RemoveFromSlot(index, number);
+            inventory.RemoveFromSlot3D(index, number);
         }
         else
         {
-            inventory.EquipmentRemoveItem(equipLocation);
+            inventory.EquipmentRemoveItem3D(equipLocation);
         }
     }
      
     void RedrawUI()
     {
-        icon.SetItem(inventory.GetItemInSlot(equipLocation));
+        icon.SetItem(inventory.GetItemInSlot3D(equipLocation));
     }
 }

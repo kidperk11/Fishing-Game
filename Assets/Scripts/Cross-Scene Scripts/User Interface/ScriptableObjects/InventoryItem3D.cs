@@ -6,8 +6,8 @@ public enum PickupType
     UI,
 }
 
-[CreateAssetMenu(menuName = ("User Interface/Pickup Item"))]
-public class InventoryItem : ScriptableObject 
+[CreateAssetMenu(menuName = ("User Interface/Pickup Item 3D"))]
+public class InventoryItem3D : ScriptableObject 
 {
     [Tooltip("Item name to be displayed in UI.")]
     [SerializeField] string displayName = null;
@@ -17,8 +17,8 @@ public class InventoryItem : ScriptableObject
     [SerializeField] Sprite icon = null;
 
     [Tooltip("The prefab that should be spawned when this item is dropped.")]
-    public WorldItemPickup pickup = null;
-    public UIItemPickup uiPickup = null;
+    public WorldItemPickup3D worldPickup = null;
+    public UIItemPickup3D uiPickup = null;
 
     [Tooltip("If true, multiple items of this type can be stacked in the same inventory slot.")]
     [SerializeField] bool stackable = false;
@@ -28,15 +28,15 @@ public class InventoryItem : ScriptableObject
     [SerializeField] public PickupType itemPickupType;
     private Transform parentObject;
 
-    public WorldItemPickup SpawnWorldPickup(Vector3 position, int number)
+    public WorldItemPickup3D SpawnWorldPickup(Vector3 position, int number)
     {
-        var pickup = Instantiate(this.pickup);
+        var pickup = Instantiate(this.worldPickup);
         pickup.transform.position = position;
         pickup.Setup(this, number);
         return pickup;
     }
 
-    public UIItemPickup SpawnUIPickup(Vector3 position, int number)
+    public UIItemPickup3D SpawnUIPickup(Vector3 position, int number)
     {
         var pickup = Instantiate(this.uiPickup);
         pickup.transform.position = position;

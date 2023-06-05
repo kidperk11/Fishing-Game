@@ -30,11 +30,11 @@ public class CursorController : MonoBehaviour
 
     private void Update()
     {
-        if (InteractWithUI()) return;
+        //if (InteractWithUI()) return;
 
         if (InteractWithComponent()) return;
 
-        SetCursor(CursorType.None);
+        //SetCursor(CursorType.None);
         
     }
 
@@ -69,17 +69,20 @@ public class CursorController : MonoBehaviour
     private bool InteractWithComponent()
     {
         RaycastHit[] hits = RaycastAllSorted();
+
         foreach (RaycastHit hit in hits)
         {
             IRaycastable[] raycastables = hit.transform.GetComponents<IRaycastable>();
 
             foreach (IRaycastable raycastable in raycastables)
             {
-                if (raycastable.HandleRaycast(this))
-                {
-                    SetCursor(raycastable.GetCursorType());
-                    return true;
-                }
+                raycastable.HandleRaycast(this);
+
+                //if (raycastable.HandleRaycast(this))
+                //{
+                //    //SetCursor(raycastable.GetCursorType());
+                //    //return true;
+                //}
             }
         }
         return false;
@@ -88,6 +91,10 @@ public class CursorController : MonoBehaviour
     RaycastHit[] RaycastAllSorted()
     {
         RaycastHit[] hits = Physics.SphereCastAll(GetMouseRay(), raycastRadius);
+
+        if(hits.Length > 1)
+            Debug.Log(hits[1]);
+
         float[] distances = new float[hits.Length];
         for (int i = 0; i < hits.Length; i++)
         {

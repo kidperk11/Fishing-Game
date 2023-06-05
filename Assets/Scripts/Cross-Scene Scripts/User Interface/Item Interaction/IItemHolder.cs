@@ -1,5 +1,5 @@
 ﻿
 public interface IItemHolder
 {
-    InventoryItem GetItem();
+    InventoryItem3D GetItem();
 }

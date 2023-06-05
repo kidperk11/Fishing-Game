@@ -10,8 +10,8 @@ public class ItemDropper : MonoBehaviour
 {
     public MousePosition mousePosition;
 
-    private List<WorldItemPickup> droppedItems = new List<WorldItemPickup>();
-    private List<UIItemPickup> droppedUIItems = new List<UIItemPickup>();
+    private List<WorldItemPickup3D> droppedItems = new List<WorldItemPickup3D>();
+    private List<UIItemPickup3D> droppedUIItems = new List<UIItemPickup3D>();
 
 
 
@@ -23,7 +23,7 @@ public class ItemDropper : MonoBehaviour
     /// The number of items contained in the pickup. Only used if the item
     /// is stackable.
     /// </param>
-    public void DropItem(InventoryItem item, int number)
+    public void DropItem(InventoryItem3D item, int number)
     {
         SpawnPickup(item, GetDropLocation(item), number);
     }
@@ -33,7 +33,7 @@ public class ItemDropper : MonoBehaviour
     /// Create a pickup at the current position.
     /// </summary>
     /// <param name="item">The item type for the pickup.</param>
-    public void DropItem(InventoryItem item)
+    public void DropItem(InventoryItem3D item)
     {
         SpawnPickup(item, GetDropLocation(item), 1);
     }
@@ -42,7 +42,7 @@ public class ItemDropper : MonoBehaviour
     /// Override to set a custom method for locating a drop.
     /// </summary>
     /// <returns>The location the drop should be spawned.</returns>
-    protected virtual Vector3 GetDropLocation(InventoryItem item)
+    protected virtual Vector3 GetDropLocation(InventoryItem3D item)
     {
         switch(item.itemPickupType)
         {
@@ -55,7 +55,7 @@ public class ItemDropper : MonoBehaviour
         }
     }
 
-    public void SpawnPickup(InventoryItem item, Vector3 spawnLocation, int number)
+    public void SpawnPickup(InventoryItem3D item, Vector3 spawnLocation, int number)
     {
         switch(item.itemPickupType)
         {

@@ -38,7 +38,7 @@ public class InventoryUI : MonoBehaviour
 
 
         //Only Gets size of inventory, Needs to get Size of equipment as well
-        for (int i = 0; i < playerInventory.GetSize(); i++)
+        for (int i = 0; i < playerInventory.GetSize3D(); i++)
         {
             var itemUI = Instantiate(InventoryItemPrefab, transform);
             itemUI.Setup(playerInventory, i);
