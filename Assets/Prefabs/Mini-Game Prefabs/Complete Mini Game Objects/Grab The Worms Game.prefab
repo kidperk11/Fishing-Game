@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7835498076296957077}
+  - component: {fileID: 9165404268440036665}
   m_Layer: 0
   m_Name: Grab The Worms Game
   m_TagString: Untagged
@@ -34,6 +35,102 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &9165404268440036665
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 177545828942041067}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 243672017259290008, guid: ca5e00ddd1f76a042ae3ae5afb2a0527, type: 2}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1413619826523668060
 GameObject:
   m_ObjectHideFlags: 0
@@ -84,7 +181,7 @@ MonoBehaviour:
   item: {fileID: 11400000, guid: c90bb1d07bfe23643b215f733e022ae4, type: 2}
   rb: {fileID: 3210380303226876701}
   cursorSpeed: {fileID: 0}
-  clickPickup: 1
+  clickPickup: 0
   throwForce: 0.5
   gravityScale: 1
   spriteStartIndex: 0
@@ -365,6 +462,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6450477834312248762}
+  - component: {fileID: 1816845921}
   m_Layer: 0
   m_Name: Worms
   m_TagString: Untagged
@@ -392,6 +490,22 @@ Transform:
   m_Father: {fileID: 7835498076296957077}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1816845921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6450477834312248761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1b0a8ab73fc47b4aaeeb76b8be04aae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wormsRemaining: {fileID: 7752487302190229679}
+  successSound: {fileID: 8300000, guid: 5c3e5a34a3003ae4d9250851c98965b2, type: 3}
+  failureSound: {fileID: 8300000, guid: a64a446b05840764284edcbfc55b3337, type: 3}
+  beatMiniGameSound: {fileID: 8300000, guid: bf854d2d31f78f046ad83516741cab93, type: 3}
 --- !u!1 &6450477834315777553
 GameObject:
   m_ObjectHideFlags: 0
@@ -1117,6 +1231,18 @@ MonoBehaviour:
       - m_Target: {fileID: 6450477835891413083}
         m_TargetAssemblyTypeName: SpriteSheetUpdate, Assembly-CSharp
         m_MethodName: IncrementSprite
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1816845921}
+        m_TargetAssemblyTypeName: WormGame, Assembly-CSharp
+        m_MethodName: WormCaptured
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
