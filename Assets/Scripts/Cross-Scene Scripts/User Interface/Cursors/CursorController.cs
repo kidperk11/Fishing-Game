@@ -30,9 +30,10 @@ public class CursorController : MonoBehaviour
 
     private void Update()
     {
-        //if (InteractWithUI()) return;
+        if (InteractWithUI()) return;
 
-        if (InteractWithComponent()) return;
+        if (InteractWithComponent2D()) return;
+        if (InteractWithComponent3D()) return;
 
         //SetCursor(CursorType.None);
         
@@ -66,9 +67,25 @@ public class CursorController : MonoBehaviour
         return false;
     }
 
-    private bool InteractWithComponent()
+    private bool InteractWithComponent2D()
     {
-        RaycastHit[] hits = RaycastAllSorted();
+        RaycastHit2D[] hits = RaycastAllSorted2D();
+
+        foreach (RaycastHit2D hit in hits)
+        {
+            IRaycastable[] raycastables = hit.transform.GetComponents<IRaycastable>();
+
+            foreach (IRaycastable raycastable in raycastables)
+            {
+                raycastable.HandleRaycast(this);
+            }
+        }
+        return false;
+    }
+
+    private bool InteractWithComponent3D()
+    {
+        RaycastHit[] hits = RaycastAllSorted3D();
 
         foreach (RaycastHit hit in hits)
         {
@@ -78,22 +95,32 @@ public class CursorController : MonoBehaviour
             {
                 raycastable.HandleRaycast(this);
 
-                //if (raycastable.HandleRaycast(this))
-                //{
-                //    //SetCursor(raycastable.GetCursorType());
-                //    //return true;
-                //}
+                if (raycastable.HandleRaycast(this))
+                {
+                    SetCursor(raycastable.GetCursorType());
+                    return true;
+                }
             }
         }
         return false;
     }
 
-    RaycastHit[] RaycastAllSorted()
+    RaycastHit2D[] RaycastAllSorted2D()
+    {
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(GetMousePosition(), 0.5f, Vector2.zero);
+
+        float[] distances = new float[hits.Length];
+        for (int i = 0; i < hits.Length; i++)
+        {
+            distances[i] = hits[i].distance;
+        }
+        Array.Sort(distances, hits);
+        return hits;
+    }
+
+    RaycastHit[] RaycastAllSorted3D()
     {
         RaycastHit[] hits = Physics.SphereCastAll(GetMouseRay(), raycastRadius);
-
-        if(hits.Length > 1)
-            Debug.Log(hits[1]);
 
         float[] distances = new float[hits.Length];
         for (int i = 0; i < hits.Length; i++)
@@ -130,4 +157,10 @@ public class CursorController : MonoBehaviour
     {
         return Camera.main.ScreenPointToRay(Input.mousePosition);
     }
+
+    private static Vector2 GetMousePosition()
+    {
+        return Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    }
+
 }

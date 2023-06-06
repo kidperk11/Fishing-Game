@@ -128,8 +128,7 @@ public class UIItemPickup2D : MonoBehaviour, IRaycastable
     public bool HandleRaycast(CursorController callingController)
     {
         if (Input.GetMouseButtonDown(0))
-            Debug.Log("Touched");
-            //ItemAction();
+            ItemAction();
 
         return true;
     }
