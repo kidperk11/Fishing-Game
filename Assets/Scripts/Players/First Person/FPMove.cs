@@ -41,7 +41,7 @@ public class FPMove : MonoBehaviour
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask whatIsGround;
-    bool grounded;
+    public bool grounded { get; private set; }
 
     [Header("Slope Handling")]
     public float maxSlopeAngle;

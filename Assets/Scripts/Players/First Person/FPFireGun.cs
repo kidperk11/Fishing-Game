@@ -69,6 +69,10 @@ public class FPFireGun : MonoBehaviour
                 {
                     enemy.TakeDamage(gunDamage);
                 }
+                else if (hit.transform.gameObject.CompareTag("Shootable"))
+                {
+                    hit.transform.GetComponent<Shootable>().Activate();
+                }
                 Debug.Log("Hit Object: " + hit.transform.gameObject );
                 GameObject impact = Instantiate(bulletImpact, hit.point, Quaternion.identity);
                 impact.transform.LookAt(this.transform);

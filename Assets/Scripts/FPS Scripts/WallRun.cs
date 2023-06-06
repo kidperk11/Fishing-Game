@@ -26,6 +26,8 @@ public class WallRun : MonoBehaviour
     public bool buttonHeld;
 
     [Header("Exiting")]
+    [SerializeField] private int maxWallRuns;
+    [SerializeField] private int wallRunCounter;
     private bool exitingWall;
     public float exitWallTime;
     public float exitWallTimer;
@@ -91,6 +93,10 @@ public class WallRun : MonoBehaviour
     {
         CheckForWall();
         StateMachine();
+        if (moveScript.grounded)
+        {
+            wallRunCounter = 0;
+        }
     }
 
     private void FixedUpdate()
@@ -119,7 +125,7 @@ public class WallRun : MonoBehaviour
         inputY = movePlayer.ReadValue<Vector2>().y;
 
         //Wallrunning State
-        if((wallLeft || wallRight) && buttonHeld && AboveGround() && !exitingWall)
+        if((wallLeft || wallRight) && buttonHeld && AboveGround() && !exitingWall && wallRunCounter < maxWallRuns)
         {
             if(wallRunTimer > 0)
             {
@@ -182,6 +188,7 @@ public class WallRun : MonoBehaviour
 
     private void StopWallRun()
     {
+        wallRunCounter++;
         wallRunSoundEnd.PlayFeedbacks();
         moveScript.wallRunning = false;
 
