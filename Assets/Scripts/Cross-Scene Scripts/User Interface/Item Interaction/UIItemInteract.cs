@@ -1,21 +1,13 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
-/// <summary>
-/// To be placed at the root of a Pickup prefab. Contains the data about the
-/// pickup such as the type of item and the number.
-/// </summary> 
-
-public class UIItemPickup2D : MonoBehaviour, IRaycastable
+public class UIItemInteract : MonoBehaviour
 {
     [SerializeField] InventoryItem2D item = null;
     [SerializeField] Rigidbody2D rb = null;
     [SerializeField] CursorSpeed cursorSpeed;
-    [SerializeField] bool clickPickup = false;
-    [SerializeField] bool isClickItem = false;
-    [SerializeField] bool isTouchItem = false;
-
-    [SerializeField] UnityEvent interactEvent;
+    [SerializeField] bool clickPickup = true;
 
     [SerializeField] float throwForce;
     [SerializeField] int gravityScale;
@@ -131,17 +123,14 @@ public class UIItemPickup2D : MonoBehaviour, IRaycastable
 
     public bool HandleRaycast(CursorController callingController)
     {
-        if (Input.GetMouseButtonDown(0) && isClickItem)
-            DragAction();
+        if (Input.GetMouseButtonDown(0))
+            ItemAction();
 
-        if (isTouchItem)
-            interactEvent.Invoke();
-
-
+        Debug.Log("Pee Pee Poo Poo");
         return true;
     }
 
-    private void DragAction()
+    private void ItemAction()
     {
         if (clickPickup)
         {
@@ -152,6 +141,7 @@ public class UIItemPickup2D : MonoBehaviour, IRaycastable
             dragItem = true;
         }
     }
+
 
     public CursorType GetCursorType()
     {
@@ -165,5 +155,4 @@ public class UIItemPickup2D : MonoBehaviour, IRaycastable
             return CursorType.Open;
         }
     }
-
 }
