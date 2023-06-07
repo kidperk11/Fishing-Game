@@ -9,34 +9,37 @@ public class FPMove : MonoBehaviour
     public float moveSpeed;
     public float walkSpeed;
     public float wallRunSpeed;
-
+    public float dashSpeed;
+    float inputX;
+    float inputY;
     public Transform orientation;
     public float groundDrag;
+    public FPPlayerActions moveActions;
+    private InputAction movePlayer;
+    private InputAction jump;
+    Vector3 moveDirection;
+    Rigidbody rb;
+    bool readyToDash;
+    public bool dashing;
+
+    [Header("Jump and Air Variables")]
     public float jumpForce;
     public float jumpCooldown;
     public float airMultiplier;
     [SerializeField] private float airTime;
     bool readyToJump;
-    float inputX;
-    float inputY;
     public bool wallRunning;
+    public float fallMultiplier;
+
 
     public MovementState state;
     public enum MovementState
     {
         walking, 
         air,
-        wallRunning
+        wallRunning,
+        dashing
     }
-
-
-    public FPPlayerActions moveActions;
-    private InputAction movePlayer;
-    private InputAction jump;
-    Vector3 moveDirection;
-    Rigidbody rb;
-
-    public float fallMultiplier;
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -80,6 +83,7 @@ public class FPMove : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
+        readyToDash = true;
 
         //Locks cursor to middle of screen and makes it invisible
         Cursor.lockState = CursorLockMode.Locked;
@@ -107,25 +111,32 @@ public class FPMove : MonoBehaviour
             airTime += Time.deltaTime;
             rb.drag = 0;
         }
-        //else if(rb.velocity.y > 0) { rb.drag = 2; }
     }
 
     private void StateHandler()
     {
-        //Walk State
-        if (grounded)
+        //Dash State
+        if (dashing)
         {
-            state = MovementState.walking;
-            moveSpeed = walkSpeed;
+            state = MovementState.dashing;
+            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
         }
 
+        //Walk State
+        else if (grounded)
+        {   
+            state = MovementState.walking;
+            moveSpeed = walkSpeed;  
+        } 
+
         //Wall Run State
-        if (wallRunning)
+        else if (wallRunning)
         {
             state = MovementState.wallRunning;
             moveSpeed = wallRunSpeed;
         }
-
+   
+        //Air State
         else
         {
             state = MovementState.air;
@@ -134,10 +145,14 @@ public class FPMove : MonoBehaviour
 
     private void FixedUpdate()
     {
-        MovePlayer();
+        if(state != MovementState.dashing)
+        {
+            MovePlayer();
+        }
+
 
         //This code adjusts the fall speed of the player's jump
-        if ((rb.velocity.y < 0 || rb.velocity.y > 0) && !OnSlope() && state != MovementState.wallRunning)
+        if ((rb.velocity.y < 0 || rb.velocity.y > 0) && !OnSlope() && state != MovementState.wallRunning && state != MovementState.dashing)
         {
             rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
         }
@@ -181,6 +196,7 @@ public class FPMove : MonoBehaviour
     {
         if (OnSlope() && !exitingSlope)
         {
+            Debug.Log("Speed Control OnSlope");
             if(rb.velocity.magnitude > moveSpeed)
             {
                 rb.velocity = rb.velocity.normalized * moveSpeed;
@@ -218,9 +234,11 @@ public class FPMove : MonoBehaviour
         }
     }
 
+    
+
     private bool OnSlope()
     {
-        if(Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 0.5f + 0.3f))
+        if(Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 0.5f + 0.3f) && grounded)
         {
             //Measures how steep the slope is
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
@@ -241,6 +259,11 @@ public class FPMove : MonoBehaviour
         readyToJump = true;
         exitingSlope = false;
     }
+    public void ResetDash()
+    {
+        readyToDash = true;
+        exitingSlope = false;
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -250,6 +273,4 @@ public class FPMove : MonoBehaviour
         }
         airTime = 0;    
     }
-
-
 }

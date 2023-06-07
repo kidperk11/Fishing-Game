@@ -85,7 +85,6 @@ public class FireHarpoon : MonoBehaviour
             Vector3 directionWithoutSpread = targetPoint - harpoonSpawnPoint.position;
 
             harpoonInstance = Instantiate(harpoon, harpoonSpawnPoint.position, Quaternion.identity).GetComponent<HarpoonController>();
-            //fire.Play();
             harpoonInstance.gameObject.transform.forward = directionWithoutSpread.normalized;
             harpoonInstance.rb.AddForce(directionWithoutSpread.normalized * harpoonInstance.harpoonSpeed, ForceMode.Impulse);
             harpoonInstance.harpoonGun = this;

@@ -71,6 +71,15 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Dash"",
+                    ""type"": ""Button"",
+                    ""id"": ""5ed1790a-2311-49f8-935e-7dba4110e11a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -280,6 +289,28 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Harpoon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b3d17bfd-28f7-4026-838a-76e1ba5da7b2"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2ba4028f-e47e-4ca0-95b0-43c16a70e31e"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Dash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -773,6 +804,7 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
         m_Player_Gun = m_Player.FindAction("Gun", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Harpoon = m_Player.FindAction("Harpoon", throwIfNotFound: true);
+        m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -851,6 +883,7 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Gun;
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Harpoon;
+    private readonly InputAction m_Player_Dash;
     public struct PlayerActions
     {
         private @FPPlayerActions m_Wrapper;
@@ -860,6 +893,7 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
         public InputAction @Gun => m_Wrapper.m_Player_Gun;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Harpoon => m_Wrapper.m_Player_Harpoon;
+        public InputAction @Dash => m_Wrapper.m_Player_Dash;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -884,6 +918,9 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
             @Harpoon.started += instance.OnHarpoon;
             @Harpoon.performed += instance.OnHarpoon;
             @Harpoon.canceled += instance.OnHarpoon;
+            @Dash.started += instance.OnDash;
+            @Dash.performed += instance.OnDash;
+            @Dash.canceled += instance.OnDash;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -903,6 +940,9 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
             @Harpoon.started -= instance.OnHarpoon;
             @Harpoon.performed -= instance.OnHarpoon;
             @Harpoon.canceled -= instance.OnHarpoon;
+            @Dash.started -= instance.OnDash;
+            @Dash.performed -= instance.OnDash;
+            @Dash.canceled -= instance.OnDash;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1072,6 +1112,7 @@ public partial class @FPPlayerActions: IInputActionCollection2, IDisposable
         void OnGun(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnHarpoon(InputAction.CallbackContext context);
+        void OnDash(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
