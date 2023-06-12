@@ -19,7 +19,6 @@ public class FPMove : MonoBehaviour
     private InputAction jump;
     Vector3 moveDirection;
     Rigidbody rb;
-    bool readyToDash;
     public bool dashing;
 
     [Header("Jump and Air Variables")]
@@ -83,7 +82,6 @@ public class FPMove : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
-        readyToDash = true;
 
         //Locks cursor to middle of screen and makes it invisible
         Cursor.lockState = CursorLockMode.Locked;
@@ -257,11 +255,6 @@ public class FPMove : MonoBehaviour
     public void ResetJump()
     {
         readyToJump = true;
-        exitingSlope = false;
-    }
-    public void ResetDash()
-    {
-        readyToDash = true;
         exitingSlope = false;
     }
 

@@ -1,0 +1,194 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
+
+public class FPSUrchinAI : MonoBehaviour
+{
+    [Header("External References")]
+    public NavMeshAgent agent;
+    public EnemyHealthAndQTE health;
+    public Animator anim;
+    public FPPlayerHealth player;
+    public OnTriggerDetector3D detector;
+
+    [Header("Movement Properties")]
+    public float normalSpeed;
+    public float attackSpeed;
+
+    [Header("Aim Properties")]
+    public float maxAimTime;
+    private float aimTimer;
+
+    [Header("Attack Properties")]
+    public float playerDetectionDistance;
+    public float attackDistance;
+    private Vector3 attackStartingPoint;
+    [SerializeField] private int attackDamage;
+
+    [Header("Cooldown Properties")]
+    public float maxCooldownTime;
+    private float cooldownTimer;
+
+    [Header("Harpoonable Properties")]
+    public GameObject weakPoint;
+    public float maxHarpoonableTime;
+    private float harpoonableTimer;
+    
+    [Header("Debug Tools")]
+    [SerializeField] private bool skipSpawn;
+
+    public State state;
+    public enum State
+    {
+        SpawnIn,
+        ChasePlayer,
+        AimAtPlayer,
+        Attack,
+        Cooldown,
+        Harpoonable,
+        Death
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (health.isDead)
+        {
+            //NOTE: Add code for the death animation
+            state = State.Death;
+        }
+
+        switch (state)
+        {
+            default:
+            case State.SpawnIn:
+                SpawnInAI();
+                break;
+            case State.ChasePlayer:
+                ChasePlayerAI();
+                break;
+            case State.AimAtPlayer:
+                AimAtPlayerAI();
+                break;
+            case State.Attack:
+                AttackAI();
+                break;
+            case State.Cooldown:
+                CooldownAI();
+                break;
+            case State.Harpoonable:
+                HarpoonableAI();
+                break;
+            case State.Death:
+                DeathAI();
+                break;
+        }
+    }
+
+    
+
+    private void SpawnInAI()
+    {
+        if (skipSpawn)
+        {
+            state = State.ChasePlayer;
+        }
+
+        //NOTE: Add code later for a spawner Animation;
+    }
+
+    private void ChasePlayerAI()
+    {
+        agent.SetDestination(player.transform.position);
+        transform.LookAt(transform.forward);
+        if (Vector3.Distance(this.transform.position, player.transform.position) <= playerDetectionDistance)
+        {
+            agent.SetDestination(this.transform.position);
+            anim.SetTrigger("aimAtPlayer");
+            state = State.AimAtPlayer;
+        }
+    }
+
+    private void AimAtPlayerAI()
+    {
+        aimTimer += Time.deltaTime;
+        if(aimTimer >= maxAimTime)
+        {
+            aimTimer = 0;
+            anim.SetTrigger("attack");
+            attackStartingPoint = this.transform.position;
+            agent.speed = attackSpeed;
+            agent.SetDestination(transform.position + transform.forward * attackDistance);
+            state = State.Attack;
+        }
+        else
+        {
+            transform.LookAt(player.transform);
+        }
+    }
+
+    private void AttackAI()
+    {
+        if (detector.CheckIfTagDetected("Player"))
+        {
+            player.TakeDamage(attackDamage);
+            agent.speed = normalSpeed;
+            agent.SetDestination(this.transform.position);
+            //NOTE: Add code for idle animation
+            state = State.Cooldown;
+        }
+        else if(detector.CheckIfTagDetected("Wall") || detector.CheckIfTagDetected("Ground"))
+        {
+            anim.SetTrigger("harpoonable");
+            weakPoint.SetActive(true);
+            agent.speed = normalSpeed;
+            agent.SetDestination(this.transform.position);
+            state = State.Harpoonable;
+        }
+        else if(Vector3.Distance(this.transform.position, attackStartingPoint) >= 9)
+        {
+            anim.SetTrigger("chase");
+            agent.speed = normalSpeed;
+            agent.SetDestination(this.transform.position);
+            state = State.ChasePlayer;
+        }
+    }
+
+    private void CooldownAI()
+    {
+        cooldownTimer += Time.deltaTime;
+        if(cooldownTimer >= maxCooldownTime)
+        {
+            cooldownTimer = 0;
+            anim.SetTrigger("chase");
+            state = State.ChasePlayer;
+        }
+    }
+
+    private void HarpoonableAI()
+    {
+        harpoonableTimer += Time.deltaTime;
+        if(harpoonableTimer >= maxHarpoonableTime)
+        {
+            harpoonableTimer = 0;
+            anim.SetTrigger("chase");
+            weakPoint.SetActive(false);
+            state = State.ChasePlayer;
+        }
+    }
+
+    private void DeathAI()
+    {
+        throw new NotImplementedException();
+    }
+
+    
+}
