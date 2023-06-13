@@ -126,7 +126,8 @@ public class FPSUrchinAI : MonoBehaviour
             anim.SetTrigger("attack");
             attackStartingPoint = this.transform.position;
             agent.speed = attackSpeed;
-            agent.SetDestination(transform.position + transform.forward * attackDistance);
+            agent.ResetPath();
+            //agent.SetDestination(transform.position + transform.forward * attackDistance);
             state = State.Attack;
         }
         else
@@ -137,6 +138,9 @@ public class FPSUrchinAI : MonoBehaviour
 
     private void AttackAI()
     {
+        agent.velocity = transform.forward * attackSpeed;
+        Debug.Log(agent.velocity);
+        Debug.Log("Multiplied velocity: " + transform.forward * attackSpeed);
         if (detector.CheckIfTagDetected("Player"))
         {
             player.TakeDamage(attackDamage);
@@ -151,13 +155,15 @@ public class FPSUrchinAI : MonoBehaviour
             weakPoint.SetActive(true);
             agent.speed = normalSpeed;
             agent.SetDestination(this.transform.position);
+            agent.velocity = Vector3.zero;
             state = State.Harpoonable;
         }
-        else if(Vector3.Distance(this.transform.position, attackStartingPoint) >= 9)
+        else if(Vector3.Distance(this.transform.position, attackStartingPoint) >= (attackDistance-1))
         {
             anim.SetTrigger("chase");
             agent.speed = normalSpeed;
             agent.SetDestination(this.transform.position);
+            agent.velocity = Vector3.zero;
             state = State.ChasePlayer;
         }
     }
