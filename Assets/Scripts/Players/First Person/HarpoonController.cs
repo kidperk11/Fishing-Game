@@ -158,7 +158,7 @@ public class HarpoonController : MonoBehaviour
                 if (hitEnemy.harpoonable)
                 {
                     //hitEnemy.gameObject.transform.parent = this.transform;
-                    hitEnemy.boxCollider.enabled = false;
+                    //hitEnemy.boxCollider.enabled = false;
                     startPoint = this.transform.position;
                     
                     state = State.HitEnemy;
