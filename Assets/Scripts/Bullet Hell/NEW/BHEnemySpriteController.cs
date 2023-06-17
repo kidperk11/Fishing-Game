@@ -2,6 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EnemySpriteType
+{
+    submarine,
+    fish,
+    bottomFeeder
+}
+
 public class BHEnemySpriteController : MonoBehaviour
 {
     [Header("Sprites")]
@@ -9,13 +16,19 @@ public class BHEnemySpriteController : MonoBehaviour
     public SpriteRenderer rotor;
 
     [Space(5)]
-    public Transform rotorRight;
-    public Transform rotorLeft;
+    public Sprite submarineSide;
+    public Sprite submarineBack;
+    public Sprite submarineFront;
 
     [Space(5)]
-    public Sprite sideSprite;
-    public Sprite backSprite;
-    public Sprite frontSprite;
+    public Sprite fishSide;
+    public Sprite fishBack;
+    public Sprite fishFront;
+
+    [Header("Rotors")]
+    [Space(5)]
+    public Transform rotorRight;
+    public Transform rotorLeft;
 
     [Space(5)]
     public GameObject sideRotors;
@@ -25,6 +38,8 @@ public class BHEnemySpriteController : MonoBehaviour
     public Transform gameObject1;
     public Transform gameObject2;
     public Transform playerTransform;
+
+    private EnemySpriteType enemyType;
 
     public float circleRadius
     {
@@ -42,6 +57,7 @@ public class BHEnemySpriteController : MonoBehaviour
     private float circumference;
     private float distanceHolder;
     private float sideHolder;
+    private float distance;
 
     // Start is called before the first frame update
     void Start()
@@ -49,31 +65,39 @@ public class BHEnemySpriteController : MonoBehaviour
         circumference = 2 * Mathf.PI * m_radius;
         GameObject playerGameObject = GameObject.FindGameObjectWithTag("Player");
         playerTransform = playerGameObject.transform;
+
+        enemyType = EnemySpriteType.submarine;
     }
 
     // Update is called once per frame
     void Update()
     {
-        UpdateSprite();
+        switch (enemyType)
+        {
+            case EnemySpriteType.submarine:
+                distance = GetPlayerDistance();
+                UpdateSubmarineSprites(distance);
+                break;
+            case EnemySpriteType.fish:
+                distance = GetPlayerDistance();
+                UpdateFishSprites(distance);
+                break;
+        }
     }
 
-    private void UpdateSprite()
+    private void UpdateSubmarineSprites(float distance)
     {
-        //Possible Solution. 
-        float distance;
-        float side;
-        distance = GetPlayerDistance();
+
         Sprite spriteToDisplay = null; 
         bool backRotorActive = false;
         bool sideRotorActive = false;
         bool shouldFlipX = false;
         Vector3 rotorPosition = new Vector3();
 
-
         if(distance < 2.5f)
         {
 
-            spriteToDisplay = sideSprite;
+            spriteToDisplay = submarineSide;
             shouldFlipX = false;
             rotorPosition = rotorRight.transform.position;
             backRotorActive = false;
@@ -85,15 +109,15 @@ public class BHEnemySpriteController : MonoBehaviour
         
         if(distance >= 2.5f && distance <= 6)
         {
-            side = GetPlayerSide();
+            float side = GetPlayerSide();
             if (side > 0f)
             {
-                spriteToDisplay = backSprite;
+                spriteToDisplay = submarineBack;
                 backRotorActive = true;
             }
             else
             {
-                spriteToDisplay = frontSprite;
+                spriteToDisplay = submarineFront;
                 backRotorActive = false;
             }
 
@@ -105,13 +129,51 @@ public class BHEnemySpriteController : MonoBehaviour
 
         if(distance > 6)
         {
-            spriteToDisplay = sideSprite;
+            spriteToDisplay = submarineSide;
             shouldFlipX = true;
             rotorPosition = rotorLeft.transform.position;
             backRotorActive = false;
             sideRotorActive = true;
 
             UpdateSprite(rotorPosition, shouldFlipX, spriteToDisplay, backRotorActive, sideRotorActive);
+        }
+    }
+
+    private void UpdateFishSprites(float distance)
+    {
+        Sprite spriteToDisplay = null;
+        bool shouldFlipX = false;
+
+        if (distance < 2.5f)
+        {
+            spriteToDisplay = fishSide;
+            shouldFlipX = false;
+            UpdateSprite(shouldFlipX, spriteToDisplay);
+
+        }
+
+        if (distance >= 2.5f && distance <= 6)
+        {
+            float side = GetPlayerSide();
+            if (side > 0f)
+            {
+                spriteToDisplay = fishBack;
+            }
+            else
+            {
+                spriteToDisplay = fishFront;
+            }
+
+            shouldFlipX = false;
+
+            UpdateSprite(shouldFlipX, spriteToDisplay);
+        }
+
+        if (distance > 6)
+        {
+            spriteToDisplay = fishSide;
+            shouldFlipX = true;
+            UpdateSprite(shouldFlipX, spriteToDisplay);
         }
     }
 
@@ -130,6 +192,20 @@ public class BHEnemySpriteController : MonoBehaviour
         body.sprite = bodySprite;
         backRotors.SetActive(backRotor);
         sideRotors.SetActive(sideRotor);
+    }
+
+    private void UpdateSprite(bool shouldFlipx, Sprite bodySprite)
+    {
+        if (m_ignoreDistanceFlip)
+        {
+
+        }
+        else
+        {
+            body.flipX = shouldFlipx;
+        }
+
+        body.sprite = bodySprite;
     }
 
     private float GetPlayerDistance()
@@ -181,6 +257,13 @@ public class BHEnemySpriteController : MonoBehaviour
         {
             Debug.Log(0f);
         }
+    }
+
+    public void ExposeSpecialFish()
+    {
+        Destroy(backRotors);
+        Destroy(sideRotors);
+        enemyType = EnemySpriteType.fish;
     }
 
 }
