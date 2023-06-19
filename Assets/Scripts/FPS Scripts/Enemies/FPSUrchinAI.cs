@@ -12,6 +12,7 @@ public class FPSUrchinAI : MonoBehaviour
     public Animator anim;
     public FPPlayerHealth player;
     public OnTriggerDetector3D detector;
+    public SphereCollider weakPointCollider;
 
     [Header("Movement Properties")]
     public float normalSpeed;
@@ -139,8 +140,6 @@ public class FPSUrchinAI : MonoBehaviour
     private void AttackAI()
     {
         agent.velocity = transform.forward * attackSpeed;
-        Debug.Log(agent.velocity);
-        Debug.Log("Multiplied velocity: " + transform.forward * attackSpeed);
         if (detector.CheckIfTagDetected("Player"))
         {
             player.TakeDamage(attackDamage);
@@ -152,7 +151,9 @@ public class FPSUrchinAI : MonoBehaviour
         else if(detector.CheckIfTagDetected("Wall") || detector.CheckIfTagDetected("Ground"))
         {
             anim.SetTrigger("harpoonable");
+            weakPointCollider.enabled = true;
             weakPoint.SetActive(true);
+            health.enabled = true;
             agent.speed = normalSpeed;
             agent.SetDestination(this.transform.position);
             agent.velocity = Vector3.zero;
@@ -184,6 +185,9 @@ public class FPSUrchinAI : MonoBehaviour
         harpoonableTimer += Time.deltaTime;
         if(harpoonableTimer >= maxHarpoonableTime)
         {
+            weakPointCollider.enabled = false;
+            weakPoint.SetActive(false);
+            health.enabled = false;
             harpoonableTimer = 0;
             anim.SetTrigger("chase");
             weakPoint.SetActive(false);
