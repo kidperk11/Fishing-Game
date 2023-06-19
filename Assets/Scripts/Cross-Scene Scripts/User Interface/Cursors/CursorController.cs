@@ -31,7 +31,6 @@ public class CursorController : MonoBehaviour
     private void Update()
     {
         if (InteractWithUI()) return;
-
         if (InteractWithComponent2D()) return;
         if (InteractWithComponent3D()) return;
 
@@ -77,6 +76,7 @@ public class CursorController : MonoBehaviour
 
             foreach (IRaycastable raycastable in raycastables)
             {
+
                 raycastable.HandleRaycast(this);
             }
         }

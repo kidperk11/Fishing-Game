@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// To be placed at the root of a Pickup prefab. Contains the data about the
@@ -10,7 +11,11 @@ public class UIItemPickup2D : MonoBehaviour, IRaycastable
     [SerializeField] InventoryItem2D item = null;
     [SerializeField] Rigidbody2D rb = null;
     [SerializeField] CursorSpeed cursorSpeed;
-    [SerializeField] bool clickPickup = true;
+    [SerializeField] bool clickPickup = false;
+    [SerializeField] bool isClickItem = false;
+    [SerializeField] bool isTouchItem = false;
+
+    [SerializeField] UnityEvent interactEvent;
 
     [SerializeField] float throwForce;
     [SerializeField] int gravityScale;
@@ -39,7 +44,7 @@ public class UIItemPickup2D : MonoBehaviour, IRaycastable
 
     private void OnEnable()
     {
-        if (cursorSpeed)
+        if (cursorSpeed == null)
         {
             cursorSpeed = GameObject.FindGameObjectWithTag("InventoryContainer").GetComponentInParent<CursorSpeed>();
         }
@@ -70,8 +75,7 @@ public class UIItemPickup2D : MonoBehaviour, IRaycastable
         rb.AddForce(mouseDelta * throwForce, ForceMode2D.Impulse);
 
         dragItem = false;
-        rb.gravityScale = 1f;
-        //rb.useGravity = true;
+        rb.gravityScale = gravityScale;
         if (hasSpriteSheet != null)
         {
             hasSpriteSheet.NewSpriteIndex(0);
@@ -127,13 +131,17 @@ public class UIItemPickup2D : MonoBehaviour, IRaycastable
 
     public bool HandleRaycast(CursorController callingController)
     {
-        if (Input.GetMouseButtonDown(0))
-            ItemAction();
+        if (Input.GetMouseButtonDown(0) && isClickItem)
+            DragAction();
+
+        if (isTouchItem)
+            interactEvent.Invoke();
+
 
         return true;
     }
 
-    private void ItemAction()
+    private void DragAction()
     {
         if (clickPickup)
         {
@@ -144,7 +152,6 @@ public class UIItemPickup2D : MonoBehaviour, IRaycastable
             dragItem = true;
         }
     }
-
 
     public CursorType GetCursorType()
     {
