@@ -144,7 +144,7 @@ public class HarpoonController : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collision)
     {
         if(state == State.InAir)
         {

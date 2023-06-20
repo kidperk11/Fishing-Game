@@ -11,6 +11,8 @@ public class SpecialUrchinBulletAI : MonoBehaviour
     [Header("Attack Variables")]
     public int bulletDamage;
     public float bulletSpeed;
+    public float knockbackSpeed;
+    private List<EnemyHealthAndQTE> hitEnemies = new List<EnemyHealthAndQTE>();
 
 
     private void Awake()
@@ -39,9 +41,28 @@ public class SpecialUrchinBulletAI : MonoBehaviour
         if (collision.gameObject.CompareTag("Enemy"))
         {
             EnemyHealthAndQTE enemy = collision.gameObject.GetComponent<EnemyHealthAndQTE>();
+
             if(enemy != null)
             {
-                enemy.TakeDamage(bulletDamage);
+                bool alreadyHit = false;
+                if(hitEnemies != null)
+                {
+                    foreach (EnemyHealthAndQTE hitEnemy in hitEnemies)
+                    {
+                        if (hitEnemy == enemy)
+                        {
+                            alreadyHit = true;
+                        }
+                    }
+                }
+                
+                if (!alreadyHit)
+                {
+                    enemy.TakeDamage(bulletDamage);
+                    Vector3 contactDirection = collision.gameObject.transform.position - this.transform.position;
+                    enemy.TakeKnockback(contactDirection, knockbackSpeed);
+                    hitEnemies.Add(enemy);
+                }
             }
         }
     }

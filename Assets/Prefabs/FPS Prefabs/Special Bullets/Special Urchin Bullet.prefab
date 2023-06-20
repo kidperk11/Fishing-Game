@@ -157,6 +157,7 @@ MonoBehaviour:
   detector: {fileID: 3647852941194009169}
   bulletDamage: 2
   bulletSpeed: 4
+  knockbackSpeed: 10
 --- !u!54 &632138235770850093
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -24,6 +24,9 @@ public class FPFireGun : MonoBehaviour
     public GameObject urchinBoulderPrefab;
     public string specialBullet;
 
+    [Header("Debug tools")]
+    public bool keepSpecialBullet;
+
     
 
     private void OnEnable()
@@ -43,7 +46,7 @@ public class FPFireGun : MonoBehaviour
     void Start()
     {
         readyToFire = true;
-        specialBullet = null;
+        //specialBullet = null;
     }
 
     private void Awake()
@@ -126,8 +129,12 @@ public class FPFireGun : MonoBehaviour
                 //bulletInstance.rb.AddForce(directionWithoutSpread.normalized * bulletInstance.bulletSpeed, ForceMode.Impulse);
             }
 
-            specialBullet = null;
-            hudBulletText.text = new string("No special bullet active.");
+            if (!keepSpecialBullet)
+            {
+                specialBullet = null;
+                hudBulletText.text = new string("No special bullet active.");
+            }
+            
         }
     }
 
