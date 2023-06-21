@@ -24,6 +24,8 @@ public class FPSUrchinAI : MonoBehaviour
 
     [Header("Attack Properties")]
     public float playerDetectionDistance;
+    public float playerKnockbackSpeed;
+    public float playerYKnockbackDirection;
     public float attackDistance;
     private Vector3 attackStartingPoint;
     [SerializeField] private int attackDamage;
@@ -143,6 +145,8 @@ public class FPSUrchinAI : MonoBehaviour
         if (detector.CheckIfTagDetected("Player"))
         {
             player.TakeDamage(attackDamage);
+            Vector3 contactDirection = player.gameObject.transform.position - this.transform.position;
+            player.TakeKnockback(new Vector3(contactDirection.x, playerYKnockbackDirection, contactDirection.z), playerKnockbackSpeed);
             agent.speed = normalSpeed;
             agent.SetDestination(this.transform.position);
             //NOTE: Add code for idle animation
