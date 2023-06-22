@@ -17,12 +17,17 @@ public class BHShooterScriptableObject : ScriptableObject
     public float fireDelay;
     public float bulletDamage;
 
-    [Header("Bullet Amount")]
+    [Header("Bullet Burst")]
     public bool burst;
     [Range(1, 20)]
     public int minBurst;
     [Range(1, 20)]
     public int maxBurst;
+
+    [Header("Multiple Bullets")]
+    public bool multiBullet;
+    [Range(1, 20)]
+    public int burstAmount;
 
     [Header("Multi-Direction")]
     public bool multiDirection;
@@ -31,6 +36,8 @@ public class BHShooterScriptableObject : ScriptableObject
     [Range(1, 20)]
     public int maxDirections;
 
+    [Header("Bullet Spray")]
+    public bool bulletSpray;
 
     [Header("Bullet Targeting")]
     public bool lockOn;
