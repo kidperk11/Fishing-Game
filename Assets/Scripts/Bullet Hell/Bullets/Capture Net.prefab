@@ -9791,11 +9791,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifeTime: 4
+  bulletSizeObject: {fileID: 1803837004204142278}
   isEnemyBullet: 0
   damage: 1
   bulletDirection: {x: 0, y: 0, z: 0}
   bulletSize: 1
   meshRenderer: {fileID: 146499215082999571}
+  spriteRenderer: {fileID: 0}
   partSystem: {fileID: 6325136826311138963}
   bulletAudio: {fileID: 0}
   impactSoundEffect: {fileID: 0}
@@ -14785,5 +14787,10 @@ MeshRenderer:
 --- !u!4 &1315988554357847164 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 214ea8920978c6343850685b305d4599, type: 3}
+  m_PrefabInstance: {fileID: 1570047505809789847}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1803837004204142278 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 214ea8920978c6343850685b305d4599, type: 3}
   m_PrefabInstance: {fileID: 1570047505809789847}
   m_PrefabAsset: {fileID: 0}

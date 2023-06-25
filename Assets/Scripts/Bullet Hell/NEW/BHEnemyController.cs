@@ -80,7 +80,6 @@ public class BHEnemyController : MonoBehaviour
     private BHPlayerController target { get { return m_Target; } }
     private BHPlayerController m_Target = null;
     public Rigidbody targetRigidBody = null;
-    private bool canAttack = false;
 
     private void OnEnable()
     {
@@ -152,14 +151,12 @@ public class BHEnemyController : MonoBehaviour
     {
         targetRigidBody = null;
         currentState = EnemyState.Swim;
-        canAttack = false;
     }
 
     private void StartPursuit()
     {
         targetRigidBody = target.GetComponentInChildren<Rigidbody>();
         currentState = EnemyState.Pursuit;
-        canAttack = true;
     }
 
     private void Pursuit()

@@ -18,93 +18,75 @@ public enum SpecialAbilities
     swordFish,
 }
 
+public struct ProjectileStats
+{
+    public float fireDelay;
+    public float bulletSpeed;
+    public float bulletSize;
+    public float bulletDamage;
+    public float bulletLife;
+    public float verticalDirection;
+    public SubmarineWeapons weaponType;
+    public ProjectileType statsProjectileType;
+ }
+
 public class BHShooterController : MonoBehaviour
 {
     [Tooltip("List of possible Shooters.")]
     [SerializeField]
     public List<BHShooter> shooters = new List<BHShooter>();
 
-
     public GameObject bulletPrefab;
-    public float fireDelay;
-    public float bulletSpeed;
-    public float bulletSize;
-    public float bulletDamage;
-    public float bulletLife;
-
     public Transform bulletSpawnLeft;
     public Transform bulletSpawnRight;
     public Transform cityCenter;
 
-    //Player Inputs
-    public BHPlayerActions moveActions;
-    private InputAction shootLeft;
-    private InputAction shootRight;
-    private InputAction weaponSwap;
-    private bool coolDownAttack;
-    private float lastFire;
-    private SubmarineWeapons currentWeapon;
+    [Space(10)]
+    [Header("Projectile Type")]
+    public ProjectileType projectileType;
+
     private int currentWeaponIndex;
     private int shootVector;
+    private float lastFire;
+    private float shootHor = 1f;
+    private float offsetIncreaseAmount = 0f;
+    private Vector3 spawnOffset = Vector3.zero;
+    private SubmarineWeapons currentWeapon;
+    private ProjectileStats projectileStats;
 
-    private void Awake()
-    {
-        moveActions = new BHPlayerActions();
-        coolDownAttack = false;
-    }
+    private bool singleProjectileActive;
+
 
     private void OnEnable()
     {
-        shootLeft = moveActions.Player.ShootLeft;
-        shootRight = moveActions.Player.ShootRight;
-        weaponSwap = moveActions.Player.WeaponSwap;
-
-        weaponSwap.performed += SwapWeapon;
-        shootLeft.performed += OnShootStart;
-        shootLeft.canceled += OnShootEnd;
-
-        shootRight.performed += OnShootStart;
-        shootRight.canceled += OnShootEnd;
-
-        shootLeft.Enable();
-        shootRight.Enable();
-        weaponSwap.Enable();
-
         currentWeapon = SubmarineWeapons.explosive;
         currentWeaponIndex = 0;
     }
 
-    private void OnDisable()
+    private void Update()
     {
-        shootLeft.Disable();
-        shootLeft.performed -= OnShootStart;
-        shootLeft.canceled -= OnShootEnd;
-
-        shootRight.Disable();
-        shootRight.performed -= OnShootStart;
-        shootRight.canceled -= OnShootEnd;
-
-        weaponSwap.Disable();
+        if (shootVector != 0)
+            Attack();
     }
 
-    private void OnShootStart(InputAction.CallbackContext context)
+    public void OnShootStart(Vector2 shootDirection)
     {
-        if (context.action == shootLeft)
+        if (shootDirection.x == -1)
         {
             shootVector = -1;
         }
-        if (context.action == shootRight)
+        if (shootDirection.x == 1)
         {
             shootVector = 1;
         }
     }
 
-    private void OnShootEnd(InputAction.CallbackContext context)
+    public void OnShootEnd(InputAction.CallbackContext context)
     {
         shootVector = 0;
     }
     
-    private void SwapWeapon(InputAction.CallbackContext context)
+    public void SwapWeapon()
     {
         switch(currentWeapon)
         {
@@ -119,56 +101,177 @@ public class BHShooterController : MonoBehaviour
                 Debug.Log("Current Weapon: " + currentWeapon);
                 break;
         }
+        projectileStats.weaponType = currentWeapon;
     }
 
-    void Update()
-    {
-        if (shootVector != 0)
-            Attack();
-    }
+
 
     private void Attack()
     {
-        float shootHor = 1f;
         Transform bulletSpawnLocation = null;
         
-        if (Time.time > lastFire + fireDelay)
+        if (Time.time > lastFire + projectileType.bulletFireDelay)
         {
-
+            //Grab Projectile info from Serialized Object
             GameObject bullet = shooters[currentWeaponIndex].shooterScriptableObject.BulletPrefab;
-            bulletSpeed = shooters[currentWeaponIndex].shooterScriptableObject.bulletSpeed;
+
+            projectileStats.bulletSpeed = projectileType.bulletSpeed;
+            projectileStats.bulletSize = shooters[currentWeaponIndex].shooterScriptableObject.bulletSize;
+            projectileStats.bulletLife = projectileType.bulletLifetime;
+            projectileStats.bulletDamage = projectileType.bulletDamage;
+            projectileStats.statsProjectileType = projectileType;
 
             switch (shootVector)
             {
                 case -1:
-                    
-                    bulletSpeed = Mathf.Abs(bulletSpeed);
+
+                    projectileStats.bulletSpeed = Mathf.Abs(projectileStats.bulletSpeed);
                     bulletSpawnLocation = bulletSpawnLeft;
                     break;
 
                 case 1:
 
-                    if (bulletSpeed >= 0)
-                        bulletSpeed = -bulletSpeed;
+                    if (projectileStats.bulletSpeed >= 0)
+                        projectileStats.bulletSpeed = -projectileStats.bulletSpeed;
                    
-                    bulletSpawnLocation = bulletSpawnRight;
+                    bulletSpawnLocation = bulletSpawnRight; 
                     break;
             }
 
-            bullet = Instantiate(bullet, bulletSpawnLocation.position, bulletSpawnLocation.rotation) as GameObject;
-            bullet.GetComponent<BHProjectile>().isEnemyBullet = false;
-            bullet.GetComponent<BHProjectile>().Shoot(shootHor, bulletSpeed, bulletSize, bulletDamage, bulletLife, cityCenter, currentWeapon);
+            //When firing multiple bullets, offset them so they are in the center.
+            CalculateOffset();
 
-            lastFire = Time.time;
-            StartCoroutine(CoolDown());
+            //Does this need a comment?
+            SpawnBullets(bullet, shootHor, bulletSpawnLocation);
+
         }
     }
 
+    private void CalculateOffset()
+    {
+        spawnOffset = Vector3.zero;
+        float yOffset = 0f;
+
+
+        // This is placeholder, will be updated later to account for size of projectile
+        switch (projectileType.multiBulletAmount)
+        {
+            case 1:
+                yOffset = 0f;
+                break;
+            case 2:
+                yOffset = -.07f;
+                break;
+            case 3:
+                yOffset = -.15f;
+                break;
+            case 4:
+                yOffset = -.2f;
+                break;
+            case 5:
+                yOffset = -.25f;
+                break;
+            default:
+                break;
+        }
+
+        spawnOffset = new Vector3(0, yOffset, 0);
+        offsetIncreaseAmount = .15f;
+    }
+
+    private void SpawnBullets(GameObject bullet, float shootHorizontal, Transform spawnLocation)
+    {
+        switch (projectileType.projectileEnumReference)
+        {
+            case ProjectileType.ProjectilesEnum.multiBullet:
+                SpawnMultiBullet(bullet, shootHorizontal, spawnLocation);
+                break;
+            case ProjectileType.ProjectilesEnum.sprayBullet:
+                SpawnSprayBullet(bullet, shootHorizontal, spawnLocation);
+                break;
+            case ProjectileType.ProjectilesEnum.helixBullet:
+                SpawnHelixBullet(bullet, spawnLocation);
+                break;
+            case ProjectileType.ProjectilesEnum.remoteExplosive:
+                SpawnRemoteExplodeBullet(bullet, spawnLocation);
+                break;
+        }
+    }
+
+    private void SpawnMultiBullet(GameObject bullet, float shootHorizontal, Transform spawnLocation)
+    {
+        Vector3 bulletOffset = spawnOffset;
+
+        for (int i = 0; i < projectileType.multiBulletAmount; i++)
+        {
+            bullet = Instantiate(bullet, spawnLocation.position + bulletOffset, spawnLocation.rotation) as GameObject;
+            bullet.GetComponent<BHProjectile>().isEnemyBullet = false;
+            bullet.GetComponent<BHProjectile>().Shoot(cityCenter, projectileStats);
+
+            lastFire = Time.time;
+            //StartCoroutine(CoolDown());
+
+            bulletOffset.y += offsetIncreaseAmount;
+        }
+    }
+
+    private void SpawnSprayBullet(GameObject bullet, float shootHorizontal, Transform spawnLocation)
+    {
+        Vector3 bulletOffset = spawnOffset;
+
+        projectileStats.verticalDirection = -1;
+
+        for (int i = 0; i <= 2; i++)
+        {
+            bullet = Instantiate(bullet, spawnLocation.position + bulletOffset, spawnLocation.rotation) as GameObject;
+            bullet.GetComponent<BHProjectile>().isEnemyBullet = false;
+            bullet.GetComponent<BHProjectile>().Shoot(cityCenter, projectileStats);
+            projectileStats.verticalDirection += 1;
+
+            lastFire = Time.time;
+            //StartCoroutine(CoolDown());
+
+            bulletOffset.y += offsetIncreaseAmount;
+        }
+    }
+
+    private void SpawnHelixBullet(GameObject bullet, Transform spawnLocation)
+    {
+        projectileStats.verticalDirection = -1;
+
+        for (int i = 0; i <= 2; i++)
+        {
+            bullet = Instantiate(bullet, spawnLocation.position , spawnLocation.rotation) as GameObject;
+            bullet.GetComponent<BHProjectile>().isEnemyBullet = false;
+            bullet.GetComponent<BHProjectile>().ShootHelix(cityCenter, projectileStats, projectileType.verticalSpeed, projectileType.verticalRange);
+            projectileStats.verticalDirection = 1;
+
+            lastFire = Time.time;
+            //StartCoroutine(CoolDown());
+        }
+    }
+
+    private void SpawnRemoteExplodeBullet(GameObject bullet, Transform spawnLocation)
+    {
+        Vector3 bulletOffset = spawnOffset;
+
+        bullet = Instantiate(bullet, spawnLocation.position + bulletOffset, spawnLocation.rotation) as GameObject;
+        bullet.GetComponent<BHProjectile>().isEnemyBullet = false;
+        bullet.GetComponent<BHProjectile>().Shoot(cityCenter, projectileStats);
+
+        lastFire = Time.time;
+        //StartCoroutine(CoolDownRemoteExplode());
+    }
 
     private IEnumerator CoolDown()
     {
-        coolDownAttack = true;
-        yield return new WaitForSeconds(fireDelay);
-        coolDownAttack = false;
+        Debug.Log("Standard Timer: " + projectileType.bulletFireDelay);
+        yield return new WaitForSeconds(projectileType.bulletFireDelay);
+    }
+
+    private IEnumerator CoolDownRemoteExplode()
+    {
+        Debug.Log("Remote Timer: " + projectileType.autoDetonationTimer);
+        yield return new WaitForSeconds(projectileType.autoDetonationTimer);
     }
 }

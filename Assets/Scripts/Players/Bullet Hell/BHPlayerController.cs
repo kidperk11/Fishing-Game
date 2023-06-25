@@ -34,13 +34,20 @@ public class BHPlayerController : MonoBehaviour
     [Space(10)]
     [Header("Other")]
     public BHPlayerSpriteController spriteController;
+    public BHShooterController playerShootingController;
     public Rigidbody rigidBody;
 
     protected static BHPlayerController s_Instance;
     public static BHPlayerController instance { get { return s_Instance; } }
     //Player Inputs
     public BHPlayerActions moveActions;
+
+
+    private InputAction shootRight;
+    private InputAction shootLeft;
+
     private InputAction movePlayer;
+    private InputAction weaponSwap;
 
 
     private void Awake()
@@ -50,7 +57,31 @@ public class BHPlayerController : MonoBehaviour
 
     private void OnEnable()
     {
+        shootRight = moveActions.Player.ShootRight;
+
+
+        shootRight.performed += OnShootStart;
+        shootRight.canceled += OnShootEnd;
+
+        shootRight.Enable();
+
         movePlayer = moveActions.Player.Move;
+
+        shootLeft = moveActions.Player.ShootLeft;
+        weaponSwap = moveActions.Player.WeaponSwap;
+
+        weaponSwap.performed += SwapWeapon;
+
+
+        shootLeft.performed += OnShootStart;
+        shootLeft.canceled += OnShootEnd;
+
+
+
+        shootLeft.Enable();
+
+        weaponSwap.Enable();
+
         movePlayer.Enable();
 
     }
@@ -64,8 +95,40 @@ public class BHPlayerController : MonoBehaviour
 
     private void OnDisable()
     {
+        shootLeft.Disable();
+        shootLeft.performed -= OnShootStart;
+        shootLeft.canceled -= OnShootEnd;
+
+
+        shootRight.Disable();
+        shootRight.performed -= OnShootStart;
+        shootRight.canceled -= OnShootEnd;
+
         movePlayer.Disable();
     }
+
+    private void OnShootStart(InputAction.CallbackContext context)
+    {
+        Vector2 shootDirection = new Vector2(0, 0);
+
+        if (context.action == shootLeft)
+        {
+            shootDirection = new Vector2(-1, 0);
+        }
+        if (context.action == shootRight)
+        {
+            shootDirection = new Vector2(1, 0);
+        }
+
+        playerShootingController.OnShootStart(shootDirection);
+    }
+
+    private void OnShootEnd(InputAction.CallbackContext context)
+    {
+        playerShootingController.OnShootEnd(context);
+    }
+
+
 
     private void Update()
     {
@@ -80,6 +143,11 @@ public class BHPlayerController : MonoBehaviour
         // Move the player
         PlayerHeight();
         PlayerRotate();
+    }
+
+    private void SwapWeapon(InputAction.CallbackContext context)
+    {
+        playerShootingController.SwapWeapon();
     }
 
     private void CurrentInput()
