@@ -54,6 +54,8 @@ public class BHShooterController : MonoBehaviour
     private SubmarineWeapons currentWeapon;
     private ProjectileStats projectileStats;
 
+    private bool singleProjectileActive;
+
 
     private void OnEnable()
     {
@@ -150,6 +152,8 @@ public class BHShooterController : MonoBehaviour
         spawnOffset = Vector3.zero;
         float yOffset = 0f;
 
+
+        // This is placeholder, will be updated later to account for size of projectile
         switch (projectileType.multiBulletAmount)
         {
             case 1:
@@ -185,8 +189,11 @@ public class BHShooterController : MonoBehaviour
             case ProjectileType.ProjectilesEnum.sprayBullet:
                 SpawnSprayBullet(bullet, shootHorizontal, spawnLocation);
                 break;
-            case ProjectileType.ProjectilesEnum.crissCrossBullet:
-                SpawnCrissCrossBullet(bullet, shootHorizontal, spawnLocation);
+            case ProjectileType.ProjectilesEnum.helixBullet:
+                SpawnHelixBullet(bullet, spawnLocation);
+                break;
+            case ProjectileType.ProjectilesEnum.remoteExplosive:
+                SpawnRemoteExplodeBullet(bullet, spawnLocation);
                 break;
         }
     }
@@ -202,7 +209,7 @@ public class BHShooterController : MonoBehaviour
             bullet.GetComponent<BHProjectile>().Shoot(cityCenter, projectileStats);
 
             lastFire = Time.time;
-            StartCoroutine(CoolDown());
+            //StartCoroutine(CoolDown());
 
             bulletOffset.y += offsetIncreaseAmount;
         }
@@ -222,32 +229,49 @@ public class BHShooterController : MonoBehaviour
             projectileStats.verticalDirection += 1;
 
             lastFire = Time.time;
-            StartCoroutine(CoolDown());
+            //StartCoroutine(CoolDown());
 
             bulletOffset.y += offsetIncreaseAmount;
         }
     }
 
-    private void SpawnCrissCrossBullet(GameObject bullet, float shootHorizontal, Transform spawnLocation)
+    private void SpawnHelixBullet(GameObject bullet, Transform spawnLocation)
     {
-        Vector3 bulletOffset = new Vector3(0, 0, 0);
-
         projectileStats.verticalDirection = -1;
 
         for (int i = 0; i <= 2; i++)
         {
-            bullet = Instantiate(bullet, spawnLocation.position + bulletOffset, spawnLocation.rotation) as GameObject;
+            bullet = Instantiate(bullet, spawnLocation.position , spawnLocation.rotation) as GameObject;
             bullet.GetComponent<BHProjectile>().isEnemyBullet = false;
-            bullet.GetComponent<BHProjectile>().Shoot(cityCenter, projectileStats);
+            bullet.GetComponent<BHProjectile>().ShootHelix(cityCenter, projectileStats, projectileType.verticalSpeed, projectileType.verticalRange);
             projectileStats.verticalDirection = 1;
 
             lastFire = Time.time;
-            StartCoroutine(CoolDown());
+            //StartCoroutine(CoolDown());
         }
+    }
+
+    private void SpawnRemoteExplodeBullet(GameObject bullet, Transform spawnLocation)
+    {
+        Vector3 bulletOffset = spawnOffset;
+
+        bullet = Instantiate(bullet, spawnLocation.position + bulletOffset, spawnLocation.rotation) as GameObject;
+        bullet.GetComponent<BHProjectile>().isEnemyBullet = false;
+        bullet.GetComponent<BHProjectile>().Shoot(cityCenter, projectileStats);
+
+        lastFire = Time.time;
+        //StartCoroutine(CoolDownRemoteExplode());
     }
 
     private IEnumerator CoolDown()
     {
+        Debug.Log("Standard Timer: " + projectileType.bulletFireDelay);
         yield return new WaitForSeconds(projectileType.bulletFireDelay);
+    }
+
+    private IEnumerator CoolDownRemoteExplode()
+    {
+        Debug.Log("Remote Timer: " + projectileType.autoDetonationTimer);
+        yield return new WaitForSeconds(projectileType.autoDetonationTimer);
     }
 }

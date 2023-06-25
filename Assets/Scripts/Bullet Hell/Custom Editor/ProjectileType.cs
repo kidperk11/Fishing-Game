@@ -11,7 +11,8 @@ public struct ProjectileType
     {
         multiBullet,
         sprayBullet,
-        crissCrossBullet
+        helixBullet,
+        remoteExplosive
     }
 
     public ProjectilesEnum projectileEnumReference;
@@ -22,5 +23,13 @@ public struct ProjectileType
     public float bulletDamage;
     public float bulletSpeed;
 
+    // Helix bullet
+    public float verticalSpeed; // Speed of vertical movement
+    public float verticalRange; // Range of vertical movement
+
+    // Spray Bullet
     public int sprayBulletDirection;
+
+    // Remote Detonation
+    public float autoDetonationTimer;
 }

@@ -1,7 +1,8 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-/**Original Code from https://www.reddit.com/r/Unity2D/comments/libffv/ive_finally_done_it_a_custom_editor_based_on_enum/
+/**
+ * Original Code from https://www.reddit.com/r/Unity2D/comments/libffv/ive_finally_done_it_a_custom_editor_based_on_enum/
  * 
  * Modified by Austin Garrison
  **/
@@ -55,25 +56,12 @@ public class ProjectileTypeInspector : PropertyDrawer
                 amountProperty.intValue = EditorGUI.IntSlider(position, "Amount", amountProperty.intValue, 1, 5);
                 position.y += position.height;
 
+
                 //-----Multi-Bullet Delay-----
                 var delayProperty = propertyInfo.FindPropertyRelative("bulletFireDelay");
                 delayProperty.floatValue = EditorGUI.FloatField(position, "Fire Delay", delayProperty.floatValue);
                 position.y += position.height;
 
-                //-----Multi-Bullet Lifetime-----
-                var lifetimeProperty = propertyInfo.FindPropertyRelative("bulletLifetime");
-                lifetimeProperty.floatValue = EditorGUI.FloatField(position, "Lifetime", lifetimeProperty.floatValue);
-                position.y += position.height;
-                
-                //-----Multi-Bullet Damage-----
-                var damageProperty = propertyInfo.FindPropertyRelative("bulletDamage");
-                damageProperty.floatValue = EditorGUI.FloatField(position, "Damage", damageProperty.floatValue);
-                position.y += position.height; 
-                
-                //-----Multi-Bullet Speed-----
-                var speedProperty = propertyInfo.FindPropertyRelative("bulletSpeed");
-                speedProperty.floatValue = EditorGUI.FloatField(position, "Speed", speedProperty.floatValue);
-                position.y += position.height;
             }
             else if (movementType == ProjectileType.ProjectilesEnum.sprayBullet)
             {
@@ -83,57 +71,64 @@ public class ProjectileTypeInspector : PropertyDrawer
                 directionProperty.intValue = EditorGUI.IntField(position, "Fire Direction", directionProperty.intValue);
                 position.y += position.height;
 
-                //-----Spray Delay-----
+
+                //-----Spray Bullet Delay-----
                 var delayProperty = propertyInfo.FindPropertyRelative("bulletFireDelay");
                 delayProperty.floatValue = EditorGUI.FloatField(position, "Fire Delay", delayProperty.floatValue);
                 position.y += position.height;
 
-                //-----Spray Lifetime-----
-                var lifetimeProperty = propertyInfo.FindPropertyRelative("bulletLifetime");
-                lifetimeProperty.floatValue = EditorGUI.FloatField(position, "Lifetime", lifetimeProperty.floatValue);
-                position.y += position.height;
-
-                //-----Spray Damage-----
-                var damageProperty = propertyInfo.FindPropertyRelative("bulletDamage");
-                damageProperty.floatValue = EditorGUI.FloatField(position, "Damage", damageProperty.floatValue);
-                position.y += position.height;
-
-                //-----Spray Speed-----
-                var speedProperty = propertyInfo.FindPropertyRelative("bulletSpeed");
-                speedProperty.floatValue = EditorGUI.FloatField(position, "Speed", speedProperty.floatValue);
-                position.y += position.height;
             }
-            else if (movementType == ProjectileType.ProjectilesEnum.crissCrossBullet)
+            else if (movementType == ProjectileType.ProjectilesEnum.helixBullet)
             {
                 //Properties for CrissCross Projectile
 
-                //-----CrissCross Delay-----
+                //-----Helix Vertical Speed-----
+                var verticalSpeedProperty = propertyInfo.FindPropertyRelative("verticalSpeed");
+                verticalSpeedProperty.floatValue = EditorGUI.FloatField(position, "Vertical Speed", verticalSpeedProperty.floatValue);
+                position.y += position.height;
+
+                //-----Helix Range-----
+                var verticalRangeProperty = propertyInfo.FindPropertyRelative("verticalRange");
+                verticalRangeProperty.floatValue = EditorGUI.FloatField(position, "Vertical Range", verticalRangeProperty.floatValue);
+                position.y += position.height;
+
+                //-----Helix Delay-----
                 var delayProperty = propertyInfo.FindPropertyRelative("bulletFireDelay");
                 delayProperty.floatValue = EditorGUI.FloatField(position, "Fire Delay", delayProperty.floatValue);
                 position.y += position.height;
 
-                //-----CrissCross Lifetime-----
-                var lifetimeProperty = propertyInfo.FindPropertyRelative("bulletLifetime");
-                lifetimeProperty.floatValue = EditorGUI.FloatField(position, "Lifetime", lifetimeProperty.floatValue);
-                position.y += position.height;
+            }
+            else if (movementType == ProjectileType.ProjectilesEnum.remoteExplosive)
+            {
+                //Properties for CrissCross Projectile
 
-                //-----CrissCross Damage-----
-                var damageProperty = propertyInfo.FindPropertyRelative("bulletDamage");
-                damageProperty.floatValue = EditorGUI.FloatField(position, "Damage", damageProperty.floatValue);
-                position.y += position.height;
-
-                //-----CrissCross Speed-----
-                var speedProperty = propertyInfo.FindPropertyRelative("bulletSpeed");
-                speedProperty.floatValue = EditorGUI.FloatField(position, "Speed", speedProperty.floatValue);
+                //-----Remote Explosive Delay-----
+                var remoteExplodeTimerProperty = propertyInfo.FindPropertyRelative("autoDetonationTimer");
+                remoteExplodeTimerProperty.floatValue = EditorGUI.FloatField(position, "Auto-Detonate Timer", remoteExplodeTimerProperty.floatValue);
                 position.y += position.height;
             }
+
+            //-----Universal Lifetime-----
+            var uniLifetimeProperty = propertyInfo.FindPropertyRelative("bulletLifetime");
+            uniLifetimeProperty.floatValue = EditorGUI.FloatField(position, "Lifetime", uniLifetimeProperty.floatValue);
+            position.y += position.height;
+
+            //-----Universal  Damage-----
+            var uniDamageProperty = propertyInfo.FindPropertyRelative("bulletDamage");
+            uniDamageProperty.floatValue = EditorGUI.FloatField(position, "Damage", uniDamageProperty.floatValue);
+            position.y += position.height;
+
+            //-----Universal  Speed-----
+            var uniSpeedProperty = propertyInfo.FindPropertyRelative("bulletSpeed");
+            uniSpeedProperty.floatValue = EditorGUI.FloatField(position, "Speed", uniSpeedProperty.floatValue);
+            position.y += position.height;
         }
     }
 
     //GetPropertyHeight is like getting the height of the whole box of script in the inspector before filling in
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        return property.isExpanded ? 20*6 : 20*3;
+        return property.isExpanded ? 20*7 : 20*3;
         //kind of inconvenient but works for now. If I have more variable I have to adjust these number myself.
     }
 }
