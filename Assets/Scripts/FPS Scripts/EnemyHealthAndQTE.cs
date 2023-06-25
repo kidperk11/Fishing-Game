@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemyHealthAndQTE : MonoBehaviour
 {
+    public Rigidbody rb;
     public GameObject boxPattern;
     public List<QTEActivationBox> allBoxes;
     public BoxCollider boxCollider;
@@ -37,5 +38,10 @@ public class EnemyHealthAndQTE : MonoBehaviour
         {
             harpoonable = true;
         }
+    }
+
+    public void TakeKnockback(Vector3 knockbackDirection, float knockbackForce)
+    {
+        rb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
     }
 }

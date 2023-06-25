@@ -133,7 +133,7 @@ public class HarpoonController : MonoBehaviour
         
         reelTimer += Time.deltaTime;
         float percentageComplete = reelTimer / maxReelTime;
-        Debug.Log(percentageComplete);
+        //Debug.Log(percentageComplete);
         this.transform.position = Vector3.Lerp(startPoint, endPoint.position, percentageComplete);
         if (this.transform.position == endPoint.position)
         {
@@ -144,7 +144,7 @@ public class HarpoonController : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collision)
     {
         if(state == State.InAir)
         {
@@ -153,12 +153,14 @@ public class HarpoonController : MonoBehaviour
                 SetLerpProperties();
 
                 rb.velocity = Vector3.zero;
-                Destroy(rb);
+                
                 hitEnemy = collision.gameObject.GetComponent<EnemyHealthAndQTE>();
                 if (hitEnemy.harpoonable)
                 {
                     //hitEnemy.gameObject.transform.parent = this.transform;
                     //hitEnemy.boxCollider.enabled = false;
+                    Destroy(rb);
+                    Debug.Log("reeling in: " + hitEnemy);
                     startPoint = this.transform.position;
                     
                     state = State.HitEnemy;

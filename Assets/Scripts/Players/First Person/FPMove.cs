@@ -56,6 +56,9 @@ public class FPMove : MonoBehaviour
     [Header("Sound Effects")]
     public AudioSource jumpSound;
 
+    [Header("Health")]
+    public FPPlayerHealth health;
+
     private void OnEnable()
     {
         movePlayer = moveActions.Player.Move;
@@ -95,7 +98,12 @@ public class FPMove : MonoBehaviour
         //This check makes a line that is a little longer than half of the player's body.
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
 
-        CurrentInput();
+        //Keeps the player from moving if they're being knocked back by an attack
+        if (!health.takingKnockback)
+        {
+            CurrentInput();
+        }
+        
         SpeedControl();
         StateHandler();
 
@@ -257,6 +265,8 @@ public class FPMove : MonoBehaviour
         readyToJump = true;
         exitingSlope = false;
     }
+
+    
 
     private void OnCollisionEnter(Collision collision)
     {

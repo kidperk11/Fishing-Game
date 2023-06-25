@@ -8,6 +8,7 @@ public class FPFireGun : MonoBehaviour
 {
     public FPPlayerActions playerActions;
     public Rigidbody playerRB;
+    public GameObject orientation;
     private InputAction fireGun;
     public Camera fpsCam;
     public Transform gunFireTransform;
@@ -20,7 +21,11 @@ public class FPFireGun : MonoBehaviour
 
     [Header("Prefabs for different bullets")]
     public GameObject pufferBombPrefab;
+    public GameObject urchinBoulderPrefab;
     public string specialBullet;
+
+    [Header("Debug tools")]
+    public bool keepSpecialBullet;
 
     
 
@@ -41,7 +46,7 @@ public class FPFireGun : MonoBehaviour
     void Start()
     {
         readyToFire = true;
-        specialBullet = null;
+        //specialBullet = null;
     }
 
     private void Awake()
@@ -103,9 +108,33 @@ public class FPFireGun : MonoBehaviour
                 bulletInstance.gameObject.transform.forward = directionWithoutSpread.normalized;
                 //bulletInstance.rb.AddForce(directionWithoutSpread.normalized * bulletInstance.bulletSpeed, ForceMode.Impulse);
             }
+            else if (specialBullet == "urchin")
+            {
+                Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+                RaycastHit hit;
+                Vector3 targetPoint;
 
-            specialBullet = null;
-            hudBulletText.text = new string("No special bullet active.");
+                if (Physics.Raycast(ray, out hit))
+                {
+                    targetPoint = hit.point;
+                }
+                else
+                {
+                    targetPoint = ray.GetPoint(75); //This is just a point 75m from the player's LOS
+                }
+
+                Vector3 directionWithoutSpread = targetPoint - gunFireTransform.position;
+                SpecialUrchinBulletAI bulletInstance = Instantiate(urchinBoulderPrefab, gunFireTransform.position, Quaternion.identity).gameObject.GetComponent<SpecialUrchinBulletAI>();
+                bulletInstance.gameObject.transform.forward = orientation.transform.forward;
+                //bulletInstance.rb.AddForce(directionWithoutSpread.normalized * bulletInstance.bulletSpeed, ForceMode.Impulse);
+            }
+
+            if (!keepSpecialBullet)
+            {
+                specialBullet = null;
+                hudBulletText.text = new string("No special bullet active.");
+            }
+            
         }
     }
 
