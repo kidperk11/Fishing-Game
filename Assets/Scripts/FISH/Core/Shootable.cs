@@ -5,9 +5,11 @@ using UnityEngine;
 public class Shootable : MonoBehaviour
 {
     public bool shot;
+    public int shotCounter;
 
     public void Activate()
     {
         shot = true;
+        shotCounter++;
     }
 }
