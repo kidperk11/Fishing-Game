@@ -53,8 +53,11 @@ public class BHShooterController : MonoBehaviour
     private Vector3 spawnOffset = Vector3.zero;
     private SubmarineWeapons currentWeapon;
     private ProjectileStats projectileStats;
+    private Transform bulletSpawnLocation = null;
 
-    private bool singleProjectileActive;
+    // Remote Explosive
+    public bool singleProjectileActive;
+    public BHProjectile activeRemoteExplosive;
 
 
     private void OnEnable()
@@ -63,11 +66,7 @@ public class BHShooterController : MonoBehaviour
         currentWeaponIndex = 0;
     }
 
-    private void Update()
-    {
-        if (shootVector != 0)
-            Attack();
-    }
+
 
     public void OnShootStart(Vector2 shootDirection)
     {
@@ -104,48 +103,82 @@ public class BHShooterController : MonoBehaviour
         projectileStats.weaponType = currentWeapon;
     }
 
-
-
-    private void Attack()
+    private void Update()
     {
-        Transform bulletSpawnLocation = null;
-        
-        if (Time.time > lastFire + projectileType.bulletFireDelay)
+        if(shootVector != 0)
         {
-            //Grab Projectile info from Serialized Object
             GameObject bullet = shooters[currentWeaponIndex].shooterScriptableObject.BulletPrefab;
+            GetStats();
 
-            projectileStats.bulletSpeed = projectileType.bulletSpeed;
-            projectileStats.bulletSize = shooters[currentWeaponIndex].shooterScriptableObject.bulletSize;
-            projectileStats.bulletLife = projectileType.bulletLifetime;
-            projectileStats.bulletDamage = projectileType.bulletDamage;
-            projectileStats.statsProjectileType = projectileType;
 
-            switch (shootVector)
+            switch (projectileType.projectileEnumReference)
             {
-                case -1:
-
-                    projectileStats.bulletSpeed = Mathf.Abs(projectileStats.bulletSpeed);
-                    bulletSpawnLocation = bulletSpawnLeft;
+                case ProjectileType.ProjectilesEnum.multiBullet:
+                    if(Time.time > lastFire + projectileType.bulletFireDelay)
+                        SpawnMultiBullet(bullet, shootHor, bulletSpawnLocation);
                     break;
 
-                case 1:
 
-                    if (projectileStats.bulletSpeed >= 0)
-                        projectileStats.bulletSpeed = -projectileStats.bulletSpeed;
-                   
-                    bulletSpawnLocation = bulletSpawnRight; 
+                case ProjectileType.ProjectilesEnum.sprayBullet:
+                    if (Time.time > lastFire + projectileType.bulletFireDelay)  
+                        SpawnSprayBullet(bullet, shootHor, bulletSpawnLocation);
+                    break;
+
+
+                case ProjectileType.ProjectilesEnum.helixBullet:
+                    if (Time.time > lastFire + projectileType.bulletFireDelay)
+                        SpawnHelixBullet(bullet, bulletSpawnLocation);   
+                    break;
+
+
+                case ProjectileType.ProjectilesEnum.remoteExplosive:
+                    if (Time.time > lastFire + projectileType.remoteExplodeFireDelay)
+                    {
+                        if (!singleProjectileActive)
+                        {
+                            SpawnRemoteExplodeBullet(bullet, bulletSpawnLocation);
+                            break;
+
+                        }
+                        else if (singleProjectileActive && activeRemoteExplosive != null)
+                        {
+                            activeRemoteExplosive.ManualRemoteExplode(this);
+                        }
+                    }
                     break;
             }
-
-            //When firing multiple bullets, offset them so they are in the center.
-            CalculateOffset();
-
-            //Does this need a comment?
-            SpawnBullets(bullet, shootHor, bulletSpawnLocation);
-
         }
     }
+
+    private void GetStats()
+    {
+        projectileStats.bulletSpeed = projectileType.bulletSpeed;
+        projectileStats.bulletSize = shooters[currentWeaponIndex].shooterScriptableObject.bulletSize;
+        projectileStats.bulletLife = projectileType.bulletLifetime;
+        projectileStats.bulletDamage = projectileType.bulletDamage;
+        projectileStats.statsProjectileType = projectileType;
+
+        switch (shootVector)
+        {
+            case -1:
+
+                projectileStats.bulletSpeed = Mathf.Abs(projectileStats.bulletSpeed);
+                bulletSpawnLocation = bulletSpawnLeft;
+                break;
+
+            case 1:
+
+                if (projectileStats.bulletSpeed >= 0)
+                    projectileStats.bulletSpeed = -projectileStats.bulletSpeed;
+
+                bulletSpawnLocation = bulletSpawnRight;
+                break;
+        }
+
+        //When firing multiple bullets, offset them so they are in the center.
+        CalculateOffset();
+    }
+
 
     private void CalculateOffset()
     {
@@ -179,25 +212,6 @@ public class BHShooterController : MonoBehaviour
         offsetIncreaseAmount = .15f;
     }
 
-    private void SpawnBullets(GameObject bullet, float shootHorizontal, Transform spawnLocation)
-    {
-        switch (projectileType.projectileEnumReference)
-        {
-            case ProjectileType.ProjectilesEnum.multiBullet:
-                SpawnMultiBullet(bullet, shootHorizontal, spawnLocation);
-                break;
-            case ProjectileType.ProjectilesEnum.sprayBullet:
-                SpawnSprayBullet(bullet, shootHorizontal, spawnLocation);
-                break;
-            case ProjectileType.ProjectilesEnum.helixBullet:
-                SpawnHelixBullet(bullet, spawnLocation);
-                break;
-            case ProjectileType.ProjectilesEnum.remoteExplosive:
-                SpawnRemoteExplodeBullet(bullet, spawnLocation);
-                break;
-        }
-    }
-
     private void SpawnMultiBullet(GameObject bullet, float shootHorizontal, Transform spawnLocation)
     {
         Vector3 bulletOffset = spawnOffset;
@@ -209,7 +223,6 @@ public class BHShooterController : MonoBehaviour
             bullet.GetComponent<BHProjectile>().Shoot(cityCenter, projectileStats);
 
             lastFire = Time.time;
-            //StartCoroutine(CoolDown());
 
             bulletOffset.y += offsetIncreaseAmount;
         }
@@ -229,7 +242,6 @@ public class BHShooterController : MonoBehaviour
             projectileStats.verticalDirection += 1;
 
             lastFire = Time.time;
-            //StartCoroutine(CoolDown());
 
             bulletOffset.y += offsetIncreaseAmount;
         }
@@ -247,7 +259,6 @@ public class BHShooterController : MonoBehaviour
             projectileStats.verticalDirection = 1;
 
             lastFire = Time.time;
-            //StartCoroutine(CoolDown());
         }
     }
 
@@ -256,22 +267,10 @@ public class BHShooterController : MonoBehaviour
         Vector3 bulletOffset = spawnOffset;
 
         bullet = Instantiate(bullet, spawnLocation.position + bulletOffset, spawnLocation.rotation) as GameObject;
+        activeRemoteExplosive = bullet.GetComponent<BHProjectile>();
         bullet.GetComponent<BHProjectile>().isEnemyBullet = false;
-        bullet.GetComponent<BHProjectile>().Shoot(cityCenter, projectileStats);
+        bullet.GetComponent<BHProjectile>().ShootRemoteExplosive(cityCenter, projectileStats, this);
 
         lastFire = Time.time;
-        //StartCoroutine(CoolDownRemoteExplode());
-    }
-
-    private IEnumerator CoolDown()
-    {
-        Debug.Log("Standard Timer: " + projectileType.bulletFireDelay);
-        yield return new WaitForSeconds(projectileType.bulletFireDelay);
-    }
-
-    private IEnumerator CoolDownRemoteExplode()
-    {
-        Debug.Log("Remote Timer: " + projectileType.autoDetonationTimer);
-        yield return new WaitForSeconds(projectileType.autoDetonationTimer);
     }
 }

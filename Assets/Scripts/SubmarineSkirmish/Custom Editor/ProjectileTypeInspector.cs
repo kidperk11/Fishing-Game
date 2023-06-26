@@ -106,6 +106,13 @@ public class ProjectileTypeInspector : PropertyDrawer
                 var remoteExplodeTimerProperty = propertyInfo.FindPropertyRelative("autoDetonationTimer");
                 remoteExplodeTimerProperty.floatValue = EditorGUI.FloatField(position, "Auto-Detonate Timer", remoteExplodeTimerProperty.floatValue);
                 position.y += position.height;
+
+                //-----Remote Explade Manual Delay-----
+                //remoteExplodeFireDelay
+
+                var manualExploderProperty = propertyInfo.FindPropertyRelative("remoteExplodeFireDelay");
+                manualExploderProperty.floatValue = EditorGUI.FloatField(position, "Manual Explode Delay", manualExploderProperty.floatValue);
+                position.y += position.height;
             }
 
             //-----Universal Lifetime-----

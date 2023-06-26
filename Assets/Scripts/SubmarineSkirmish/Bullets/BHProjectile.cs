@@ -24,6 +24,7 @@ public class BHProjectile : MonoBehaviour
     private float bulletDamage;
     private float bulletSpeed;
     private bool startRotate;
+    private bool hasBoomed = false;
     private Transform rotation;
     private SubmarineWeapons weaponType;
     private float vertDir;
@@ -41,6 +42,9 @@ public class BHProjectile : MonoBehaviour
     private float verticalSpeed = 5f;           // Speed of vertical movement
     private float verticalRange = .3f;           // Range of vertical movement
     private float crissCrossTime = 0f;          // Timer for oscillation
+
+    // Remote Explode Bullet
+    BHShooterController firedFrom = null;
 
     void Awake()
     {
@@ -91,6 +95,63 @@ public class BHProjectile : MonoBehaviour
         
     }
 
+    private void GetStats(Transform center, ProjectileStats stats)
+    {
+        vertDir = stats.verticalDirection;
+        lifeTime = stats.bulletLife;
+        weaponType = stats.weaponType;
+        bulletSize = stats.bulletSize;
+        bulletSpeed = stats.bulletSpeed;
+        bulletDamage = stats.bulletDamage;
+
+        //I dont remember Why i did this, but dont remove it
+        if (vertDir == -1)
+            vertDir = -.06f;
+        if (vertDir == 1)
+            vertDir = .06f;
+
+        rotation = center;
+        startRotate = true;
+
+        //Set scale of meshRender (And colliders)
+        bulletSizeObject.transform.localScale = new Vector3(bulletSize, bulletSize, bulletSize);
+    }
+
+
+    internal void Shoot(Transform center, ProjectileStats projInfo)
+    {
+        GetStats(center, projInfo);
+
+        this.projectileType = projInfo.statsProjectileType;
+
+        StartCoroutine(DeathDelay());
+    }
+
+    internal void ShootHelix(Transform center, ProjectileStats projInfo, float verticalSpeed, float verticalRange)
+    {
+        GetStats(center, projInfo);
+
+        this.projectileType = projInfo.statsProjectileType;
+        this.verticalSpeed = verticalSpeed;
+        this.verticalRange = verticalRange;
+
+        StartCoroutine(DeathDelay());
+    }
+
+    internal void ShootRemoteExplosive(Transform center, ProjectileStats projInfo, BHShooterController firedFrom)
+    {
+        this.firedFrom = firedFrom;
+        this.firedFrom.singleProjectileActive = true;
+        GetStats(center, projInfo);
+        this.projectileType = projInfo.statsProjectileType;
+
+        StartCoroutine(DeathDelayRemote());
+    }
+
+    /*
+    * Helix Bullet
+    */
+
     private void MoveMultiBullet()
     {
         transform.RotateAround(rotation.position, Vector3.up, bulletSpeed * Time.deltaTime);
@@ -108,7 +169,6 @@ public class BHProjectile : MonoBehaviour
         }
     }
 
-
     private void MoveHelixBullet()
     {
         //bullets weave up and down, like a sin wave
@@ -125,83 +185,32 @@ public class BHProjectile : MonoBehaviour
         }
     }
 
-    internal void Shoot(Transform center, ProjectileStats projInfo)
+    /*
+     * Remote Explosive Bullet
+     */
+
+    public void ManualRemoteExplode(BHShooterController triggeredFrom)
     {
+        if (hasBoomed == false)
+        {
+            bulletSpeed = 0;
+            meshRenderer.enabled = false;
+            if (collideParticle != null)
+            {
+                collideParticle.gameObject.transform.localScale *= 10;
+                collideParticle.Play();
+            }
+            hasBoomed = true;
+            StartCoroutine(DelayAllowNewFire(.5f, triggeredFrom));
+        }
 
-        vertDir             = projInfo.verticalDirection;
-        lifeTime            = projInfo.bulletLife;
-        weaponType          = projInfo.weaponType;
-        bulletSize          = projInfo.bulletSize;
-        bulletSpeed         = projInfo.bulletSpeed;
-        bulletDamage        = projInfo.bulletDamage;
-        this.projectileType = projInfo.statsProjectileType;
-
-        //I dont remember Why i did this, but dont remove it
-        if (vertDir == -1)
-            vertDir = -.06f;
-        if (vertDir == 1)
-            vertDir = .06f;
-
-        rotation = center;
-        startRotate = true;
-
-        //Set scale of meshRender (And colliders)
-        bulletSizeObject.transform.localScale = new Vector3(bulletSize, bulletSize, bulletSize);
-
-        StartCoroutine(DeathDelay());
+        triggeredFrom.activeRemoteExplosive = null;
     }
 
-    internal void ShootHelix(Transform center, ProjectileStats projInfo, float verticalSpeed, float verticalRange)
-    {
-        vertDir = projInfo.verticalDirection;
-        lifeTime = projInfo.bulletLife;
-        weaponType = projInfo.weaponType;
-        bulletSize = projInfo.bulletSize;
-        bulletSpeed = projInfo.bulletSpeed;
-        bulletDamage = projInfo.bulletDamage;
-        this.projectileType = projInfo.statsProjectileType;
-        this.verticalSpeed = verticalSpeed;
-        this.verticalRange = verticalRange;
 
-        //I dont remember Why i did this, but dont remove it
-        if (vertDir == -1)
-            vertDir = -.06f;
-        if (vertDir == 1)
-            vertDir = .06f;
-
-        rotation = center;
-        startRotate = true;
-
-        //Set scale of meshRender (And colliders)
-        bulletSizeObject.transform.localScale = new Vector3(bulletSize, bulletSize, bulletSize);
-
-        StartCoroutine(DeathDelay());
-    }
-
-    internal void ShootRemoteExplosive(Transform center, ProjectileStats projInfo)
-    {
-        vertDir = projInfo.verticalDirection;
-        lifeTime = projInfo.bulletLife;
-        weaponType = projInfo.weaponType;
-        bulletSize = projInfo.bulletSize;
-        bulletSpeed = projInfo.bulletSpeed;
-        bulletDamage = projInfo.bulletDamage;
-        this.projectileType = projInfo.statsProjectileType;
-
-        //I dont remember Why i did this, but dont remove it
-        if (vertDir == -1)
-            vertDir = -.06f;
-        if (vertDir == 1)
-            vertDir = .06f;
-
-        rotation = center;
-        startRotate = true;
-
-        //Set scale of meshRender (And colliders)
-        bulletSizeObject.transform.localScale = new Vector3(bulletSize, bulletSize, bulletSize);
-
-        StartCoroutine(DeathDelay());
-    }
+    /*
+    * Collision Management
+    */
 
     private void OnTriggerEnter(Collider collider)
     {
@@ -236,6 +245,13 @@ public class BHProjectile : MonoBehaviour
                 meshRenderer.enabled = false;
                 StartCoroutine(DelayedDestroy(2f));
                 collider.GetComponentInParent<BHHealthManager>().ApplyDamage(bulletDamage);
+                hasBoomed = true;
+
+                if(firedFrom != null)
+                {
+                    firedFrom.singleProjectileActive = false;    
+                }
+
                 break;
             case SubmarineWeapons.retractable:
                 meshRenderer.enabled = false;
@@ -248,6 +264,11 @@ public class BHProjectile : MonoBehaviour
             collideParticle.Play();
     }
 
+    /**
+     * Enumerators
+     **/
+
+
     IEnumerator DeathDelay()
     {
         yield return new WaitForSeconds(lifeTime);
@@ -257,6 +278,31 @@ public class BHProjectile : MonoBehaviour
         //m_RigidBody.useGravity = true;
         expireParticle.Play();
         StartCoroutine(DelayedDestroy(3f));
+    }
+
+    IEnumerator DeathDelayRemote()
+    {
+        yield return new WaitForSeconds(lifeTime);
+
+        if (!hasBoomed)
+        {
+            //bulletSpeed /= 2;
+            bulletSpeed = 0;
+            meshRenderer.enabled = false;
+            //m_RigidBody.useGravity = true;
+            if (collideParticle != null)
+                collideParticle.Play();
+
+            firedFrom.singleProjectileActive = false;
+            StartCoroutine(DelayedDestroy(3f));
+        }
+    }
+
+    private IEnumerator DelayAllowNewFire(float destroyTime, BHShooterController triggeredFrom)
+    {
+        yield return new WaitForSeconds(destroyTime);
+        triggeredFrom.singleProjectileActive = false;
+        Destroy(gameObject);
     }
 
     private IEnumerator DelayedDestroy(float destroyTime)

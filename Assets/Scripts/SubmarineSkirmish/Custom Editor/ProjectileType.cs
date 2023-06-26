@@ -32,4 +32,5 @@ public struct ProjectileType
 
     // Remote Detonation
     public float autoDetonationTimer;
+    public float remoteExplodeFireDelay;
 }
