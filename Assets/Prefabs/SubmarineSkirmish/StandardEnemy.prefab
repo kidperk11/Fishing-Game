@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 8505959537632963505}
   - component: {fileID: 725019314}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: StandardEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78,9 +78,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc632c8c7e454184d82213f2dca97c70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vertical: 1
-  horizontal: 1
-  tracking: 1
+  vertical: 0
+  horizontal: 0
+  tracking: 0
   playerScanner:
     heightOffset: 1
     detectionRadius: 2
@@ -123,7 +123,7 @@ MonoBehaviour:
   submarineBack: {fileID: -1373426248, guid: 00e98cc50507de94780de7c7515bb54f, type: 3}
   submarineFront: {fileID: 152974597, guid: 00e98cc50507de94780de7c7515bb54f, type: 3}
   fishSide: {fileID: 1930258107, guid: 6255df598f4242b478b6cad7d8073b88, type: 3}
-  fishBack: {fileID: 1930258107, guid: 6255df598f4242b478b6cad7d8073b88, type: 3}
+  fishBack: {fileID: -335387502, guid: 6255df598f4242b478b6cad7d8073b88, type: 3}
   fishFront: {fileID: 1158028691, guid: 6255df598f4242b478b6cad7d8073b88, type: 3}
   rotorRight: {fileID: 8505959537932529102}
   rotorLeft: {fileID: 8505959537559770607}
@@ -163,6 +163,30 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 8505959538232191411}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 7269765279399716}
+        m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 8352324754829264088}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
@@ -749,6 +773,11 @@ PrefabInstance:
 --- !u!4 &7269765265242724 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: f50e1a71574864d4188d7f6d68f38e1f, type: 3}
+  m_PrefabInstance: {fileID: 7269765265105124}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &7269765279399716 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 19800000, guid: f50e1a71574864d4188d7f6d68f38e1f, type: 3}
   m_PrefabInstance: {fileID: 7269765265105124}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &404796403392747323

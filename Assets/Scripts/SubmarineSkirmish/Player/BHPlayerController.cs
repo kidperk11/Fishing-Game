@@ -72,16 +72,11 @@ public class BHPlayerController : MonoBehaviour
 
         weaponSwap.performed += SwapWeapon;
 
-
         shootLeft.performed += OnShootStart;
         shootLeft.canceled += OnShootEnd;
 
-
-
         shootLeft.Enable();
-
         weaponSwap.Enable();
-
         movePlayer.Enable();
 
     }
@@ -173,6 +168,7 @@ public class BHPlayerController : MonoBehaviour
         if (autoRotate)
         {
             transform.RotateAround(center.position, Vector3.up, horizontalMoveSpeed * Time.deltaTime);
+            NewRadius();
         }
         else
         {
