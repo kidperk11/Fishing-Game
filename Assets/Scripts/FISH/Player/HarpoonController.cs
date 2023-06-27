@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -73,6 +74,8 @@ public class HarpoonController : MonoBehaviour
                 break;
         }        
     }
+
+    
 
     private void InAirAI()
     {
@@ -191,9 +194,18 @@ public class HarpoonController : MonoBehaviour
                 startPoint = this.transform.position;
                 state = State.ReelIn;
             }
-            if (collision.gameObject.CompareTag("Player"))
+            if (collision.gameObject.CompareTag("HarpoonSwitch"))
             {
-                
+                HarpoonSwitch harpoonSwitch = collision.gameObject.GetComponent<HarpoonSwitch>();
+                if (!harpoonSwitch.isActive)
+                {
+                    harpoonSwitch.Activate();
+                }
+                else
+                {
+                    harpoonSwitch.Deactivate();
+                }
+                state = State.ReelIn;
             }
         }
     }
