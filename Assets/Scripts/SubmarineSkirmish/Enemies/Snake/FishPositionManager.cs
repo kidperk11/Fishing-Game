@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MarkerManager : MonoBehaviour
+public class FishPositionManager : MonoBehaviour
 {
 
     public class Marker
@@ -22,8 +22,6 @@ public class MarkerManager : MonoBehaviour
     private void OnEnable()
     {
         UpdateMarkerList();
-
-        Debug.Log(markerList[0].position.x);
     }
 
     private void FixedUpdate()
