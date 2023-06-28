@@ -17,7 +17,6 @@ public class AutoRotate : MonoBehaviour
 
     }
 
-
     void FixedUpdate()
     {
         SetVelocity();

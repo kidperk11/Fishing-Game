@@ -47,13 +47,17 @@ public class BHEnemyController : MonoBehaviour
     public float verticalMoveSpeed;
     [Range(0.6f, .999f)]
     public float dragCoefficient = 0.95f;
+    // Swimming/Bobbing movement
+    public float verticalSpeed = 5f;           // Speed of vertical movement
+    public float verticalRange = .3f;           // Range of vertical movement
+    private float crissCrossTime = 0f;          // Timer for oscillation
+    public GameObject followTarget;
 
     [Header("Chase Rules")]
     public float timeToStopPursuit;
     public bool respawnOnDeath = false;
     public int respawnLimit = 0;
 
-    [Space(10)]
     [Header("Horizontal Movement")]
     public Transform center;
     public float radius = 2.0f;
@@ -305,8 +309,20 @@ public class BHEnemyController : MonoBehaviour
             inputY = 0;
         }
 
+
+        //---------------------------
+
+        crissCrossTime += Time.deltaTime;
+
+        float verticalMovement = Mathf.Sin((crissCrossTime * verticalSpeed) + (Mathf.PI / 2)) * verticalRange;
+
+        
+
+        //---------------------------
+
         // Apply movement force to the Rigidbody
-        rigidBody.AddForce(new Vector2(0, inputY) * verticalMoveSpeed);
+        rigidBody.AddForce(new Vector2(0, verticalMovement) * verticalMoveSpeed);
+
 
         // Reduce velocity gradually when no input is given
         if (inputY == 0)

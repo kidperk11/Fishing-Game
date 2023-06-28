@@ -10,19 +10,8 @@ public class BHEnemyManager : MonoBehaviour
     public float angle = -90f;
 
     private float currentSpeed;
+    public bool adjust;
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            AddEnemy();
-        }
-
-        //Circle circumference = 2*PI*radius
-
-        // Rotate player around center
-        //transform.RotateAround(center.position, Vector3.up, -currentSpeed * Time.deltaTime);
-    }
 
     private void AddEnemy()
     {
@@ -39,5 +28,7 @@ public class BHEnemyManager : MonoBehaviour
         // Set the object's position
         newEnemy.transform.position = new Vector3(x, y, z);
         newEnemy.GetComponent<BHEnemyController>().center = transform;
+        adjust = false;
+        angle += 9;
     }
 }

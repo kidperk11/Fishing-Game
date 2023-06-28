@@ -36,6 +36,8 @@ public class BHPlayerController : MonoBehaviour
     public BHPlayerSpriteController spriteController;
     public BHShooterController playerShootingController;
     public Rigidbody rigidBody;
+    //Angle on cylinder 
+    public float angularPosition = -90;
 
     protected static BHPlayerController s_Instance;
     public static BHPlayerController instance { get { return s_Instance; } }
@@ -88,12 +90,26 @@ public class BHPlayerController : MonoBehaviour
         transform.position = (transform.position - center.position).normalized * radius + center.position;
     }
 
+    private void Update()
+    {
+        CurrentInput();
+
+        // Update target speed based on input
+        targetSpeed = inputX * horizontalMoveSpeed;
+    }
+
+    private void FixedUpdate()
+    {
+        // Move the player
+        PlayerHeight();
+        PlayerRotate();
+    }
+
     private void OnDisable()
     {
         shootLeft.Disable();
         shootLeft.performed -= OnShootStart;
         shootLeft.canceled -= OnShootEnd;
-
 
         shootRight.Disable();
         shootRight.performed -= OnShootStart;
@@ -101,6 +117,23 @@ public class BHPlayerController : MonoBehaviour
 
         movePlayer.Disable();
     }
+
+    private void AdjustPlayer()
+    {
+        transform.rotation = Quaternion.identity;
+        // Convert angle to radians
+        float radians = angularPosition * Mathf.Deg2Rad;
+
+        // Calculate position on the circumference
+        float x = radius * Mathf.Cos(radians);
+        float y = 0f;
+        float z = radius * Mathf.Sin(radians);
+
+        // Set the object's position
+        transform.position = new Vector3(x, y, z);
+    }
+
+
 
     private void OnShootStart(InputAction.CallbackContext context)
     {
@@ -121,23 +154,6 @@ public class BHPlayerController : MonoBehaviour
     private void OnShootEnd(InputAction.CallbackContext context)
     {
         playerShootingController.OnShootEnd(context);
-    }
-
-
-
-    private void Update()
-    {
-        CurrentInput();
-
-        // Update target speed based on input
-        targetSpeed = inputX * horizontalMoveSpeed;
-    }
-
-    private void FixedUpdate()
-    {   
-        // Move the player
-        PlayerHeight();
-        PlayerRotate();
     }
 
     private void SwapWeapon(InputAction.CallbackContext context)
@@ -175,7 +191,6 @@ public class BHPlayerController : MonoBehaviour
             // Rotate player around center
             transform.RotateAround(center.position, Vector3.up, -currentSpeed * Time.deltaTime);
         }
-
     }
 
     private void NewRadius()
@@ -196,7 +211,5 @@ public class BHPlayerController : MonoBehaviour
             rigidBody.velocity *= dragCoefficient;
         }
     }
-
-
 }
 
