@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c367a966e12c6e4eacfcfdabf04da8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rb: {fileID: 0}
+  rb: {fileID: 5709352687927207939}
   boxPattern: {fileID: 0}
   allBoxes:
   - {fileID: 0}

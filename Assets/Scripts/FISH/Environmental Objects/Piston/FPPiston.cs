@@ -6,17 +6,24 @@ using UnityEngine;
 public class FPPiston : MonoBehaviour
 {
     [Header("External References")]
-    public Rigidbody rb;
     public HarpoonSwitch harpoonSwitch;
     public Transform startTransform;
     public Transform endTransform;
 
-    [Header("Movement Variables")]
+    [Header("Movement and Lerp Variables")]
     [SerializeField] private float maxFireTime;
     [SerializeField] private float maxRetractTime;
     private float fireTimer;
     private float retractTimer;
-    [SerializeField] private float knockbackSpeed;
+    [SerializeField] private float enemyKnockbackSpeed;
+    [SerializeField] private float playerKnockbackSpeed;
+    [SerializeField] private float playerYKnockbackDirection;
+
+    [SerializeField] private Quaternion startRotation;
+    [SerializeField] private Quaternion endRotation;
+    private float lerpTimer;
+    private List<EnemyHealthAndQTE> hitEnemies = new List<EnemyHealthAndQTE>();
+    public bool hitPlayer;
 
     [Header("Debug Tools")]
     public bool hasHarpoonSwitch;
@@ -52,33 +59,67 @@ public class FPPiston : MonoBehaviour
 
     private void IdleAI()
     {
-        
+        if (harpoonSwitch.isActive)
+        {
+            //NOTE: Consider adding logic to change the color of the harpoonSwitch when it's active
+            state = State.firing;
+        }
     }
 
     private void FiringAI()
     {
-        
+        lerpTimer += Time.deltaTime;
+        float percentageComplete = lerpTimer / maxFireTime;
+        this.transform.position = Vector3.Lerp(startTransform.position, endTransform.position, percentageComplete);
+        //this.transform.rotation = Quaternion.Lerp(startRotation, endRotation, percentageComplete);
+        if(percentageComplete >= 1)
+        {
+            lerpTimer = 0;
+            hitPlayer = false;
+            state = State.extended;
+        }
     }
 
     private void ExtendedAI()
     {
-        
+        if (!harpoonSwitch.isActive)
+        {
+            state = State.retracting;
+        }
     }
 
     private void RetractingAI()
     {
-        
+        lerpTimer += Time.deltaTime;
+        float percentageComplete = lerpTimer / maxRetractTime;
+        this.transform.position = Vector3.Lerp(endTransform.position, startTransform.position, percentageComplete);
+        //this.transform.rotation = Quaternion.Lerp(endRotation, startRotation, percentageComplete);
+        if (percentageComplete >= 1)
+        {
+            lerpTimer = 0;
+            state = State.idle;
+        }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collision)
     {
         if(state == State.firing)
         {
             if (collision.gameObject.CompareTag("Enemy"))
             {
                 EnemyHealthAndQTE enemy = collision.gameObject.GetComponent<EnemyHealthAndQTE>();
-                Vector3 contactDirection = collision.gameObject.transform.position - this.transform.position;
-                enemy.TakeKnockback(contactDirection, knockbackSpeed);
+                //Vector3 contactDirection = collision.gameObject.transform.position - this.transform.position;
+                Vector3 contactDirection = transform.forward;
+                enemy.TakeKnockback(contactDirection, enemyKnockbackSpeed);
+                Debug.Log("Enemy hit by piston");
+            }
+            if (collision.gameObject.CompareTag("Player") && !hitPlayer)
+            {
+                hitPlayer = true;
+                FPPlayerHealth player = collision.gameObject.GetComponent<FPPlayerHealth>();
+                //Vector3 contactDirection = collision.gameObject.transform.position - this.transform.position;
+                Vector3 contactDirection = transform.forward;
+                player.TakeKnockback(new Vector3(contactDirection.x, playerYKnockbackDirection, contactDirection.z), playerKnockbackSpeed);
             }
         }
     }

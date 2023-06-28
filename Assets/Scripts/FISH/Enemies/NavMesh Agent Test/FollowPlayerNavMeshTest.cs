@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class FollowPlayerNavMeshTest : MonoBehaviour
 {
     public NavMeshAgent agent;
+    public NavAgentCollisionManagement collisionManagement;
     public GameObject player;
 
     // Start is called before the first frame update
@@ -17,6 +18,10 @@ public class FollowPlayerNavMeshTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        agent.SetDestination(player.transform.position);
+        if (!collisionManagement.isRagdoll)
+        {
+            agent.SetDestination(player.transform.position);
+        }
+        
     }
 }

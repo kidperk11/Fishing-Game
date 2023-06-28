@@ -205,6 +205,8 @@ public class HarpoonController : MonoBehaviour
                 {
                     harpoonSwitch.Deactivate();
                 }
+                SetLerpProperties();
+                startPoint = this.transform.position;
                 state = State.ReelIn;
             }
         }
