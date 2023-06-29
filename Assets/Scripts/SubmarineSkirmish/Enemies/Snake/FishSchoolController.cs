@@ -7,11 +7,11 @@ public class FishSchoolController : MonoBehaviour
     [SerializeField] float distanceBetween = .2f;
     [SerializeField] float speed = 280;
     [SerializeField] float turnSpeed = 180;
+    [SerializeField] Transform cityCenter;
 
     [Header("Fish Contained In School")]
     [SerializeField] List<GameObject> fishToSpawn = new List<GameObject>();
     public List<GameObject> spawnedFish = new List<GameObject>();
-
     float countUp = 0;
 
     // Swimming/Bobbing movement
@@ -21,6 +21,11 @@ public class FishSchoolController : MonoBehaviour
 
     public float verticalMoveSpeed;
     private Rigidbody leaderRigidBody;
+
+    public bool Manual;
+    public float radius = 5.0f;
+    public float angle = -85f;
+    public bool spawnFollowers = true;
 
     private void Start()
     {
@@ -34,8 +39,6 @@ public class FishSchoolController : MonoBehaviour
             SpawnFollowers();
         }
 
-        LeaderMovement();
-
         //Follow the leader :^)
         if (spawnedFish.Count > 1)
         {
@@ -43,36 +46,35 @@ public class FishSchoolController : MonoBehaviour
         }
     }
 
-    void LeaderMovement()
+    private void SpawnLeader()
     {
-        leaderRigidBody.velocity = spawnedFish[0].transform.right * speed * Time.deltaTime;
+        if (spawnedFish.Count == 0)
+        {
+            GameObject leader = Instantiate(fishToSpawn[0], transform.position, transform.rotation, transform);
+            PlaceOnCircle(leader);
+            BHEnemyController controller = null;
+            controller = leader.GetComponent<BHEnemyController>();
+            controller.currentState = EnemyState.Leader;
+            controller.center = cityCenter;
+            controller.vertical = true;
+            controller.horizontal = true;
 
-        crissCrossTime += Time.deltaTime;
-        float verticalMovement = Mathf.Sin((crissCrossTime * verticalSpeed) + (Mathf.PI / 2)) * verticalRange;
-        leaderRigidBody.AddForce(new Vector2(0, verticalMovement) * verticalMoveSpeed);
+            spawnedFish.Add(leader);
+            fishToSpawn.RemoveAt(0);
+        }
+
+        leaderRigidBody = spawnedFish[0].GetComponentInChildren<Rigidbody>();
     }
 
     void FollowerMovement()
     {
         for (int i = 1; i < spawnedFish.Count; i++)
         {
-            FishPositionManager positions = spawnedFish[i - 1].GetComponent<FishPositionManager>();
+            FishPositionManager positions = spawnedFish[i - 1].GetComponentInChildren<FishPositionManager>();
             spawnedFish[i].transform.position = positions.markerList[0].position;
             spawnedFish[i].transform.rotation = positions.markerList[0].rotation;
             positions.markerList.RemoveAt(0);
-        }  
-    }
-
-    private void SpawnLeader()
-    {
-        if (spawnedFish.Count == 0)
-        {
-            GameObject leader = Instantiate(fishToSpawn[0], transform.position, transform.rotation, transform);
-            spawnedFish.Add(leader);
-            fishToSpawn.RemoveAt(0);
         }
-
-        leaderRigidBody = spawnedFish[0].GetComponent<Rigidbody>();
     }
 
     private void SpawnFollowers()
@@ -85,8 +87,7 @@ public class FishSchoolController : MonoBehaviour
 
         if (countUp == 0)
         {
-
-            swimPositions = previousFish.GetComponent<FishPositionManager>();
+            swimPositions = previousFish.GetComponentInChildren<FishPositionManager>();
             swimPositions.ClearMarkerList();
         }
 
@@ -96,16 +97,37 @@ public class FishSchoolController : MonoBehaviour
         {
             if (swimPositions == null)
             {
-                swimPositions = previousFish.GetComponent<FishPositionManager>();
+                swimPositions = previousFish.GetComponentInChildren<FishPositionManager>();
             }
 
             GameObject follower = Instantiate(fishToSpawn[0], swimPositions.markerList[0].position, swimPositions.markerList[0].rotation, transform);
+            BHEnemyController controller = null;
+            controller = follower.GetComponent<BHEnemyController>();
+            controller.currentState = EnemyState.Follower;
+            controller.center = cityCenter;
 
             spawnedFish.Add(follower);
             fishToSpawn.RemoveAt(0);
-            follower.GetComponent<FishPositionManager>().ClearMarkerList();
+
+            follower.GetComponentInChildren<FishPositionManager>().ClearMarkerList();
             countUp = 0;
         }
+    }
+
+
+
+    private void PlaceOnCircle(GameObject enemy)
+    {
+        // Convert angle to radians
+        float radians = angle * Mathf.Deg2Rad;
+
+        // Calculate position on the circumference
+        float x = radius * Mathf.Cos(radians);
+        float y = 0f;
+        float z = radius * Mathf.Sin(radians);
+
+        // Set the object's position
+        enemy.transform.position = new Vector3(x, y, z);
     }
 
 }

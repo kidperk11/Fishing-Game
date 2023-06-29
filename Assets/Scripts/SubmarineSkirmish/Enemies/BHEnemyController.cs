@@ -10,10 +10,11 @@ public enum EnemyState
 {
     Idle,
     Swim,
+    Leader,
+    Follower,
     Spotted,
     Pursuit,
     ReturnToIdle,
-    Follow,
     Die,
     Attack,
     RadiusChange,
@@ -92,7 +93,7 @@ public class BHEnemyController : MonoBehaviour
 
     private void Start()
     {
-        currentState = EnemyState.Swim;
+        //currentState = EnemyState.Swim;
         //rigidBody = GetComponent<Rigidbody>();
         transform.position = (transform.position - center.position).normalized * radius + center.position;
 
@@ -109,6 +110,9 @@ public class BHEnemyController : MonoBehaviour
     {
         switch (currentState)
         {
+            case (EnemyState.Leader):
+                Leader();
+                break;
             case (EnemyState.Swim):
                 //Runs until target is found
                 Swimming();
@@ -128,6 +132,16 @@ public class BHEnemyController : MonoBehaviour
                 NewRadius();
                 break;
         }
+    }
+
+    private void Leader()
+    {
+        if (tracking)
+            FindTarget();
+        if (vertical)
+            UpdateHeight();
+        if (horizontal)
+            SwimRotate();
     }
 
     private void Swimming()
@@ -296,29 +310,9 @@ public class BHEnemyController : MonoBehaviour
     {
         float inputY = 0;
 
-        if(Input.GetKey(KeyCode.U))
-        {
-            inputY = 1;
-        }
-        else if (Input.GetKey(KeyCode.J))
-        {
-            inputY = -1;
-        }
-        else
-        {
-            inputY = 0;
-        }
-
-
-        //---------------------------
-
         crissCrossTime += Time.deltaTime;
 
         float verticalMovement = Mathf.Sin((crissCrossTime * verticalSpeed) + (Mathf.PI / 2)) * verticalRange;
-
-        
-
-        //---------------------------
 
         // Apply movement force to the Rigidbody
         rigidBody.AddForce(new Vector2(0, verticalMovement) * verticalMoveSpeed);
