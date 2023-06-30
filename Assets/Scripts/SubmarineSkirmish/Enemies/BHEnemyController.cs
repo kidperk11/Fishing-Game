@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
+using TMPro;
 
 public enum EnemyState
 {
@@ -35,24 +35,27 @@ public enum EnemyType
 
 public class BHEnemyController : MonoBehaviour
 {
-    [Header("Optimization")]
+    [Header("Debugging")]
     public bool vertical = false;
     public bool horizontal = false;
     public bool tracking = false;
+    public float angularPosition = -80f;
+    public bool updateEnemyPlacement;
 
     [Tooltip("Controls enemy attack range and spot range.")]
-    [SerializeField]
     public TargetScanner playerScanner;
+    public bool displayScanner;
 
     [Header("Verical Movement")]
     public float verticalMoveSpeed;
     [Range(0.6f, .999f)]
     public float dragCoefficient = 0.95f;
+
     // Swimming/Bobbing movement
-    public float verticalSpeed = 5f;           // Speed of vertical movement
-    public float verticalRange = .3f;           // Range of vertical movement
+    public float sinWaveSpeed = 5f;           // Speed of vertical movement
+    public float sinWaveRange = .3f;           // Range of vertical movement
     private float crissCrossTime = 0f;          // Timer for oscillation
-    public GameObject followTarget;
+
 
     [Header("Chase Rules")]
     public float timeToStopPursuit;
@@ -64,12 +67,6 @@ public class BHEnemyController : MonoBehaviour
     public float radius = 2.0f;
     public float radiusSpeed = 0.5f;
     public float horizontalMoveSpeed = 80.0f;
-    private Vector3 axis = Vector3.up;
-    private Vector3 desiredPosition;
-    float currentSpeed = 0.0f;
-    float targetSpeed = 0.0f;
-    float smoothTime = 0.2f;
-    float currentVelocity = 0.0f;
 
     [Header("Enemy Attack Type")]
     public EnemyState currentState;
@@ -80,11 +77,23 @@ public class BHEnemyController : MonoBehaviour
     public BHEnemySpriteController spriteController;
     public Rigidbody rigidBody;
     public bool overrideSpriteFlip;
+    public GameObject followTarget;
+    public Rigidbody targetRigidBody = null;
 
+    //Movement information
+    private Vector3 axis = Vector3.up;
+    private Vector3 desiredPosition;
+    internal Vector3 offset;
+    private float currentSpeed = 0.0f;
+    private float targetSpeed = 0.0f;
+    private float smoothTime = 0.2f;
+    private float currentVelocity = 0.0f;
     private float m_TimerSinceLostTarget = 0.0f;
+    internal Rigidbody rigidBodyToFollow = null;
+
+    //Tracking information
     private BHPlayerController target { get { return m_Target; } }
     private BHPlayerController m_Target = null;
-    public Rigidbody targetRigidBody = null;
 
     private void OnEnable()
     {
@@ -93,17 +102,21 @@ public class BHEnemyController : MonoBehaviour
 
     private void Start()
     {
-        //currentState = EnemyState.Swim;
-        //rigidBody = GetComponent<Rigidbody>();
-        transform.position = (transform.position - center.position).normalized * radius + center.position;
 
+        //Once set, tranform.forward will always face the center
+        transform.LookAt(center);
+        transform.position = (transform.position - center.position).normalized * radius + center.position;
     }
 
-    // Update is called once per frame
     void Update()
     {
         targetSpeed = horizontalMoveSpeed;
         spriteController.SpriteFlip = overrideSpriteFlip;
+
+        if(updateEnemyPlacement)
+        {
+            PlaceEnemyOnCircle();
+        }
     }
 
     private void FixedUpdate()
@@ -111,52 +124,75 @@ public class BHEnemyController : MonoBehaviour
         switch (currentState)
         {
             case (EnemyState.Leader):
-                Leader();
+                //Runs until target is found, Breaks up the entire school
+                //if (!vertical)
+                //    vertical = true;
+                if (!horizontal)
+                    horizontal = true;
+                LeaderLoop();
                 break;
+
+            case (EnemyState.Follower):
+                //Runs until target is found, Breaks away from the school leader
+                FollowerLoop();
+                break;
+
             case (EnemyState.Swim):
                 //Runs until target is found
-                Swimming();
+                SwimmingLoop();
                 break;
+
             case (EnemyState.Spotted):
                 //Spotted state only runs once
                 Spotted();
                 break;
+
             case (EnemyState.Pursuit):
                 //Runs until target is lost
-                Pursuit();
+                PursuitLoop();
                 break;
+
             case (EnemyState.ReturnToIdle):
                 StopPursuit();
                 break;
+
             case (EnemyState.RadiusChange):
-                NewRadius();
+                MoveToNewRadius();
                 break;
         }
     }
 
-    private void Leader()
+    private void LeaderLoop()
     {
         if (tracking)
-            FindTarget();
+            SearchForTarget();
         if (vertical)
-            UpdateHeight();
+            SwimHeight();
         if (horizontal)
             SwimRotate();
     }
 
-    private void Swimming()
+    private void FollowerLoop()
     {
         if (tracking)
-            FindTarget();
+            SearchForTarget();
+
+        FollowSchoolLeader();
+    }
+
+    private void SwimmingLoop()
+    {
+        if (tracking)
+            SearchForTarget();
         if (vertical)
-            UpdateHeight();
+            SwimHeight();
         if (horizontal)
             SwimRotate();
     }
 
     private void Spotted()
     {
-        FindTarget();
+        SearchForTarget();
         if (target == null)
         {
             StopPursuit();
@@ -165,21 +201,9 @@ public class BHEnemyController : MonoBehaviour
         StartPursuit();
     }
 
-    private void StopPursuit()
+    private void PursuitLoop()
     {
-        targetRigidBody = null;
-        currentState = EnemyState.Swim;
-    }
-
-    private void StartPursuit()
-    {
-        targetRigidBody = target.GetComponentInChildren<Rigidbody>();
-        currentState = EnemyState.Pursuit;
-    }
-
-    private void Pursuit()
-    {
-        FindTarget();
+        SearchForTarget();
         if (target == null)
         {
             StopPursuit();
@@ -189,16 +213,20 @@ public class BHEnemyController : MonoBehaviour
         ChaseHeight();
     }
 
-    private float GetPlayerSide()
+    private void StopPursuit()
     {
-        Vector3 heading = target.transform.position - transform.position;
-        Vector3 perp = Vector3.Cross(transform.forward, heading);
-        float direction = Vector3.Dot(perp, transform.up);
-
-        return direction;
+        targetRigidBody = null;
+        currentState = EnemyState.Swim;
     }
 
-    private void FindTarget()
+    private void MoveToNewRadius()
+    {
+        // Move enemy towards desired position
+        desiredPosition = (transform.position - center.position).normalized * radius + center.position;
+        transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * radiusSpeed);
+    }
+
+    private void SearchForTarget()
     {
         //we ignore height difference if the target was already seen
         BHPlayerController target = playerScanner.Detect(transform, m_Target == null);
@@ -237,6 +265,21 @@ public class BHEnemyController : MonoBehaviour
                 m_TimerSinceLostTarget = 0.0f;
             }
         }
+    }
+
+    private void StartPursuit()
+    {
+        targetRigidBody = target.GetComponentInChildren<Rigidbody>();
+        currentState = EnemyState.Pursuit;
+    }
+
+    private float GetPlayerSide()
+    {
+        Vector3 heading = target.transform.position - transform.position;
+        Vector3 perp = Vector3.Cross(transform.forward, heading);
+        float direction = Vector3.Dot(perp, transform.up);
+
+        return direction;
     }
 
     private void SwimRotate()
@@ -298,21 +341,13 @@ public class BHEnemyController : MonoBehaviour
         }
     }
 
-    private void NewRadius()
-    {
-        // Move enemy towards desired position
-        desiredPosition = (transform.position - center.position).normalized * radius + center.position;
-        transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * radiusSpeed);
-    }
-
-
-    private void UpdateHeight()
+    private void SwimHeight()
     {
         float inputY = 0;
 
         crissCrossTime += Time.deltaTime;
 
-        float verticalMovement = Mathf.Sin((crissCrossTime * verticalSpeed) + (Mathf.PI / 2)) * verticalRange;
+        float verticalMovement = Mathf.Sin((crissCrossTime * sinWaveSpeed) + (Mathf.PI / 2)) * sinWaveRange;
 
         // Apply movement force to the Rigidbody
         rigidBody.AddForce(new Vector2(0, verticalMovement) * verticalMoveSpeed);
@@ -325,18 +360,40 @@ public class BHEnemyController : MonoBehaviour
         }
     }
 
-    public static void ClearConsole()
+    private void FollowSchoolLeader()
     {
-        var assembly = Assembly.GetAssembly(typeof(SceneView));
-        var type = assembly.GetType("UnityEditor.LogEntries");
-        var method = type.GetMethod("Clear");
-        method.Invoke(new object(), null);
+        FishPositionManager positions = rigidBodyToFollow.GetComponent<FishPositionManager>();
+
+        transform.position = positions.markerList[0].position + offset;
+        transform.rotation = positions.markerList[0].rotation;
+        positions.markerList.RemoveAt(0);
+    }
+
+
+    private void PlaceEnemyOnCircle( )
+    {
+        //transform.forward = zePlayer.transform.forward;
+
+        // Convert angle to radians
+        float radians = angularPosition * Mathf.Deg2Rad;
+
+        // Calculate position on the circumference
+        float x = radius * Mathf.Cos(radians);
+        float y = 0f;
+        float z = radius * Mathf.Sin(radians);
+
+        // Set the object's position
+        transform.position = new Vector3(x, y, z);
+        transform.LookAt(center.transform);
+
+        updateEnemyPlacement = false;
     }
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        playerScanner.EditorGizmo(transform);
+        if(displayScanner)
+            playerScanner.EditorGizmo(transform);
     }
 #endif
 }

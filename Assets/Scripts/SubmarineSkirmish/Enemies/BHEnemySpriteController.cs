@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public enum EnemySpriteType
 {
@@ -33,7 +34,6 @@ public class BHEnemySpriteController : MonoBehaviour
     [Space(5)]
     public GameObject sideRotors;
     public GameObject backRotors;
-
 
     public Transform gameObject1;
     public Transform gameObject2;
@@ -76,6 +76,8 @@ public class BHEnemySpriteController : MonoBehaviour
         {
             case EnemySpriteType.submarine:
                 distance = GetPlayerDistance();
+
+
                 UpdateSubmarineSprites(distance);
                 break;
             case EnemySpriteType.fish:

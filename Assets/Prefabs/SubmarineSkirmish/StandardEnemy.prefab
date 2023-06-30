@@ -81,6 +81,8 @@ MonoBehaviour:
   vertical: 0
   horizontal: 0
   tracking: 0
+  angularPosition: -117
+  updateEnemyPlacement: 0
   playerScanner:
     heightOffset: 1
     detectionRadius: 2
@@ -89,24 +91,25 @@ MonoBehaviour:
     viewBlockerLayerMask:
       serializedVersion: 2
       m_Bits: 0
+  displayScanner: 0
   verticalMoveSpeed: 5
   dragCoefficient: 0.95
-  verticalSpeed: 5
-  verticalRange: 0.3
-  followTarget: {fileID: 0}
+  sinWaveSpeed: 5
+  sinWaveRange: 0.3
   timeToStopPursuit: 0
   respawnOnDeath: 0
   respawnLimit: 0
   center: {fileID: 0}
   radius: 5
   radiusSpeed: 10
-  horizontalMoveSpeed: 30
-  currentState: 0
+  horizontalMoveSpeed: 15
+  currentState: 1
   enemyType: 0
   enemyMovementType: 0
   spriteController: {fileID: 8505959537632963505}
   rigidBody: {fileID: 8505959539073686581}
   overrideSpriteFlip: 0
+  followTarget: {fileID: 0}
   targetRigidBody: {fileID: 0}
 --- !u!114 &8505959537632963505
 MonoBehaviour:
@@ -642,7 +645,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8505959539073686582}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5ddc2e02c4514a241a2e233f3677f829, type: 3}
   m_Name: 
@@ -949,6 +952,10 @@ PrefabInstance:
     - target: {fileID: 2651387541401578652, guid: dde756c85915984489ee4b350ce56d7e, type: 3}
       propertyPath: m_Name
       value: HealthBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 2651387541401578652, guid: dde756c85915984489ee4b350ce56d7e, type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8208166897413807664, guid: dde756c85915984489ee4b350ce56d7e, type: 3}
       propertyPath: m_Layer

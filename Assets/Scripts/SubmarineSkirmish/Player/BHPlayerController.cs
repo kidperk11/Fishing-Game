@@ -94,8 +94,10 @@ public class BHPlayerController : MonoBehaviour
     {
         CurrentInput();
 
+
         // Update target speed based on input
         targetSpeed = inputX * horizontalMoveSpeed;
+
     }
 
     private void FixedUpdate()
