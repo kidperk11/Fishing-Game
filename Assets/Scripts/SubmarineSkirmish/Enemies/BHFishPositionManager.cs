@@ -2,9 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FishPositionManager : MonoBehaviour
+public class BHFishPositionManager : MonoBehaviour
 {
-
     public class Marker
     {
         public Vector3 position;

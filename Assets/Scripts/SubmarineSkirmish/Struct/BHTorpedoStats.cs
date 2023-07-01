@@ -1,22 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-[System.Serializable]
-public struct ProjectileType
+﻿[System.Serializable]
+public struct BHTorpedoStats
 {
     public string projectileName;
 
-    public enum ProjectilesEnum
-    {
-        multiBullet,
-        sprayBullet,
-        helixBullet,
-        remoteExplosive
-    }
+    public BHTorpedoType projectileEnumReference;
 
-    public ProjectilesEnum projectileEnumReference;
-
+    // Universal
     public int multiBulletAmount;
     public float bulletFireDelay;
     public float bulletLifetime;

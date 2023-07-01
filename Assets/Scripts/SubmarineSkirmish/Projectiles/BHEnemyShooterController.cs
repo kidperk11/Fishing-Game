@@ -5,7 +5,7 @@ using UnityEngine;
 
     public class BHEnemyShooterController : MonoBehaviour
     {
-        private BHEnemyController enemyController;
+        private BHEnemyManager enemyController;
 
         [Tooltip("List of possible Shooters.")]
         [SerializeField]
@@ -33,7 +33,7 @@ using UnityEngine;
         {
             if (hasEnemyController)
             {
-                enemyController = GetComponent<BHEnemyController>();
+                enemyController = GetComponent<BHEnemyManager>();
             }
         }
 

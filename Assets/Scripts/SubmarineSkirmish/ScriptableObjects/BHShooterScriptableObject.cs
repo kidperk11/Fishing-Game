@@ -52,5 +52,5 @@ public class BHShooterScriptableObject : ScriptableObject
         get { return _bulletPrefab; }
     }
 
-    private BHEnemyController _sc;
+    private BHEnemyManager _sc;
 }

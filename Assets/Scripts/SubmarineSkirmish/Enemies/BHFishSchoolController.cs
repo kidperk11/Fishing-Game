@@ -1,12 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FishSchoolController : MonoBehaviour
+public class BHFishSchoolController : MonoBehaviour
 {
     [SerializeField] float distanceBetween = .2f;
-    [SerializeField] float speed = 280;
-    [SerializeField] float turnSpeed = 180;
     [SerializeField] GameObject fishPrefab;
 
     private Transform cityCenter;
@@ -81,11 +78,11 @@ public class FishSchoolController : MonoBehaviour
             return;
 
         GameObject previousFish = spawnedFish[spawnedFish.Count - 1];
-        FishPositionManager swimPositions = null;
+        BHFishPositionManager swimPositions = null;
 
         if (countUp == 0)
         {
-            swimPositions = previousFish.GetComponentInChildren<FishPositionManager>();
+            swimPositions = previousFish.GetComponentInChildren<BHFishPositionManager>();
             swimPositions.ClearMarkerList();
         }
 
@@ -95,7 +92,7 @@ public class FishSchoolController : MonoBehaviour
         {
             if (swimPositions == null)
             {
-                swimPositions = previousFish.GetComponentInChildren<FishPositionManager>();
+                swimPositions = previousFish.GetComponentInChildren<BHFishPositionManager>();
             }
 
             GameObject follower = Instantiate(fishToSpawn[0], swimPositions.markerList[0].position, swimPositions.markerList[0].rotation, transform);
@@ -110,14 +107,14 @@ public class FishSchoolController : MonoBehaviour
             spawnedFish.Add(follower);
             fishToSpawn.RemoveAt(0);
 
-            follower.GetComponentInChildren<FishPositionManager>().ClearMarkerList();
+            follower.GetComponentInChildren<BHFishPositionManager>().ClearMarkerList();
             countUp = 0;
         }
 
         if (fishToSpawn.Count == 0)
         {
             spawnFollowers = false;
-            Destroy(GetComponent<FishSchoolController>());
+            Destroy(GetComponent<BHFishSchoolController>());
         }
 
     }

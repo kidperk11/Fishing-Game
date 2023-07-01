@@ -18,7 +18,7 @@ public class BHEnemyManager : MonoBehaviour
         if(spawnSomeEnemies)
         {
             GameObject newFishController = Instantiate(fishControllerPrefab, transform.position, transform.rotation);
-            FishSchoolController schoolController = newFishController.GetComponent<FishSchoolController>();
+            BHFishSchoolController schoolController = newFishController.GetComponent<BHFishSchoolController>();
 
             schoolController.fishToSpawn.Clear();
 

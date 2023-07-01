@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3846102353484745616}
   - component: {fileID: 8188226652598042090}
   - component: {fileID: 6730036984275335373}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 7331374919131806979}
   - component: {fileID: 3560564948755763583}
   - component: {fileID: 6275191545635586172}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -187,6 +187,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2125407032381368101}
+  - component: {fileID: 976271287}
+  - component: {fileID: 976271288}
   m_Layer: 10
   m_Name: HealthBar
   m_TagString: Untagged
@@ -210,6 +212,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &976271287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2651387541401578652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ddc2e02c4514a241a2e233f3677f829, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ignoreZaxis: 0
+  disableOnSpawn: 0
+--- !u!114 &976271288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2651387541401578652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84d08de6810ca4b479db4d4910c74082, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthManager: {fileID: 0}
+  forground: {fileID: 5673309834873952381}
+  rootCanvas: {fileID: 7331374919131806979}
+  hideHealhbar: 0
 --- !u!1 &8208166897413807664
 GameObject:
   m_ObjectHideFlags: 0
@@ -221,7 +253,7 @@ GameObject:
   - component: {fileID: 5673309834873952381}
   - component: {fileID: 4293248830330040204}
   - component: {fileID: 1994859271684762952}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Foregroumd
   m_TagString: Untagged
   m_Icon: {fileID: 0}

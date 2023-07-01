@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HealthBar : MonoBehaviour
+public class BHHealthBar : MonoBehaviour
 {
     [SerializeField] BHHealthManager healthManager = null;
     [SerializeField] RectTransform forground = null;

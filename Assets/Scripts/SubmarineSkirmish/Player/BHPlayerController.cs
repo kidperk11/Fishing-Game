@@ -18,15 +18,17 @@ public class BHPlayerController : MonoBehaviour
     [Header("Horizontal Movement")]
     public Transform center;
 
-    public float radius = 2.0f;
+    
     public float radiusSpeed = 0.5f;
     public float horizontalMoveSpeed = 80.0f;
+    private float currentSpeed = 0.0f;
+    private float targetSpeed = 0.0f;
+    private float smoothTime = 0.2f;
+    private float currentVelocity = 0.0f;
     private float inputX;
     private Vector3 desiredPosition;
-    float currentSpeed = 0.0f;
-    float targetSpeed = 0.0f;
-    float smoothTime = 0.2f;
-    float currentVelocity = 0.0f;
+    private float radius = 5f;
+    public float m_Radius { set { radius = value; } }
 
     public float rotationDamping = 2f;
     public float movementDamping = 2;
@@ -35,6 +37,7 @@ public class BHPlayerController : MonoBehaviour
     [Header("Other")]
     public BHPlayerSpriteController spriteController;
     public BHShooterController playerShootingController;
+    public BHGameManager gameManager;
     public Rigidbody rigidBody;
     //Angle on cylinder 
     public float angularPosition = -90;
@@ -139,18 +142,16 @@ public class BHPlayerController : MonoBehaviour
 
     private void OnShootStart(InputAction.CallbackContext context)
     {
-        Vector2 shootDirection = new Vector2(0, 0);
-
         if (context.action == shootLeft)
         {
-            shootDirection = new Vector2(-1, 0);
+            //Shoot on the left, -1
+            playerShootingController.OnShootStart(context, -1);
         }
         if (context.action == shootRight)
         {
-            shootDirection = new Vector2(1, 0);
+            //Shoot on the right, 1
+            playerShootingController.OnShootStart(context, 1);
         }
-
-        playerShootingController.OnShootStart(shootDirection);
     }
 
     private void OnShootEnd(InputAction.CallbackContext context)
@@ -161,6 +162,7 @@ public class BHPlayerController : MonoBehaviour
     private void SwapWeapon(InputAction.CallbackContext context)
     {
         playerShootingController.SwapWeapon();
+        Debug.Log("Player Switched weapons");
     }
 
     private void CurrentInput()
@@ -186,7 +188,7 @@ public class BHPlayerController : MonoBehaviour
         if (autoRotate)
         {
             transform.RotateAround(center.position, Vector3.up, horizontalMoveSpeed * Time.deltaTime);
-            NewRadius();
+            RotateToNewRadius();
         }
         else
         {
@@ -195,7 +197,12 @@ public class BHPlayerController : MonoBehaviour
         }
     }
 
-    private void NewRadius()
+    internal void UpdateRadius(int newRadius)
+    {
+        radius = newRadius;
+    }
+
+    private void RotateToNewRadius()
     {
         // Move player towards desired position
         desiredPosition = (transform.position - center.position).normalized * radius + center.position;

@@ -125,8 +125,8 @@ public class BHEnemyController : MonoBehaviour
         {
             case (EnemyState.Leader):
                 //Runs until target is found, Breaks up the entire school
-                //if (!vertical)
-                //    vertical = true;
+                if (!vertical)
+                    vertical = true;
                 if (!horizontal)
                     horizontal = true;
                 LeaderLoop();
@@ -362,7 +362,7 @@ public class BHEnemyController : MonoBehaviour
 
     private void FollowSchoolLeader()
     {
-        FishPositionManager positions = rigidBodyToFollow.GetComponent<FishPositionManager>();
+        BHFishPositionManager positions = rigidBodyToFollow.GetComponent<BHFishPositionManager>();
 
         transform.position = positions.markerList[0].position + offset;
         transform.rotation = positions.markerList[0].rotation;

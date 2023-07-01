@@ -27,12 +27,6 @@ public class BHHealthManager : MonoBehaviour
 
     void Update()
     {
-
-        if(Input.GetKeyDown(KeyCode.H))
-        {
-            ApplyDamage(1f);
-        }
-
         if (isInvulnerable)
         {
             timeSinceLastHit += Time.deltaTime;
@@ -79,7 +73,6 @@ public class BHHealthManager : MonoBehaviour
     public void Die()
     {
         isDead = true;
-        //GetComponentInChildren<Animator>().SetTrigger("Death");
         OnDeath.Invoke();
     }
 }

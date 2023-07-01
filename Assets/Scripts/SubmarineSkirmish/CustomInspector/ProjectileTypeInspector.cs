@@ -7,7 +7,7 @@ using UnityEngine;
  * Modified by Austin Garrison
  **/
 
-[CustomPropertyDrawer(typeof(ProjectileType))]
+[CustomPropertyDrawer(typeof(BHTorpedoStats))]
 public class ProjectileTypeInspector : PropertyDrawer
 {
     //I use PropertyDrawer because Phase does not derived from MonoBehavior
@@ -29,10 +29,10 @@ public class ProjectileTypeInspector : PropertyDrawer
         var movementTypeProperty = propertyInfo.FindPropertyRelative("projectileEnumReference");
 
         //make a new movementType variable as a Phase.PhaseMovementType and set it equal to the property after convert
-        ProjectileType.ProjectilesEnum movementType = (ProjectileType.ProjectilesEnum)movementTypeProperty.enumValueIndex;//get Index and type cast it back to enum
+        BHTorpedoType movementType = (BHTorpedoType)movementTypeProperty.enumValueIndex;//get Index and type cast it back to enum
 
         //create popup to get the new value
-        movementType = (ProjectileType.ProjectilesEnum)EditorGUI.EnumPopup(position, "", movementType);//""(label) is important. Else the title of the popup will appear
+        movementType = (BHTorpedoType)EditorGUI.EnumPopup(position, "", movementType);//""(label) is important. Else the title of the popup will appear
 
         //send back the new value
         movementTypeProperty.enumValueIndex = (int)movementType;
@@ -48,7 +48,7 @@ public class ProjectileTypeInspector : PropertyDrawer
         if (propertyInfo.isExpanded)
         {
             position.y += position.height;
-            if (movementType == ProjectileType.ProjectilesEnum.multiBullet)
+            if (movementType == BHTorpedoType.multiBullet)
             {
                 //Properties for Multi-Shot Projectile
                 //-----Multi-Bullet Amount-----
@@ -63,7 +63,7 @@ public class ProjectileTypeInspector : PropertyDrawer
                 position.y += position.height;
 
             }
-            else if (movementType == ProjectileType.ProjectilesEnum.sprayBullet)
+            else if (movementType == BHTorpedoType.sprayBullet)
             {
                 //Properties for Spray Projectile
                 //-----Spray Bullet Fire Direction-----
@@ -78,7 +78,7 @@ public class ProjectileTypeInspector : PropertyDrawer
                 position.y += position.height;
 
             }
-            else if (movementType == ProjectileType.ProjectilesEnum.helixBullet)
+            else if (movementType == BHTorpedoType.helixBullet)
             {
                 //Properties for CrissCross Projectile
 
@@ -98,7 +98,7 @@ public class ProjectileTypeInspector : PropertyDrawer
                 position.y += position.height;
 
             }
-            else if (movementType == ProjectileType.ProjectilesEnum.remoteExplosive)
+            else if (movementType == BHTorpedoType.remoteExplosive)
             {
                 //Properties for CrissCross Projectile
 

@@ -19,14 +19,14 @@ public class BHProjectile : MonoBehaviour
     public AudioClip impactSoundEffect;
 
     [Space(10)]
-    public ProjectileType projectileType;
+    public BHTorpedoStats projectileType;
 
     private float bulletDamage;
     private float bulletSpeed;
     private bool startRotate;
     private bool hasBoomed = false;
     private Transform rotation;
-    private SubmarineWeapons weaponType;
+    private SubmarineWeaponType weaponType;
     private float vertDir;
 
     protected float m_SinceFired;
@@ -77,16 +77,16 @@ public class BHProjectile : MonoBehaviour
     
         switch (projectileType.projectileEnumReference)
         {
-            case ProjectileType.ProjectilesEnum.multiBullet:
+            case BHTorpedoType.multiBullet:
                 MoveMultiBullet();
                 break;
-            case ProjectileType.ProjectilesEnum.sprayBullet:
+            case BHTorpedoType.sprayBullet:
                 MoveSprayBullet();
                 break;
-            case ProjectileType.ProjectilesEnum.helixBullet:
+            case BHTorpedoType.helixBullet:
                 MoveHelixBullet();
                 break;
-            case ProjectileType.ProjectilesEnum.remoteExplosive:
+            case BHTorpedoType.remoteExplosive:
                 MoveMultiBullet();
                 break;
             default:
@@ -162,7 +162,7 @@ public class BHProjectile : MonoBehaviour
         //One goes up, one goes middle, on goes down
         transform.RotateAround(rotation.position, Vector3.up, bulletSpeed * Time.deltaTime);
 
-        if (projectileType.projectileEnumReference == ProjectileType.ProjectilesEnum.sprayBullet && (spreadAmount <= 1f))
+        if (projectileType.projectileEnumReference == BHTorpedoType.sprayBullet && (spreadAmount <= 1f))
         {
             transform.Translate(0f, vertDir / 2, 0f);
             spreadAmount += 0.1f;
@@ -175,7 +175,7 @@ public class BHProjectile : MonoBehaviour
 
         transform.RotateAround(rotation.position, Vector3.up, bulletSpeed * Time.deltaTime);
 
-        if (projectileType.projectileEnumReference == ProjectileType.ProjectilesEnum.helixBullet)
+        if (projectileType.projectileEnumReference == BHTorpedoType.helixBullet)
         {
             crissCrossTime += Time.deltaTime;
 
@@ -240,7 +240,7 @@ public class BHProjectile : MonoBehaviour
     {
         switch (weaponType)
         {
-            case SubmarineWeapons.explosive:
+            case SubmarineWeaponType.explosive:
                 bulletSpeed = 0;
                 meshRenderer.enabled = false;
                 StartCoroutine(DelayedDestroy(2f));
@@ -253,10 +253,10 @@ public class BHProjectile : MonoBehaviour
                 }
 
                 break;
-            case SubmarineWeapons.retractable:
+            case SubmarineWeaponType.retractable:
                 meshRenderer.enabled = false;
                 break;
-            case SubmarineWeapons.specialAbility:
+            case SubmarineWeaponType.specialAbility:
                 break;
         }
 
