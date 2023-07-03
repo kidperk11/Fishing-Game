@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyHealthAndQTE : MonoBehaviour
+public class EnemyHealth : MonoBehaviour
 {
     [Header("External References")]
     public Rigidbody rb;
-    public GameObject boxPattern;
-    public List<QTEActivationBox> allBoxes;
     public BoxCollider boxCollider;
     public NavAgentCollisionManagement agentCollisionManagement;
     
@@ -67,6 +65,7 @@ public class EnemyHealthAndQTE : MonoBehaviour
     {
         if (isNavAgent)
         {
+            Debug.Log(this.gameObject);
             agentCollisionManagement.TakeKnockBack(knockbackDirection, knockbackForce);
         }
         else

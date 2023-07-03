@@ -38,6 +38,7 @@ public class NavAgentCollisionManagement : MonoBehaviour
     {
         agent.enabled = false;
         rb.isKinematic = false;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.useGravity = true;
         rb.AddForce(knockbackDirection * knockbackForce, ForceMode.Impulse);
         isRagdoll = true;
@@ -45,6 +46,7 @@ public class NavAgentCollisionManagement : MonoBehaviour
 
     private void EndRagdoll()
     {
+        rb.interpolation = RigidbodyInterpolation.None;
         rb.isKinematic = true;
         rb.useGravity = false;
         agent.enabled = true;

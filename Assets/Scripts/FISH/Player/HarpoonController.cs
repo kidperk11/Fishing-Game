@@ -15,7 +15,7 @@ public class HarpoonController : MonoBehaviour
     
 
     //HitEnemyAI
-    private EnemyHealthAndQTE hitEnemy;
+    private EnemyHealth hitEnemy;
 
     //ReelInAI
     [SerializeField] private Vector3 startScale;
@@ -157,7 +157,7 @@ public class HarpoonController : MonoBehaviour
 
                 rb.velocity = Vector3.zero;
                 
-                hitEnemy = collision.gameObject.GetComponent<EnemyHealthAndQTE>();
+                hitEnemy = collision.gameObject.GetComponent<EnemyHealth>();
                 if (hitEnemy.harpoonable)
                 {
                     //hitEnemy.gameObject.transform.parent = this.transform;

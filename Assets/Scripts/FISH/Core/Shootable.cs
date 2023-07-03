@@ -12,4 +12,10 @@ public class Shootable : MonoBehaviour
         shot = true;
         shotCounter++;
     }
+
+    public void Deactivate()
+    {
+        shot = false;
+        shotCounter++;
+    }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 public class FPPufferAI : MonoBehaviour
 {
     //Basic Variables
-    public EnemyHealthAndQTE health;
+    public EnemyHealth health;
     public Animator anim;
     public FPPlayerHealth playerHealth;
 

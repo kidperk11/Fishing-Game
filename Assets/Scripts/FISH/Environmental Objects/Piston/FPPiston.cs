@@ -6,7 +6,7 @@ using UnityEngine;
 public class FPPiston : MonoBehaviour
 {
     [Header("External References")]
-    public HarpoonSwitch harpoonSwitch;
+    public Shootable shootableSwitch;
     public Transform startTransform;
     public Transform endTransform;
 
@@ -22,7 +22,7 @@ public class FPPiston : MonoBehaviour
     [SerializeField] private Quaternion startRotation;
     [SerializeField] private Quaternion endRotation;
     private float lerpTimer;
-    private List<EnemyHealthAndQTE> hitEnemies = new List<EnemyHealthAndQTE>();
+    private List<EnemyHealth> hitEnemies = new List<EnemyHealth>();
     public bool hitPlayer;
 
     [Header("Debug Tools")]
@@ -59,7 +59,7 @@ public class FPPiston : MonoBehaviour
 
     private void IdleAI()
     {
-        if (harpoonSwitch.isActive)
+        if (shootableSwitch.shot)
         {
             //NOTE: Consider adding logic to change the color of the harpoonSwitch when it's active
             state = State.firing;
@@ -82,7 +82,7 @@ public class FPPiston : MonoBehaviour
 
     private void ExtendedAI()
     {
-        if (!harpoonSwitch.isActive)
+        if (!shootableSwitch.shot)
         {
             state = State.retracting;
         }
@@ -107,7 +107,7 @@ public class FPPiston : MonoBehaviour
         {
             if (collision.gameObject.CompareTag("Enemy"))
             {
-                EnemyHealthAndQTE enemy = collision.gameObject.GetComponent<EnemyHealthAndQTE>();
+                EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
                 //Vector3 contactDirection = collision.gameObject.transform.position - this.transform.position;
                 Vector3 contactDirection = transform.forward;
                 enemy.TakeKnockback(contactDirection, enemyKnockbackSpeed);
