@@ -4,16 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class FPSUrchinAI : MonoBehaviour
+public class FPPiranhaAI : MonoBehaviour
 {
     [Header("External References")]
-    public Rigidbody rb;
     public NavMeshAgent agent;
     public EnemyHealth health;
     public Animator anim;
     public FPPlayerHealth player;
     public OnTriggerDetector3D detector;
-    public SphereCollider weakPointCollider;
+    public NavAgentCollisionManagement collisionManagement;
 
     [Header("Movement Properties")]
     public float normalSpeed;
@@ -25,8 +24,8 @@ public class FPSUrchinAI : MonoBehaviour
 
     [Header("Attack Properties")]
     public float playerDetectionDistance;
-    public float playerKnockbackSpeed;
-    public float playerYKnockbackDirection;
+    //public float playerKnockbackSpeed;
+    //public float playerYKnockbackDirection;
     public float attackDistance;
     private Vector3 attackStartingPoint;
     [SerializeField] private int attackDamage;
@@ -36,10 +35,9 @@ public class FPSUrchinAI : MonoBehaviour
     private float cooldownTimer;
 
     [Header("Harpoonable Properties")]
-    public GameObject weakPoint;
     public float maxHarpoonableTime;
     private float harpoonableTimer;
-    
+
     [Header("Debug Tools")]
     [SerializeField] private bool skipSpawn;
 
@@ -52,22 +50,33 @@ public class FPSUrchinAI : MonoBehaviour
         Attack,
         Cooldown,
         Harpoonable,
+        Ragdoll,
         Death
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        agent.speed = normalSpeed;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (health.harpoonable && state != State.Ragdoll)
+        {
+            agent.SetDestination(this.transform.position);
+            agent.velocity = Vector3.zero;
+            state = State.Harpoonable;
+        }
         if (health.isDead)
         {
             //NOTE: Add code for the death animation
             state = State.Death;
+        }
+        if (collisionManagement.isRagdoll)
+        {
+            state = State.Ragdoll;
         }
 
         switch (state)
@@ -90,6 +99,9 @@ public class FPSUrchinAI : MonoBehaviour
                 break;
             case State.Harpoonable:
                 HarpoonableAI();
+                break;
+            case State.Ragdoll:
+                TakingKnockbackAI();
                 break;
             case State.Death:
                 DeathAI();
@@ -124,14 +136,13 @@ public class FPSUrchinAI : MonoBehaviour
     private void AimAtPlayerAI()
     {
         aimTimer += Time.deltaTime;
-        if(aimTimer >= maxAimTime)
+        if (aimTimer >= maxAimTime)
         {
             aimTimer = 0;
             anim.SetTrigger("attack");
             attackStartingPoint = this.transform.position;
             agent.speed = attackSpeed;
             agent.ResetPath();
-            //agent.SetDestination(transform.position + transform.forward * attackDistance);
             state = State.Attack;
         }
         else
@@ -143,30 +154,7 @@ public class FPSUrchinAI : MonoBehaviour
     private void AttackAI()
     {
         agent.velocity = transform.forward * attackSpeed;
-        if (detector.CheckIfTagDetected("Player"))
-        {
-            player.TakeDamage(attackDamage);
-            Vector3 contactDirection = player.gameObject.transform.position - this.transform.position;
-            player.TakeKnockback(new Vector3(contactDirection.x, playerYKnockbackDirection, contactDirection.z), playerKnockbackSpeed);
-            agent.speed = normalSpeed;
-            agent.SetDestination(this.transform.position);
-            //NOTE: Add code for idle animation
-            state = State.Cooldown;
-        }
-        else if(detector.CheckIfTagDetected("Wall") || detector.CheckIfTagDetected("Ground"))
-        {
-            anim.SetTrigger("harpoonable");
-            weakPointCollider.enabled = true;
-            weakPoint.SetActive(true);
-            health.enabled = true;
-            agent.speed = normalSpeed;
-            agent.SetDestination(this.transform.position);
-            agent.velocity = Vector3.zero;
-            agent.enabled = false;
-            rb.isKinematic = false;
-            state = State.Harpoonable;
-        }
-        else if(Vector3.Distance(this.transform.position, attackStartingPoint) >= (attackDistance-1))
+        if (Vector3.Distance(this.transform.position, attackStartingPoint) >= (attackDistance - 1))
         {
             anim.SetTrigger("chase");
             agent.speed = normalSpeed;
@@ -179,7 +167,7 @@ public class FPSUrchinAI : MonoBehaviour
     private void CooldownAI()
     {
         cooldownTimer += Time.deltaTime;
-        if(cooldownTimer >= maxCooldownTime)
+        if (cooldownTimer >= maxCooldownTime)
         {
             cooldownTimer = 0;
             anim.SetTrigger("chase");
@@ -190,24 +178,35 @@ public class FPSUrchinAI : MonoBehaviour
     private void HarpoonableAI()
     {
         harpoonableTimer += Time.deltaTime;
-        if(harpoonableTimer >= maxHarpoonableTime)
+        if (harpoonableTimer >= maxHarpoonableTime)
         {
-            weakPointCollider.enabled = false;
-            weakPoint.SetActive(false);
-            health.enabled = false;
+            health.harpoonable = false;
             harpoonableTimer = 0;
             anim.SetTrigger("chase");
-            weakPoint.SetActive(false);
-            rb.isKinematic = true;
-            agent.enabled = true;
+            state = State.ChasePlayer;
+        }
+    }
+
+    private void TakingKnockbackAI()
+    {
+        if (!collisionManagement.isRagdoll)
+        {
             state = State.ChasePlayer;
         }
     }
 
     private void DeathAI()
     {
-        throw new NotImplementedException();
+        Destroy(this.gameObject);
     }
 
-    
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Player") && state == State.Attack)
+        {
+            player.TakeDamage(attackDamage);
+            agent.velocity = Vector3.zero;
+            state = State.Cooldown;
+        }
+    }
 }

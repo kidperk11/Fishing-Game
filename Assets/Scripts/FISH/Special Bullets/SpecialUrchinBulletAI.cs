@@ -12,7 +12,7 @@ public class SpecialUrchinBulletAI : MonoBehaviour
     public int bulletDamage;
     public float bulletSpeed;
     public float knockbackSpeed;
-    private List<EnemyHealthAndQTE> hitEnemies = new List<EnemyHealthAndQTE>();
+    private List<EnemyHealth> hitEnemies = new List<EnemyHealth>();
 
 
     private void Awake()
@@ -40,14 +40,14 @@ public class SpecialUrchinBulletAI : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            EnemyHealthAndQTE enemy = collision.gameObject.GetComponent<EnemyHealthAndQTE>();
+            EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
 
             if(enemy != null)
             {
                 bool alreadyHit = false;
                 if(hitEnemies != null)
                 {
-                    foreach (EnemyHealthAndQTE hitEnemy in hitEnemies)
+                    foreach (EnemyHealth hitEnemy in hitEnemies)
                     {
                         if (hitEnemy == enemy)
                         {

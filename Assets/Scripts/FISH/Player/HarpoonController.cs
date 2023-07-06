@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +15,7 @@ public class HarpoonController : MonoBehaviour
     
 
     //HitEnemyAI
-    private EnemyHealthAndQTE hitEnemy;
+    private EnemyHealth hitEnemy;
 
     //ReelInAI
     [SerializeField] private Vector3 startScale;
@@ -73,6 +74,8 @@ public class HarpoonController : MonoBehaviour
                 break;
         }        
     }
+
+    
 
     private void InAirAI()
     {
@@ -154,7 +157,7 @@ public class HarpoonController : MonoBehaviour
 
                 rb.velocity = Vector3.zero;
                 
-                hitEnemy = collision.gameObject.GetComponent<EnemyHealthAndQTE>();
+                hitEnemy = collision.gameObject.GetComponent<EnemyHealth>();
                 if (hitEnemy.harpoonable)
                 {
                     //hitEnemy.gameObject.transform.parent = this.transform;
@@ -191,9 +194,20 @@ public class HarpoonController : MonoBehaviour
                 startPoint = this.transform.position;
                 state = State.ReelIn;
             }
-            if (collision.gameObject.CompareTag("Player"))
+            if (collision.gameObject.CompareTag("HarpoonSwitch"))
             {
-                
+                HarpoonSwitch harpoonSwitch = collision.gameObject.GetComponent<HarpoonSwitch>();
+                if (!harpoonSwitch.isActive)
+                {
+                    harpoonSwitch.Activate();
+                }
+                else
+                {
+                    harpoonSwitch.Deactivate();
+                }
+                SetLerpProperties();
+                startPoint = this.transform.position;
+                state = State.ReelIn;
             }
         }
     }

@@ -103,13 +103,14 @@ public class FPMove : MonoBehaviour
         {
             CurrentInput();
         }
-        
+
         SpeedControl();
         StateHandler();
 
         //Handle Drag
         if (grounded)
         {
+            
             rb.drag = groundDrag;
         }
         else 

@@ -33,7 +33,7 @@ public class FPSFlatDamageZone : MonoBehaviour
     {
         if (other.CompareTag("Enemy"))
         {
-            EnemyHealthAndQTE enemyHealth = other.gameObject.GetComponent<EnemyHealthAndQTE>();
+            EnemyHealth enemyHealth = other.gameObject.GetComponent<EnemyHealth>();
             enemyHealth.TakeDamage(bulletDamage);
         }
     }

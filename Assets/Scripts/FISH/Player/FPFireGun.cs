@@ -69,14 +69,22 @@ public class FPFireGun : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit))
             {
-                EnemyHealthAndQTE enemy = hit.transform.GetComponent<EnemyHealthAndQTE>();
+                EnemyHealth enemy = hit.transform.GetComponent<EnemyHealth>();
                 if(enemy != null)
                 {
                     enemy.TakeDamage(gunDamage);
                 }
                 else if (hit.transform.gameObject.CompareTag("Shootable"))
                 {
-                    hit.transform.GetComponent<Shootable>().Activate();
+                    Shootable shootable = hit.transform.GetComponent<Shootable>();
+                    if (!shootable.shot)
+                    {
+                        shootable.Activate();
+                    }
+                    else
+                    {
+                        shootable.Deactivate();
+                    }
                 }
                 Debug.Log("Hit Object: " + hit.transform.gameObject );
                 GameObject impact = Instantiate(bulletImpact, hit.point, Quaternion.identity);

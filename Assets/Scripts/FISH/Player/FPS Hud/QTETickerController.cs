@@ -16,7 +16,7 @@ public class QTETickerController : MonoBehaviour
     public QTEActivationBox currentActivationBox;
     public List<QTEActivationBox> allActivationBoxes;
 
-    public EnemyHealthAndQTE currentEnemy;
+    public EnemyHealth currentEnemy;
     public HarpoonController currentHarpoon;
 
     // Start is called before the first frame update
@@ -41,80 +41,80 @@ public class QTETickerController : MonoBehaviour
             if(tickerTransform.anchoredPosition == endPoint.anchoredPosition)
             {
                 Debug.Log("Ticker has reached the end point, now failing Ticker");
-                FailTicker();
+                //FailTicker();
             }
         }
     }
 
-    public void ActivateTicker(EnemyHealthAndQTE enemyHealth, HarpoonController harpoon)
-    {
-        Debug.Log("The ticker has been activated. Current Enemy Attack Pattern: " + enemyHealth.boxPattern);
-        currentEnemy = enemyHealth;
-        currentHarpoon = harpoon;
-        boxPattern = currentEnemy.boxPattern;
-        boxPattern.SetActive(true);
-        Debug.Log("Test value for allActivationBoxes: " + allActivationBoxes);
-        foreach(QTEActivationBox box in currentEnemy.allBoxes)
-        {
-            allActivationBoxes.Add(box);
-        }
-        QTETimer = 0;
-        tickerTransform.anchoredPosition = startPoint.anchoredPosition;
-        activateTicker = true;
-        //NOTE: Add code to make a sound effect and play a special animation
-    }
+    //public void ActivateTicker(EnemyHealth enemyHealth, HarpoonController harpoon)
+    //{
+    //    Debug.Log("The ticker has been activated. Current Enemy Attack Pattern: " + enemyHealth.boxPattern);
+    //    currentEnemy = enemyHealth;
+    //    currentHarpoon = harpoon;
+    //    boxPattern = currentEnemy.boxPattern;
+    //    boxPattern.SetActive(true);
+    //    Debug.Log("Test value for allActivationBoxes: " + allActivationBoxes);
+    //    foreach(QTEActivationBox box in currentEnemy.allBoxes)
+    //    {
+    //        allActivationBoxes.Add(box);
+    //    }
+    //    QTETimer = 0;
+    //    tickerTransform.anchoredPosition = startPoint.anchoredPosition;
+    //    activateTicker = true;
+    //    //NOTE: Add code to make a sound effect and play a special animation
+    //}
 
-    public void FailTicker()
-    {
-        Debug.Log("The ticker has failed, now resetting instance.");
-        boxPattern = null;
-        currentActivationBox = null;
-        allActivationBoxes.Clear();
-        foreach(QTEActivationBox box in currentEnemy.allBoxes)
-        {
-            box.gameObject.SetActive(true);
-        }
-        currentEnemy.boxPattern.SetActive(false);
-        currentEnemy = null;
+    //public void FailTicker()
+    //{
+    //    Debug.Log("The ticker has failed, now resetting instance.");
+    //    boxPattern = null;
+    //    currentActivationBox = null;
+    //    allActivationBoxes.Clear();
+    //    foreach(QTEActivationBox box in currentEnemy.allBoxes)
+    //    {
+    //        box.gameObject.SetActive(true);
+    //    }
+    //    currentEnemy.boxPattern.SetActive(false);
+    //    currentEnemy = null;
         
-        currentHarpoon = null;
-        QTETimer = 0;
-        activateTicker = false;
-        //NOTE: Add code to make a sound effect and play a special animation
-    }
+    //    currentHarpoon = null;
+    //    QTETimer = 0;
+    //    activateTicker = false;
+    //    //NOTE: Add code to make a sound effect and play a special animation
+    //}
 
-    public void SuccessfulInput()
-    {
-        Debug.Log("Count for currentEnemy.allBoxes: " + currentEnemy.allBoxes.Count);
-        Debug.Log("A successful input has been triggered");
-        allActivationBoxes.Remove(currentActivationBox);
-        Debug.Log("Count for currentEnemy.allBoxes: " + currentEnemy.allBoxes.Count);
-        currentActivationBox.gameObject.SetActive(false);
-        currentActivationBox = null;
-        Debug.Log(allActivationBoxes);
-        if(allActivationBoxes.Count == 0)
-        {
-            //NOTE: This code needs to be altered to move the enemy and the harpoon back to the player
-            Debug.Log("QTE has been successfully completed.");
-            currentActivationBox = null;
-            allActivationBoxes.Clear();
-            activateTicker = false;
-            Debug.Log("Count for currentEnemy.allBoxes: " + currentEnemy.allBoxes.Count);
+    //public void SuccessfulInput()
+    //{
+    //    Debug.Log("Count for currentEnemy.allBoxes: " + currentEnemy.allBoxes.Count);
+    //    Debug.Log("A successful input has been triggered");
+    //    allActivationBoxes.Remove(currentActivationBox);
+    //    Debug.Log("Count for currentEnemy.allBoxes: " + currentEnemy.allBoxes.Count);
+    //    currentActivationBox.gameObject.SetActive(false);
+    //    currentActivationBox = null;
+    //    Debug.Log(allActivationBoxes);
+    //    if(allActivationBoxes.Count == 0)
+    //    {
+    //        //NOTE: This code needs to be altered to move the enemy and the harpoon back to the player
+    //        Debug.Log("QTE has been successfully completed.");
+    //        currentActivationBox = null;
+    //        allActivationBoxes.Clear();
+    //        activateTicker = false;
+    //        Debug.Log("Count for currentEnemy.allBoxes: " + currentEnemy.allBoxes.Count);
 
-            foreach (QTEActivationBox box in currentEnemy.allBoxes)
-            {
-                Debug.Log(box);
-                box.gameObject.SetActive(true);
-            }
-            currentEnemy.boxPattern.SetActive(false);
-            currentEnemy.transform.parent = currentHarpoon.transform;
+    //        foreach (QTEActivationBox box in currentEnemy.allBoxes)
+    //        {
+    //            Debug.Log(box);
+    //            box.gameObject.SetActive(true);
+    //        }
+    //        currentEnemy.boxPattern.SetActive(false);
+    //        currentEnemy.transform.parent = currentHarpoon.transform;
            
-            currentHarpoon = null;
-            QTETimer = 0;
-            //Destroy(currentEnemy.gameObject);
-            currentEnemy = null;
+    //        currentHarpoon = null;
+    //        QTETimer = 0;
+    //        //Destroy(currentEnemy.gameObject);
+    //        currentEnemy = null;
 
-        }
+    //    }
         //NOTE: Add code to make a sound effect and play a special animation
-    }
+    
 }
