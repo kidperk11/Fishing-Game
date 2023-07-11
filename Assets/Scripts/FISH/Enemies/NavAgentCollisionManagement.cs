@@ -15,6 +15,9 @@ public class NavAgentCollisionManagement : MonoBehaviour
     public bool isRagdoll;
     private float ragdollTimer;
 
+    [Header("Ground Tracking")]
+    [SerializeField] private bool isGrounded;
+
     private void Start()
     {
         defaultRotation = transform.rotation;
@@ -25,7 +28,7 @@ public class NavAgentCollisionManagement : MonoBehaviour
         if (isRagdoll)
         {
             ragdollTimer += Time.deltaTime;
-            if (ragdollTimer >= maxRagdollTime)
+            if (ragdollTimer >= maxRagdollTime && isGrounded)
             {
                 ragdollTimer = 0;
                 isRagdoll = false;
@@ -51,6 +54,21 @@ public class NavAgentCollisionManagement : MonoBehaviour
         rb.useGravity = false;
         agent.enabled = true;
         transform.rotation = defaultRotation;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
+        }
     }
 
 }

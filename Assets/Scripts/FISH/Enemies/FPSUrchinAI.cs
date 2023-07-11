@@ -8,6 +8,7 @@ public class FPSUrchinAI : MonoBehaviour
 {
     [Header("External References")]
     public Rigidbody rb;
+    public NavAgentCollisionManagement collisionManagement;
     public NavMeshAgent agent;
     public EnemyHealth health;
     public Animator anim;
@@ -52,6 +53,7 @@ public class FPSUrchinAI : MonoBehaviour
         Attack,
         Cooldown,
         Harpoonable,
+        Ragdoll,
         Death
     }
 
@@ -68,6 +70,10 @@ public class FPSUrchinAI : MonoBehaviour
         {
             //NOTE: Add code for the death animation
             state = State.Death;
+        }
+        if (collisionManagement.isRagdoll)
+        {
+            state = State.Ragdoll;
         }
 
         switch (state)
@@ -90,6 +96,9 @@ public class FPSUrchinAI : MonoBehaviour
                 break;
             case State.Harpoonable:
                 HarpoonableAI();
+                break;
+            case State.Ragdoll:
+                RagdollAI();
                 break;
             case State.Death:
                 DeathAI();
@@ -200,6 +209,14 @@ public class FPSUrchinAI : MonoBehaviour
             weakPoint.SetActive(false);
             rb.isKinematic = true;
             agent.enabled = true;
+            state = State.ChasePlayer;
+        }
+    }
+
+    private void RagdollAI()
+    {
+        if (!collisionManagement.isRagdoll)
+        {
             state = State.ChasePlayer;
         }
     }

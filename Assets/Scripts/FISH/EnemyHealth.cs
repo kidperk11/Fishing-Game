@@ -37,16 +37,7 @@ public class EnemyHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(takingNavKnockback && isNavAgent)
-        {
-            navKnockbackTimer += Time.deltaTime;
-            if(navKnockbackTimer >= maxNavKnockbackTime)
-            {
-                navKnockbackTimer = 0;
-                takingNavKnockback = false;
-            }
-            agent.velocity = navKnockbackVelocity;
-        }
+       
     }
 
     public void TakeDamage(int damage)

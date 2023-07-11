@@ -133,6 +133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 2277950238620857989}
+  collisionManagement: {fileID: 4513338919667288291}
   agent: {fileID: 5653158449027298309}
   health: {fileID: 2323015248875044902}
   anim: {fileID: 5653158449235404629}
@@ -244,6 +245,7 @@ MonoBehaviour:
   defaultRotation: {x: 0, y: 0, z: 0, w: 0}
   maxRagdollTime: 2
   isRagdoll: 0
+  isGrounded: 0
 --- !u!1 &5653158449040098940
 GameObject:
   m_ObjectHideFlags: 0
