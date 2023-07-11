@@ -8538,7 +8538,7 @@ GameObject:
   - component: {fileID: 3551695474128631805}
   - component: {fileID: 3551695474128631806}
   m_Layer: 0
-  m_Name: PF_OptionsMenu_Combined_URP
+  m_Name: InGamePauseMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

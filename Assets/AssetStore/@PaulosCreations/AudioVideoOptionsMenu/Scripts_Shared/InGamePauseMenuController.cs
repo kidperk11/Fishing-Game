@@ -8,7 +8,7 @@ using System.IO;
 
 namespace PaulosMenuController
 {
-    public class GameMenuController : MonoBehaviour
+    public class InGamePauseMenuController : MonoBehaviour
     {
         [Header("Should the game pause when opening the menu ?")]
         [SerializeField]
