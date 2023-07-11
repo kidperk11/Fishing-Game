@@ -53,8 +53,8 @@ public class FPSUrchinAI : MonoBehaviour
         Attack,
         Cooldown,
         Harpoonable,
-        Ragdoll,
-        Death
+        Ragdoll
+        //Death
     }
 
     // Start is called before the first frame update
@@ -66,11 +66,11 @@ public class FPSUrchinAI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (health.isDead)
-        {
-            //NOTE: Add code for the death animation
-            state = State.Death;
-        }
+        //if (health.isDead)
+        //{
+        //    //NOTE: Add code for the death animation
+        //    state = State.Death;
+        //}
         if (collisionManagement.isRagdoll)
         {
             state = State.Ragdoll;
@@ -100,9 +100,9 @@ public class FPSUrchinAI : MonoBehaviour
             case State.Ragdoll:
                 RagdollAI();
                 break;
-            case State.Death:
-                DeathAI();
-                break;
+            //case State.Death:
+            //    DeathAI();
+            //    break;
         }
     }
 
@@ -221,10 +221,10 @@ public class FPSUrchinAI : MonoBehaviour
         }
     }
 
-    private void DeathAI()
-    {
-        throw new NotImplementedException();
-    }
+    //private void DeathAI()
+    //{
+    //    throw new NotImplementedException();
+    //}
 
     
 }

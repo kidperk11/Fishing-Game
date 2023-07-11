@@ -36,9 +36,14 @@ public class SpecialUrchinBulletAI : MonoBehaviour
         if (collision.gameObject.CompareTag("Enemy"))
         {
             EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
-
-            if(enemy != null)
+            if(enemy == null)
             {
+                enemy = collision.gameObject.GetComponentInParent<EnemyHealth>();
+            }
+            Debug.Log("Enemy has been hit by Urchin Bullet");
+            if (enemy != null)
+            {
+                Debug.Log("Enemy has been hit by Urchin Bullet, and EnemyHealth has been obtained");
                 bool alreadyHit = false;
                 if(hitEnemies != null)
                 {
