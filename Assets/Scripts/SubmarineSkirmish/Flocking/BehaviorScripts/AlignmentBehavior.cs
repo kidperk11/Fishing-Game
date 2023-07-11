@@ -10,7 +10,7 @@ public class AlignmentBehavior : FilteredFlockBehavior
     {
         //If no neighbors, maintain current alignment
         if (context.Count == 0)
-            return agent.transform.up;
+            return agent.transform.right;
 
         //Add all points together and average
         Vector3 alighmentMove = Vector3.zero;
@@ -18,8 +18,9 @@ public class AlignmentBehavior : FilteredFlockBehavior
         foreach (Transform item in filteredContext)
         {
             //Possibly transform.forward for 3d
-            alighmentMove += item.transform.up;
+            alighmentMove += item.transform.position;
         }
+
         alighmentMove /= context.Count;
 
         return alighmentMove;

@@ -97,7 +97,10 @@ public class BHEnemyController : MonoBehaviour
 
     private void OnEnable()
     {
-        spriteController.circleRadius = radius;
+        if(spriteController != null)
+            spriteController.circleRadius = radius;
+        if (center == null)
+            center = GameObject.FindGameObjectWithTag("AtlantisCenter").transform;
     }
 
     private void Start()
@@ -106,12 +109,16 @@ public class BHEnemyController : MonoBehaviour
         //Once set, tranform.forward will always face the center
         transform.LookAt(center);
         transform.position = (transform.position - center.position).normalized * radius + center.position;
+
+        horizontalMoveSpeed = UnityEngine.Random.Range(40, 80);
     }
 
     void Update()
     {
+
         targetSpeed = horizontalMoveSpeed;
-        spriteController.SpriteFlip = overrideSpriteFlip;
+        if(spriteController != null)
+            spriteController.SpriteFlip = overrideSpriteFlip;
 
         if(updateEnemyPlacement)
         {
@@ -123,6 +130,10 @@ public class BHEnemyController : MonoBehaviour
     {
         switch (currentState)
         {
+            case (EnemyState.Idle):
+                IdleLoop();
+                break;
+
             case (EnemyState.Leader):
                 //Runs until target is found, Breaks up the entire school
                 if (!vertical)
@@ -168,6 +179,13 @@ public class BHEnemyController : MonoBehaviour
             SearchForTarget();
         if (vertical)
             SwimHeight();
+        if (horizontal)
+            SwimRotate();
+    }
+
+    private void IdleLoop()
+    {
+
         if (horizontal)
             SwimRotate();
     }
@@ -221,9 +239,15 @@ public class BHEnemyController : MonoBehaviour
 
     private void MoveToNewRadius()
     {
+        Vector3 newRadius = new Vector3();
+        //Debug.Log("Non normalized: " + (transform.position - center.position));
+        //Debug.Log("Normalized: " + (transform.position - center.position).normalized);
         // Move enemy towards desired position
         desiredPosition = (transform.position - center.position).normalized * radius + center.position;
-        transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * radiusSpeed);
+        newRadius = desiredPosition - transform.position;
+        //newRadius = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * radiusSpeed);
+        transform.position += newRadius;
+
     }
 
     private void SearchForTarget()

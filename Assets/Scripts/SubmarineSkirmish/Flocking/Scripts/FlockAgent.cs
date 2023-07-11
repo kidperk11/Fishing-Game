@@ -8,9 +8,12 @@ public class FlockAgent : MonoBehaviour
     Flock agentFlock;
     public Flock AgentFlock { get { return agentFlock; } }
 
+    public GameObject sphere;
 
     Collider agentCollider;
     public Collider AgentCollider { get { return agentCollider; } }
+
+    internal Transform cityCenter;
 
     void Start()
     {
@@ -24,10 +27,6 @@ public class FlockAgent : MonoBehaviour
 
     public void Move(Vector3 velocity)
     {
-        //Tranform.forward for 3d
-        transform.up = velocity;
-
-        //Constant movement reguardless of movement
         transform.position += velocity * Time.deltaTime;
     }
 }

@@ -26,7 +26,7 @@ public class SteeredCohesionBehavior : FilteredFlockBehavior
 
         //Create offset from agent position
         cohesionMove -= agent.transform.position;
-        cohesionMove = Vector3.SmoothDamp(agent.transform.up, cohesionMove, ref currentVelocity, agentSmoothTime);
+        cohesionMove = Vector3.SmoothDamp(agent.transform.right, cohesionMove, ref currentVelocity, agentSmoothTime);
         return cohesionMove;
     }
 }

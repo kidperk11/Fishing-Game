@@ -35,6 +35,8 @@ public class BHPlayerController : MonoBehaviour
 
     [Space(10)]
     [Header("Other")]
+    public Transform topLimit;
+    public Transform bottomLimit;
     public BHPlayerSpriteController spriteController;
     public BHShooterController playerShootingController;
     public BHGameManager gameManager;
@@ -54,6 +56,11 @@ public class BHPlayerController : MonoBehaviour
     private InputAction movePlayer;
     private InputAction weaponSwap;
 
+    private float downHeightLimiter;
+    private float upHeightLimiter;
+
+    private float distanceFromTop;
+    private float distanceFromBottom;
 
     private void Awake()
     {
@@ -91,16 +98,22 @@ public class BHPlayerController : MonoBehaviour
         s_Instance = this;
         //rigidBody = GetComponent<Rigidbody>();
         transform.position = (transform.position - center.position).normalized * radius + center.position;
+
     }
 
     private void Update()
     {
         CurrentInput();
 
-
         // Update target speed based on input
         targetSpeed = inputX * horizontalMoveSpeed;
 
+
+        distanceFromTop =
+    (rigidBody.transform.position.y - topLimit.transform.position.y) / (topLimit.position.y - bottomLimit.position.y);
+
+        distanceFromBottom =
+            (rigidBody.transform.position.y - bottomLimit.transform.position.y) / (topLimit.position.y - bottomLimit.position.y);
     }
 
     private void FixedUpdate()
@@ -173,9 +186,16 @@ public class BHPlayerController : MonoBehaviour
         //Rounds up input values when moving diagonally 
         if (inputX != 0)
             inputX = Mathf.Sign(inputX);
-        if (inputY != 0)
-            inputY = Mathf.Sign(inputY);
 
+        if (inputY != 0 && inputY > 0)
+        {
+            inputY = Mathf.Sign(inputY) * upHeightLimiter;
+        }
+
+        if(inputY != 0 && inputY < 0)
+        {
+            inputY = Mathf.Sign(inputY) * downHeightLimiter;
+        }
 
         spriteController.FlipSprite(inputX);
     }
@@ -211,6 +231,10 @@ public class BHPlayerController : MonoBehaviour
 
     private void PlayerHeight()
     {
+
+        downHeightLimiter = 1f;
+        upHeightLimiter = 1f;
+
         // Apply movement force to the Rigidbody
         rigidBody.AddForce(new Vector2(0, inputY) * verticalMoveSpeed);
 
@@ -219,6 +243,43 @@ public class BHPlayerController : MonoBehaviour
         {
             rigidBody.velocity *= dragCoefficient;
         }
+
+
+        if (distanceFromBottom < 0.1f)
+        {
+            rigidBody.AddForce(new Vector2(0, 1) * verticalMoveSpeed);
+            downHeightLimiter = 0;
+            return;
+        }
+        if (distanceFromBottom < 0.2f)
+        {
+            downHeightLimiter = .1f;
+            return;
+        }
+        if (distanceFromBottom < 0.3f)
+        {
+            downHeightLimiter = .3f;
+            return;
+        }
+
+        if (distanceFromTop > -0.2f)
+        {
+            rigidBody.AddForce(new Vector2(0, -1) * verticalMoveSpeed);
+            upHeightLimiter = 0f;
+            return;
+        }
+        if (distanceFromTop > -0.3f)
+        {
+            upHeightLimiter = 0.1f;
+            return;
+        }
+        if (distanceFromTop > -0.4f)
+        {
+            upHeightLimiter = 0.3f;
+            return;
+        }
+        
     }
+
 }
 

@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class Flock : MonoBehaviour
 {
+    public Transform edgeofRadius;
+    public Transform cityCenter;
+
+    [Space(10)]
     public FlockAgent agentPrefab;
     List<FlockAgent> agents = new List<FlockAgent>();
     public FlockBehavior behavior;
 
-    [Range(2, 500)]
+    [Range(1, 500)]
     public int startingCount = 250;
     const float AGENT_DENSITY = 0.08f;
 
@@ -19,7 +23,7 @@ public class Flock : MonoBehaviour
     [Range(1f, 10f)]
     public float neighborRadius = 1.5f;
     [Range(0f, 1f)]
-    public float avoidanceRadiusMultiplier = 0.5f;
+    public float avoidanceRadiusMultiplier = 0.25f;
 
     float squareMaxSpeed;
     float squareNeighborRadius;
@@ -34,14 +38,23 @@ public class Flock : MonoBehaviour
 
         for (int i = 0; i < startingCount; i++)
         {
+            //FlockAgent newAgent = Instantiate(
+            //    agentPrefab,
+            //    Random.insideUnitCircle * startingCount * AGENT_DENSITY,
+            //    Quaternion.Euler(Vector3.forward * Random.Range(0f, 360f)),
+            //    transform
+            //    );
+
             FlockAgent newAgent = Instantiate(
-                agentPrefab, 
-                Random.insideUnitCircle * startingCount * AGENT_DENSITY,
-                Quaternion.Euler(Vector3.forward * Random.Range(0f, 360f)),
+                agentPrefab,
+                edgeofRadius.transform.position,
+                Quaternion.identity,
                 transform
                 );
+
             newAgent.name = "Agent " + i;
             newAgent.Initialize(this);
+            newAgent.cityCenter = cityCenter;
             agents.Add(newAgent);
         }
     }
