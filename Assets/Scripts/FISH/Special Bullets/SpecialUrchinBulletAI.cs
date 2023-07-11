@@ -14,11 +14,6 @@ public class SpecialUrchinBulletAI : MonoBehaviour
     public float knockbackSpeed;
     private List<EnemyHealth> hitEnemies = new List<EnemyHealth>();
 
-
-    private void Awake()
-    {
-        rb = this.gameObject.GetComponent<Rigidbody>();
-    }
     // Start is called before the first frame update
     void Start()
     {
@@ -36,14 +31,19 @@ public class SpecialUrchinBulletAI : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
             EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
-
-            if(enemy != null)
+            if(enemy == null)
             {
+                enemy = collision.gameObject.GetComponentInParent<EnemyHealth>();
+            }
+            Debug.Log("Enemy has been hit by Urchin Bullet");
+            if (enemy != null)
+            {
+                Debug.Log("Enemy has been hit by Urchin Bullet, and EnemyHealth has been obtained");
                 bool alreadyHit = false;
                 if(hitEnemies != null)
                 {

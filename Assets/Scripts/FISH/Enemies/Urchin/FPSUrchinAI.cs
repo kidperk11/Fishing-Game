@@ -8,6 +8,7 @@ public class FPSUrchinAI : MonoBehaviour
 {
     [Header("External References")]
     public Rigidbody rb;
+    public NavAgentCollisionManagement collisionManagement;
     public NavMeshAgent agent;
     public EnemyHealth health;
     public Animator anim;
@@ -52,7 +53,8 @@ public class FPSUrchinAI : MonoBehaviour
         Attack,
         Cooldown,
         Harpoonable,
-        Death
+        Ragdoll
+        //Death
     }
 
     // Start is called before the first frame update
@@ -64,10 +66,14 @@ public class FPSUrchinAI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (health.isDead)
+        //if (health.isDead)
+        //{
+        //    //NOTE: Add code for the death animation
+        //    state = State.Death;
+        //}
+        if (collisionManagement.isRagdoll)
         {
-            //NOTE: Add code for the death animation
-            state = State.Death;
+            state = State.Ragdoll;
         }
 
         switch (state)
@@ -91,9 +97,12 @@ public class FPSUrchinAI : MonoBehaviour
             case State.Harpoonable:
                 HarpoonableAI();
                 break;
-            case State.Death:
-                DeathAI();
+            case State.Ragdoll:
+                RagdollAI();
                 break;
+            //case State.Death:
+            //    DeathAI();
+            //    break;
         }
     }
 
@@ -204,10 +213,18 @@ public class FPSUrchinAI : MonoBehaviour
         }
     }
 
-    private void DeathAI()
+    private void RagdollAI()
     {
-        throw new NotImplementedException();
+        if (!collisionManagement.isRagdoll)
+        {
+            state = State.ChasePlayer;
+        }
     }
+
+    //private void DeathAI()
+    //{
+    //    throw new NotImplementedException();
+    //}
 
     
 }

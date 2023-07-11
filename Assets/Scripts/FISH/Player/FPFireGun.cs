@@ -6,25 +6,26 @@ using TMPro;
 
 public class FPFireGun : MonoBehaviour
 {
+    [Header("External References")]
     public FPPlayerActions playerActions;
     public Rigidbody playerRB;
     public GameObject orientation;
     private InputAction fireGun;
     public Camera fpsCam;
     public Transform gunFireTransform;
+    public TextMeshProUGUI hudBulletText;
+    public GameObject bulletImpact;
+
+    [Header("Gun Control Variables")]
     public bool readyToFire;
     public int gunDamage;
-    public GameObject bulletImpact;
-    public TextMeshProUGUI hudBulletText;
-
     
-
-    [Header("Prefabs for different bullets")]
+    [Header("Prefabs for Special Bullets")]
     public GameObject pufferBombPrefab;
     public GameObject urchinBoulderPrefab;
     public string specialBullet;
 
-    [Header("Debug tools")]
+    [Header("Debug Tools")]
     public bool keepSpecialBullet;
 
     
@@ -132,7 +133,7 @@ public class FPFireGun : MonoBehaviour
                 }
 
                 Vector3 directionWithoutSpread = targetPoint - gunFireTransform.position;
-                SpecialUrchinBulletAI bulletInstance = Instantiate(urchinBoulderPrefab, gunFireTransform.position, Quaternion.identity).gameObject.GetComponent<SpecialUrchinBulletAI>();
+                SpecialUrchinBulletAI bulletInstance = Instantiate(urchinBoulderPrefab, gunFireTransform.position, Quaternion.identity).gameObject.GetComponentInChildren<SpecialUrchinBulletAI>();
                 bulletInstance.gameObject.transform.forward = orientation.transform.forward;
                 //bulletInstance.rb.AddForce(directionWithoutSpread.normalized * bulletInstance.bulletSpeed, ForceMode.Impulse);
             }

@@ -74,7 +74,7 @@ public class FPPiranhaAI : MonoBehaviour
             //NOTE: Add code for the death animation
             state = State.Death;
         }
-        if (collisionManagement.isRagdoll)
+        if (collisionManagement.isRagdoll && !health.isDead)
         {
             state = State.Ragdoll;
         }
@@ -101,7 +101,7 @@ public class FPPiranhaAI : MonoBehaviour
                 HarpoonableAI();
                 break;
             case State.Ragdoll:
-                TakingKnockbackAI();
+                RagdollAI();
                 break;
             case State.Death:
                 DeathAI();
@@ -187,7 +187,7 @@ public class FPPiranhaAI : MonoBehaviour
         }
     }
 
-    private void TakingKnockbackAI()
+    private void RagdollAI()
     {
         if (!collisionManagement.isRagdoll)
         {
