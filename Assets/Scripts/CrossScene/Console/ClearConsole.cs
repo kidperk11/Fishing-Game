@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class ClearConsole : MonoBehaviour
 {
+    /*
+     * 
     public static void ClearTheConsole()
     {
         var assembly = Assembly.GetAssembly(typeof(SceneView));
@@ -13,4 +15,5 @@ public class ClearConsole : MonoBehaviour
         var method = type.GetMethod("Clear");
         method.Invoke(new object(), null);
     }
+    */
 }

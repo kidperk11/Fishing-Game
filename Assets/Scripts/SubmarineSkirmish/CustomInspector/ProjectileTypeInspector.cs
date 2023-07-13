@@ -7,6 +7,7 @@ using UnityEngine;
  * Modified by Austin Garrison
  **/
 
+#if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(BHTorpedoStats))]
 public class ProjectileTypeInspector : PropertyDrawer
 {
@@ -139,3 +140,4 @@ public class ProjectileTypeInspector : PropertyDrawer
         //kind of inconvenient but works for now. If I have more variable I have to adjust these number myself.
     }
 }
+#endif

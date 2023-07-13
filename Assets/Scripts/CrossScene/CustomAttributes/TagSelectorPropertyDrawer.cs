@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
+#if UNITY_EDITOR
 //Original by DYLAN ENGELMAN http://jupiterlighthousestudio.com/custom-inspectors-unity/
 //Altered by Brecht Lecluyse http://www.brechtos.com
 [CustomPropertyDrawer(typeof(TagSelectorAttribute))]
@@ -73,3 +74,4 @@ public class TagSelectorPropertyDrawer : PropertyDrawer
         }
     }
 }
+#endif
